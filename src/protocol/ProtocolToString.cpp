@@ -1,0 +1,562 @@
+#include "ProtocolToString.h"
+#include "EEPROM.h"
+
+
+ProtocolToString::ProtocolToString() :
+  crc(CyclicRedundancyCheck())
+{
+  for(int i=0; i<1984; i++){
+    eepromBuffer[i] = EEPROM.read(i);
+    delayMicroseconds(150);
+  }
+}
+
+ProtocolToString::~ProtocolToString(){}
+
+void ProtocolToString::printContentsToString(){
+  String values;
+  boolean run = true;
+  int dataIndex = 0; 
+  int crcBuffer[4];
+  long crcValue = 0L;
+    
+  do {
+    int dataBuffer[16];
+    int bufferIndex = 0;
+    int state = 0;
+
+    for(int i=0; i<16; i++){
+      dataBuffer[i] = 0x00;
+    }
+    
+    while(bufferIndex < 8){
+      dataBuffer[bufferIndex] = eepromBuffer[dataIndex];
+      bufferIndex++;
+      dataIndex++;
+    }
+
+    state = compareProtocolBlocks(dataBuffer);
+    
+    if(state == 0){
+        while(bufferIndex < 16){
+        dataBuffer[bufferIndex] = eepromBuffer[dataIndex]; 
+        bufferIndex++;
+        dataIndex++;
+      }
+      values += dataStructureToString(dataBuffer);  
+    } else if(state > 0 && state < 4){
+        values += dataBlockToString(state);
+    } else if(state == 4){
+      
+        values += dataBlockToString(state);
+        bufferIndex = 0;
+
+        while(bufferIndex < 4){
+          crcBuffer[bufferIndex] = eepromBuffer[dataIndex];
+
+          values += String("Byte : [");
+          values += String(bufferIndex);
+          values += String("] \n");
+          
+          bufferIndex++;
+          dataIndex++;
+        }
+        crcValue = crc.convertToLong(crcBuffer, 4);
+        values += String("\n----------------\n");
+        values += String("CRC : ");
+        values += String(crcValue);
+        values += String("\n----------------\n");
+    }
+
+    /** End of the contents  have been reached **/
+    if(dataIndex >= 1984 || state == 5){
+      values += dataBlockToString(state);
+      values += String("End has been reached. Exiting loop");
+      run = false;     
+    }
+    Serial.print(values);
+    delay(25);
+  }while(run); 
+
+  /*Print CRC */ 
+
+  
+  
+}
+
+/** Return an Int Based on the 8 Byte Block supplied 
+ *  as argument 
+ */
+
+int ProtocolToString::compareProtocolBlocks(const int* data){
+  if(compareSceneBlock(data)){
+    return 1; // Scene Block
+  }
+
+  if(compareStartBlock(data)){
+    return 2; //Start Block
+  }
+
+  if(compareEndBlock(data)){
+    return 3; //End Block
+  }
+
+  if(compareCyclicRedundancyCheckBeginBlock(data)){
+    return 4; //CRC Begin
+  }
+
+  if(compareCyclicRedundancyCheckEndBlock(data)){
+    return 5; //5: CRC End
+  }
+
+  return 0;
+}
+
+String ProtocolToString::dataBlockToString(int option){
+  String values;
+  
+  switch(option){
+    case 1:      
+      values += String("   Scene Block \n");  
+      break;
+    case 2:
+      values += String("   Start Block \n");
+      break;
+    case 3:
+      values += String("    End Block \n");
+      break;
+    case 4: 
+      values += String("CRC Begin Block \n"); 
+      break;
+    case 5:
+      values += String(" CRC End Block \n");
+      break;  
+  }
+
+values += String("------------------\n");  
+
+  return values;
+}
+
+String ProtocolToString::dataStructureToString(const int* data){
+  String values;
+  int id = data[1];
+
+  values += String("------------------\n");
+
+  switch(id){
+    case 0xE0: //Program Change
+      values += programChangeToString(data);
+      break;
+    case 0XE1: //Note Velocity
+      values += noteVelocityToString(data);
+      break;  
+    case 0xE2: //Note Control Change  
+      values += noteControlChangeToString(data);
+      break;
+    case 0xE3: //Pitch Bend  
+     values += pitchBendToString(data);
+      break;
+    case 0xE4: //Pitch Bend Note
+      values += pitchBendNoteToString(data);
+      break;
+    case 0xE5: //Control Change 
+      values += controlChangeToString(data);
+      break;
+    case 0xE6: //Control Change Fade
+      values += controlChangeFadeToString(data);
+      break;
+    case 0xEA: //Scene Data
+      values += sceneDataToString(data);
+      break;        
+  }
+
+  return values;
+}
+
+String ProtocolToString::programChangeToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[5];
+
+  if(startByte == 0xF0 && optionId == 0xE0 && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Program Change ID \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(data[3]) + " : Bank Select \n";
+    values += String(data[4]) + " : Program Select \n";
+    values += String(data[5]) + " : End Byte \n";
+
+    for(int i=6; i<16; i++){
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += String("Error \n");
+      }
+    }
+  } else {
+    values = String("Error while parsing program change data \n");
+  }
+  return values;
+}
+
+String ProtocolToString::noteVelocityToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[6];
+
+  if(startByte == 0xF0 && optionId == 0xE1 && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Note Velocity ID \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(data[3]) + " : Pitch \n";
+    values += String(data[4]) + " : Velocity \n";
+    values += String(data[5]) + " : Link/Static Option \n";
+    values += String(data[6]) + " : End Byte \n";
+
+    for(int i=7; i<16; i++){
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += String("Error \n");
+      }
+    }
+  } else {
+    values = String("Error While Parsing Note Velocity Data \n");
+  }
+  return values;
+}
+
+String ProtocolToString::noteControlChangeToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int resolutionByte = data[6];
+
+  if(startByte == 0xF0 && optionId == 0xE2 && resolutionByte == 0x00 && data[10] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Note Control Change ID \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(data[3]) + " : Pitch \n";
+    values += String(data[4]) + " : Velocity \n";
+    values += String(data[5]) + " : Link/Static Option \n";
+    values += String(data[6]) + " : Resolution 8-bit \n";
+    values += String(data[7]) + " : Control Change Number \n";  
+    values += String(data[8]) + " : Top Value \n";
+    values += String(data[9]) + " : Bottom Value \n";
+    values += String(data[10]) + " : End Byte \n";  
+
+    for(int i=11; i<16; i++){
+       if(data[i] == 0x00){
+            values += String(data[i]) + " : Zero Padding \n";
+          } else {
+            values += "Error \n";
+       }      
+    }
+  } else if(startByte == 0xF0 && optionId == 0xE2 && resolutionByte == 0x01 && data[12] == 0xFF){
+      values += String(data[0]) + " : Start Byte \n";
+      values += String(data[1]) + " : Note Control Change ID \n";
+      values += String(data[2]) + " : MIDI Channel \n";
+      values += String(data[3]) + " : Pitch \n";
+      values += String(data[4]) + " : Velocity \n";
+      values += String(data[5]) + " : Link/Static Option \n";
+      values += String(data[6]) + " : Resolution 14-bit \n";
+      values += String(data[7]) + " : Control Change Number \n";
+      values += String(data[8]) + " : Top Value MSB \n";
+      values += String(data[9]) + " : Top Value LSB \n";
+      values += String(data[10]) + " : Bottom Value MSB \n";
+      values += String(data[11]) + " : Bottom Value LSB \n";
+      values += String(data[12]) + " : End Byte \n";
+
+      for(int i=13; i<16; i++){
+        if(data[i] == 0x00){
+            values += String(data[i]) + " : Zero Padding \n";
+          } else {
+            values += "Error \n";
+       }        
+    }
+  } else {
+      values += String("Error while parsing Note Control Change data \n");
+  }
+  return values;
+}
+
+String ProtocolToString::pitchBendToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[3];
+
+  if(startByte == 0xF0 && optionId == 0xE3 && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Pitch Bend ID \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(data[3]) + " : End Byte \n";
+
+    for(int i=4; i<16; i++){
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += String("Error \n");
+       }
+    }
+  } else {
+    values += String("Error while parsing Pitch Bend data");
+  }
+  return values;
+}
+  
+String ProtocolToString::pitchBendNoteToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[5]; 
+
+  if(startByte == 0xF0 && optionId == 0xE4 && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Pitch Bend Note ID \n";
+    values += String(data[2]) + " : MIDI Channel \n"; 
+    values += String(data[3]) + " : Pitch \n";
+    values += String(data[4]) + " : Velocity \n";
+    values += String(data[5]) + " : End Byte \n";   
+
+    for(int i=6; i<16; i++){
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error \n";
+      }
+    }
+  } else {
+    values += String("Error while Parsing Pitch Bend Note Data \n");
+  }
+
+  return values;
+}
+
+String ProtocolToString::controlChangeToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int resolutionByte = data[3];
+
+  if(startByte == 0xF0 && optionId == 0xE5 && resolutionByte == 0x00){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Control Change ID \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(data[3]) + " : Resolution 8-bit \n";
+    values += String(data[4]) + " : Control Change Number \n";
+    values += String(data[5]) + " : Top Value \n";
+    values += String(data[6]) + " : Bottom Value \n";
+    values += String(data[7]) + " : End Byte \n";
+  
+    for(int i=8; i<16; i++){
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+        } else {
+            values += "Error \n";
+        }
+    } 
+  } else if(startByte == 0xF0 && optionId == 0xE5 && resolutionByte == 0x01){
+      values += String(data[0]) + " : Start Byte \n";
+      values += String(data[1]) + " : Control Change ID \n";
+      values += String(data[2]) + " : MIDI Channel \n";
+      values += String(data[3]) + " : Resolution 14-bit \n";
+      values += String(data[4]) + " : Control Change Number \n";
+      values += String(data[5]) + " : Top Value MSB\n";
+      values += String(data[6]) + " : Top Value LSB\n";
+      values += String(data[7]) + " : Bottom Value MSB \n";
+      values += String(data[8]) + " : Bottom Value MSB \n";
+      values += String(data[9]) + " : End Byte \n";      
+
+      for(int i=10; i<16; i++){
+        if(data[i] == 0x00){
+          values += String(data[i]) + " : Zero Padding \n";
+        } else {
+          values += "Error \n";
+        }
+      }
+  } else {
+    values = String("Error while parsing Control Change \n");
+  }
+  return values;
+}
+
+  
+  String ProtocolToString::controlChangeFadeToString(const int* data){
+    String values; 
+    int startByte = data[0];
+    int optionId = data[1];
+    int resolutionByte = data[3];
+
+    if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x00){       
+      values += String(data[0]) + " : Start Byte \n";
+      values += String(data[1]) + " : Control Change Fade ID \n";
+      values += String(data[2]) + " : MIDI Channel \n";
+      values += String(data[3]) + " : Resolution 8-bit \n";
+      values += String(data[4]) + " : Control Change Number \n";
+      values += String(data[5]) + " : Start \n";
+      values += String(data[6]) + " : Hold \n";
+      values += String(data[7]) + " : End \n";
+      values += String(data[8]) + " : Fade In MSB \n";
+      values += String(data[9]) + " : Fade In LSB \n";
+      values += String(data[10]) + " : Fade Out MSB \n";
+      values += String(data[11]) + " : Fade Out LSB \n";
+      values += String(data[12]) + " : End Byte \n";
+        
+      for(int i=13; i<16; i++){
+        if(data[i] == 0x00){
+          values += String(data[i]) + " : Zero Padding \n";
+        } else {
+          values += "Error \n";
+        }     
+      }
+    } else if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x01){
+      values += String(data[0]) + " : Start Byte \n";
+      values += String(data[1]) + " : Control Change Fade ID \n";
+      values += String(data[2]) + " : MIDI Channel \n";
+      values += String(data[3]) + " : Resolution 14-bit \n";
+      values += String(data[4]) + " : Control Change Number \n";
+      values += String(data[5]) + " : Start MSB\n";
+      values += String(data[6]) + " : Start LSB\n";
+      values += String(data[7]) + " : Hold MSB \n";
+      values += String(data[8]) + " : Hold LSB \n";
+      values += String(data[9]) + " : End MSB \n";
+      values += String(data[10]) + " : End LSB \n";     
+      values += String(data[11]) + " : Fade In MSB \n";
+      values += String(data[12]) + " : Fade In LSB \n";
+      values += String(data[13]) + " : Fade Out MSB \n";
+      values += String(data[14]) + " : Fade Out LSB \n";
+      values += String(data[15]) + " : End Byte \n";
+        
+    } else {
+      values = String("Error while parsing Control Change Fade Data \n");
+    }      
+  return values;  
+}
+
+String ProtocolToString::sceneDataToString(const int* data){
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[15];
+
+  if(startByte == 0xF0 && optionId == 0xEA && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Scene Data Id \n";
+    values += String(data[2]) + " : Option \n";
+    values += String(data[3]) + " : MIDI Channel 1 \n";
+    values += String(data[4]) + " : Bank 1 \n";
+    values += String(data[5]) + " : Program 1 \n";
+    values += String(data[6]) + " : MIDI Channel 2 \n";
+    values += String(data[7]) + " : Bank 2 \n";
+    values += String(data[8]) + " : Program 2 \n";
+    values += String(data[9]) + " : MIDI Channel 3 \n";
+    values += String(data[10]) + " : Bank 3 \n";
+    values += String(data[11]) + " : Program 3 \n";
+    values += String(data[12]) + " : MIDI Channel 4 \n";
+    values += String(data[13]) + " : Bank 4 \n";
+    values += String(data[14]) + " : Program 4 \n";
+    values += String(data[15]) + " : End Byte \n";    
+  } else {
+    values += String("Error while parsing Scene Data \n");
+  }
+  return values ;
+}
+  
+boolean ProtocolToString::compareSceneBlock(const int* data){
+  boolean result = false; 
+
+  if(
+      data[0] == 'S' &&
+      data[1] == 'C' &&
+      data[2] == 'E' &&
+      data[3] == 'N' &&
+      data[4] == 'E' &&
+      data[5] == 'N' &&
+      data[6] == 'R'
+    )
+  {
+    result = true;    
+  }
+  return result;
+}
+
+boolean ProtocolToString::compareStartBlock(const int* data){
+  boolean result = false;
+
+  if(
+      data[0] == 'S' &&
+      data[1] == 'T' && 
+      data[2] == 'R' &&
+      data[3] == 'B' &&
+      data[4] == 'L' &&
+      data[5] == 'O' &&
+      data[6] == 'C' &&
+      data[7] == 'K'
+    )
+  {
+    result = true;  
+  }
+  
+  return result;
+}
+
+boolean ProtocolToString::compareEndBlock(const int* data){
+  boolean result = false;
+
+  if(
+      data[0] == 'E' &&
+      data[1] == 'N' &&
+      data[2] == 'D' &&
+      data[3] == 'B' &&
+      data[4] == 'L' &&
+      data[5] == 'O' &&
+      data[6] == 'C' &&
+      data[7] == 'K'
+    )
+  {
+    result = true;  
+  }
+  return result;
+}
+
+boolean ProtocolToString::compareCyclicRedundancyCheckBeginBlock(const int* data){
+  boolean result = false;
+
+  if(
+      data[0] == 'C' &&
+      data[1] == 'R' &&
+      data[2] == 'C' &&
+      data[3] == 'B' &&
+      data[4] == 'G' &&
+      data[5] == 'N' &&
+      data[6] == 'B' &&
+      data[7] == 'L' 
+    )
+  {
+    result = true;
+  }
+  return result;
+}
+boolean ProtocolToString::compareCyclicRedundancyCheckEndBlock(const int* data){
+  boolean result = false;
+
+  if(
+      data[0] == 'C' &&
+      data[1] == 'R' &&
+      data[2] == 'C' &&
+      data[3] == 'E' &&
+      data[4] == 'N' && 
+      data[5] == 'D' &&
+      data[6] == 'B' &&
+      data[7] == 'L'
+    )
+  {
+    result = true;   
+  }
+  return result;
+}
+
