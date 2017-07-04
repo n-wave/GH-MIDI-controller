@@ -13,7 +13,7 @@ public:
   long convertToLong(const int* dataArray, int length);
   
 private:
-   long crcTable[16] = {
+   unsigned int crcTable[16] = {
                         0x00000000, 0x1db71064,
                         0x3b6e20c8, 0x26d930ac,
                         0x76dc4190, 0x6b6b51f4,
