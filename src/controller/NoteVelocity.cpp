@@ -7,8 +7,13 @@
 
 #include "NoteVelocity.h"
 
-NoteVelocity::NoteVelocity() {
-	// TODO Auto-generated constructor stub
+NoteVelocity::NoteVelocity() :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	parameter(0)
+{
 
 }
 
@@ -25,13 +30,41 @@ void NoteVelocity::update(const uint32_t* time){
 }
 
 void NoteVelocity::setParameter(const uint16_t* value){
-
+	parameter = *value;
 }
 
 uint16_t NoteVelocity::getParameter(){
-	return 0;
+	return parameter;
 }
 
-void NoteVelocity::setConfiguration(const int* data){
+boolean NoteVelocity::setConfiguration(const int* data){
+	boolean result = false;
 
+	if(
+		data[0] == 0xF0 &&
+		data[1] == id &&
+		data[6] == 0xFF
+	  )
+	{
+		channel = data[2];
+		pitch = data[3];
+		velocity = data[4];
+		velocityOption = data[5];
+
+		result = true;
+	}
+	return result;
 }
+
+#ifdef DEBUG
+    String NoteVelocity::toString(){
+    	String result = String("Note Velocity");
+    	result += (String)"MIDI Channel : " + channel + "\n";
+    	result += (String)"Pitch        : " + pitch + "\n";
+    	result += (String)"Velocity     : " + velocity + "\n";
+    	result += (String)"Vel Option	: " + velocityOption + "\n";
+    	result += (String)"Parameter    : " + parameter + "\n";
+    	return result;
+    }
+#endif /* DEBUG */
+

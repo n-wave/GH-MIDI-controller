@@ -20,8 +20,17 @@ public:
 
     void setParameter(const uint16_t* value);
     uint16_t getParameter();
-    void setConfiguration(const int* data);
+    boolean setConfiguration(const int* data);
+
+#ifdef DEBUG
+    String toString();
+#endif /* DEBUG */
+
 private:
+    const uint8_t id = 0xE3;
+    uint8_t channel;
+
+    uint16_t parameter;
 };
 
 #endif /* SRC_CONTROLLER_PITCHBEND_H_ */

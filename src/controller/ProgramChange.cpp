@@ -7,7 +7,12 @@
 
 #include "ProgramChange.h"
 
-ProgramChange::ProgramChange() {
+
+ProgramChange::ProgramChange() :
+	channel(0),
+	bank(0),
+	program(0)
+{
 	// TODO Auto-generated constructor stub
 
 }
@@ -32,6 +37,32 @@ uint16_t ProgramChange::getParameter(){
 	return -1;
 }
 
-void ProgramChange::setConfiguration(const int* data){
+boolean ProgramChange::setConfiguration(const int* data){
+	boolean result = false;
 
+	if(
+		data[0] == 0xF0 &&
+		data[1] == id &&
+		data[5] == 0xFF
+	  )
+	{
+		channel = data[2];
+		bank = data[3];
+		program = data[4];
+
+		result = true;
+	}
+
+	return result;
 }
+
+#ifdef DEBUG
+    String ProgramChange::toString(){
+    	String result = String("Program Change \n");
+    	result += (String)"MIDI Channel : " + channel + "\n";
+    	result += (String)"Bank         : " + bank + "\n";
+    	result += (String)"program      : " + program + "\n";
+
+    	return result;
+    }
+#endif /* DEBUG */

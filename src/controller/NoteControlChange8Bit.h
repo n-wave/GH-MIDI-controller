@@ -20,8 +20,23 @@ public:
 
     void setParameter(const uint16_t* value);
     uint16_t getParameter();
-    void setConfiguration(const int* data);
+    boolean setConfiguration(const int* data);
+
+#ifdef DEBUG
+    String toString();
+#endif /* DEBUG */
+
 private:
+    const uint8_t id = 0xE2;
+    uint8_t channel;
+    uint8_t pitch;
+    uint8_t velocity;
+    uint8_t velocityOption;
+    uint8_t controlChangeNumber;
+    uint8_t topValue;
+    uint8_t bottomValue;
+
+    uint16_t parameter;
 };
 
 #endif /* SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_ */
