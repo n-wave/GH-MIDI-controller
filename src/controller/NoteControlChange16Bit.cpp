@@ -84,7 +84,7 @@ uint16_t NoteControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 
 #ifdef DEBUG
     String NoteControlChange16Bit::toString(){
-    	String result = String("Note Control Change 16Bit");
+    	String result = String("Note Control Change 16Bit \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     : " + velocity + "\n";

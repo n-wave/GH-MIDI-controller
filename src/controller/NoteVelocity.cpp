@@ -58,11 +58,11 @@ boolean NoteVelocity::setConfiguration(const int* data){
 
 #ifdef DEBUG
     String NoteVelocity::toString(){
-    	String result = String("Note Velocity");
+    	String result = String("Note Velocity \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     : " + velocity + "\n";
-    	result += (String)"Vel Option	: " + velocityOption + "\n";
+    	result += (String)"Vel Option   : " + velocityOption + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
     	return result;
     }

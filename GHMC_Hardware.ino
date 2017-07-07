@@ -15,39 +15,41 @@ int programChangeData[] = {
 							0xFF  //5 End Byte
 					   };
 */
-Test test = Test();
+
+//Test test = Test();
+PointerTest* test;
 boolean run = true;
 String result;
 
 void setup()
 {
-
-	/*
-	delay(1000);
-	if(pc.setConfiguration(programChangeData)){
-		succes = String("Successfully loaded data");
-	} else {
-		succes = String("Couldn't load data");
-	}
-	*/
-// Add your initialization code here
 	Serial.begin(9600);
+	delay(1000);
 
+	test = new PointerTest();
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
+
 	delay(2000);
 	if(run){
-		Serial.println("test");
+		/**
+		 *  Dynamic Initialization should take place in loop
+		 * 	If defined as global variable, the class will not be
+		 * 	successfully intialialized on the heap.
+		 **/
+
+
 		for(int i=0; i<9; i++){
 
-			Serial.println("--------------------------\n");
-			Serial.println("Printing Controller : ");
-			Serial.println("--------------------------\n");
+			Serial.println("------------------------");
+			Serial.print("Printing Controller : ");
+			Serial.println(i);
+			Serial.println("------------------------\n");
 
-			result = test.getString(i);
+			result = test->getContents(i);
 			Serial.println(result);
 
 			delay(500);

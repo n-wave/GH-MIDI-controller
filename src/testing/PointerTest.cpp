@@ -10,16 +10,6 @@
 PointerTest::PointerTest() {
 	// TODO Auto-generated constructor stub
 	this->initialize();
-	this->initializeProgramChange();
-	this->initializePitchBendNote();
-	this->initializePitchBend();
-	this->initializeNoteVelocity();
-	this->initializeNoteControlChange8Bit();
-	this->initializeNoteControlChange16Bit();
-	this->initializeControlChangeFade8Bit();
-	this->initializeControlChangeFade16Bit();
-	this->initializeControlChange8Bit();
-	this->initializeControlChange16Bit();
 }
 
 PointerTest::~PointerTest() {
@@ -47,16 +37,56 @@ void PointerTest::initialize(){
 	controllers[8] = new ControlChange8Bit();
 	controllers[9] = new ControlChange16Bit();
 
-	Serial.begin(9600);
+	this->initializeProgramChange();
+	this->initializePitchBendNote();
+	this->initializePitchBend();
+	this->initializeNoteVelocity();
+	this->initializeNoteControlChange8Bit();
+	this->initializeNoteControlChange16Bit();
+	this->initializeControlChangeFade8Bit();
+	this->initializeControlChangeFade16Bit();
+	this->initializeControlChange8Bit();
+	this->initializeControlChange16Bit();
 }
 
-void PointerTest::printContents(){
-	String result = String("Empty");
-	for(int i=0; i<NROFOBJECTS; i++){
-		result = controllers[i]->toString();
-		Serial.println(result);
-		delay(100);
+String PointerTest::getContents(int option){
+	String result;
+
+	switch(option){
+		case 0:
+			result = controllers[0]->toString();
+			break;
+		case 1:
+			result = controllers[1]->toString();
+			break;
+		case 2:
+			result = controllers[2]->toString();
+			break;
+		case 3:
+			result = controllers[3]->toString();
+			break;
+		case 4:
+			result = controllers[4]->toString();
+			break;
+		case 5:
+			result = controllers[5]->toString();
+			break;
+		case 6:
+			result = controllers[6]->toString();
+			break;
+		case 7:
+			result = controllers[7]->toString();
+			break;
+		case 8:
+			result = controllers[8]->toString();
+			break;
+		case 9:
+			result = controllers[9]->toString();
+			break;
+		default:
+			break;
 	}
+	return result;
 }
 
 void PointerTest::initializeProgramChange(){
@@ -124,10 +154,11 @@ void PointerTest::initializeNoteVelocity(){
 	const int data[] = {
 						0xF0, //0 Start Byte
 						0xE1, //1 Option ID
-						0x04, //2 Pitch
-						0x05, //3 Velocity
-						0x00, //4 Velocity Option
-						0xFF  //5 End Byte
+						0x05, //2 Channel
+						0x04, //3 Pitch
+						0x05, //4 Velocity
+						0x00, //5 Velocity Option
+						0xFF  //6 End Byte
 					   };
 
 	if(controllers[3] != NULL){
@@ -282,7 +313,7 @@ void PointerTest::initializeControlChange16Bit(){
 						0xF0, //0 Start Byte
 						0xE5, //1 Option Id
 						0x07, //2 Channel
-						0x00, //3 Resolution
+						0x01, //3 Resolution
 						0x09, //4 Control Change NR
 						0x00, //5 TopValue MSB
 						0x7F, //6 TopValue LSB

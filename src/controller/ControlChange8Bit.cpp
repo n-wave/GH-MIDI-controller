@@ -60,7 +60,7 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
 
 #ifdef DEBUG
     String ControlChange8Bit::toString(){
-    	String result = String("Control Change 8Bit");
+    	String result = String("Control Change 8Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"CC nr        : " + controlChangeNumber + "\n";

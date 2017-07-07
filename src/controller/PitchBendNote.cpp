@@ -54,7 +54,7 @@ boolean PitchBendNote::setConfiguration(const int* data) {
 
 #ifdef DEBUG
 String PitchBendNote::toString(){
-	String result = String("Pitch Bend Note");
+	String result = String("Pitch Bend Note \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Pitch        : " + pitch + "\n";
 	result += (String)"Velocity     : " + velocity + "\n";

@@ -45,7 +45,7 @@ boolean PitchBend::setConfiguration(const int* data){
 	  )
 	{
 		channel = data[2];
-		result = false;
+		result = true;
 	}
 
 	return result;
@@ -53,7 +53,7 @@ boolean PitchBend::setConfiguration(const int* data){
 
 #ifdef DEBUG
 String PitchBend::toString(){
-	String result = String("Pitch Bend");
+	String result = String("Pitch Bend \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Parameter    : " + parameter + "\n";
 	return result;

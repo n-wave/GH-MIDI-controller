@@ -77,7 +77,7 @@ uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 
 #ifdef DEBUG
     String ControlChange16Bit::toString(){
-    	String result = String("Control Change 16Bit");
+    	String result = String("Control Change 16Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"CC nr MSB    : " + controlChangeNumberMSB + "\n";

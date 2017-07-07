@@ -81,7 +81,7 @@ uint16_t ControlChangeFade8Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 
 #ifdef DEBUG
 String ControlChangeFade8Bit::toString(){
-	String result = String("Control Change Fade 8Bit");
+	String result = String("Control Change Fade 8Bit \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"CC number    : " + controlChangeNumber + "\n";
 	result += (String)"Start        : " + start + "\n";
