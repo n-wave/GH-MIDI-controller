@@ -13,6 +13,7 @@
 class ControlChange16Bit : public Controller {
 public:
 	ControlChange16Bit();
+	ControlChange16Bit(const int* data);
     ~ControlChange16Bit();
 
     void execute();

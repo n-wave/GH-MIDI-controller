@@ -21,6 +21,28 @@ NoteControlChange16Bit::NoteControlChange16Bit() :
 	// TODO Auto-generated constructor stub
 }
 
+NoteControlChange16Bit::NoteControlChange16Bit(const int* data) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	controlChangeNumberMSB(0),
+	controlChangeNumberLSB(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("NoteControlChange8Bit successfully initialized");
+	} else {
+		Serial.println("Error occurred in NoteControlChange8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 NoteControlChange16Bit::~NoteControlChange16Bit() {
 	// TODO Auto-generated destructor stub
 }

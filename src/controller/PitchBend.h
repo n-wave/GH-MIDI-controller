@@ -13,6 +13,7 @@
 class PitchBend: public Controller {
 public:
 	PitchBend();
+	PitchBend(const int* data);
     ~PitchBend();
 
     void execute();

@@ -17,6 +17,24 @@ ControlChange8Bit::ControlChange8Bit() :
 	// TODO Auto-generated constructor stub
 }
 
+ControlChange8Bit::ControlChange8Bit(const int* data) :
+	channel(0),
+	controlChangeNumber(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChange8Bit successfully initialized");
+	} else {
+		Serial.println("Error occurred in ControlChange8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 ControlChange8Bit::~ControlChange8Bit() {
 	// TODO Auto-generated destructor stub
 }

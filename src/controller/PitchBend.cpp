@@ -11,10 +11,23 @@ PitchBend::PitchBend() :
 	channel(0),
 	parameter(0)
 {
-	// TODO Auto-generated constructor stub
 
 }
 
+PitchBend::PitchBend(const int* data) :
+	channel(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("PitchBend successfully initialized");
+	} else {
+		Serial.println("Error occurred in PitchBend while loading data");
+	}
+#endif /* DEBUG */
+}
 PitchBend::~PitchBend(){
 	// TODO Auto-generated destructor stub
 }

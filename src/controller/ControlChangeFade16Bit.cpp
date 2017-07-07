@@ -22,6 +22,28 @@ ControlChangeFade16Bit::ControlChangeFade16Bit() :
 
 }
 
+ControlChangeFade16Bit::ControlChangeFade16Bit(const int* data) :
+	channel(0),
+	controlChangeNumberMSB(0),
+	controlChangeNumberLSB(0),
+	start(0),
+	hold(0),
+	end(0),
+	fadeIn(0),
+	fadeOut(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChangeFade16Bit successfully initialized");
+	} else {
+		Serial.println("Error occurred in ControlChangeFade16Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 ControlChangeFade16Bit::~ControlChangeFade16Bit() {
 	// TODO Auto-generated destructor stub
 }

@@ -270,7 +270,7 @@ void PointerTest::initializeControlChangeFade16Bit(){
 						0x00, //11 Fade In MSB
 						0xFF, //12 Fade in LSB
 						0x07, //13 Fade Out MSB
-						0x7F, //14 Fade out LSB
+						0xFF, //14 Fade out LSB
 						0xFF  //15 End Byte
 					   };
 

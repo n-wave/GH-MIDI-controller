@@ -13,6 +13,7 @@
 class NoteVelocity : public Controller {
 public:
 	NoteVelocity();
+	NoteVelocity(const int* data);
 	~NoteVelocity();
 
     void execute();

@@ -8,6 +8,8 @@ class Controller
 {
   public:
     Controller();
+    Controller(const int* data);
+
     virtual ~Controller();
     virtual void execute() = 0;
     virtual void update(const uint32_t* time) = 0;

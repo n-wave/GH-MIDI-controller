@@ -13,6 +13,8 @@
 class ControlChangeFade8Bit : public Controller {
 public:
 	ControlChangeFade8Bit();
+	ControlChangeFade8Bit(const int* data);
+
 	~ControlChangeFade8Bit();
 
     void execute();

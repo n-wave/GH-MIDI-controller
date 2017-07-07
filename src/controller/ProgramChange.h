@@ -12,6 +12,8 @@
 class ProgramChange : public Controller {
 public:
 	ProgramChange();
+	ProgramChange(const int* data);
+
     ~ProgramChange();
 
     void execute();

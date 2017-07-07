@@ -13,6 +13,8 @@
 class ControlChangeFade16Bit : public Controller {
 public:
 	ControlChangeFade16Bit();
+	ControlChangeFade16Bit(const int* data);
+
 	virtual ~ControlChangeFade16Bit();
 
     void execute();

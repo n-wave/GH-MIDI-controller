@@ -15,6 +15,23 @@ PitchBendNote::PitchBendNote() :
 {
 }
 
+PitchBendNote::PitchBendNote(const int* data) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("PitchBendNote successfully initialized");
+	} else {
+		Serial.println("Error occurred in PitchBendNote while loading data");
+	}
+#endif /* DEBUG */
+}
+
 PitchBendNote::~PitchBendNote() {
 	// TODO Auto-generated destructor stub
 }

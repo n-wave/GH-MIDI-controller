@@ -14,7 +14,22 @@ ProgramChange::ProgramChange() :
 	program(0)
 {
 	// TODO Auto-generated constructor stub
+}
 
+ProgramChange::ProgramChange(const int* data) :
+	channel(0),
+	bank(0),
+	program(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ProgramChange successfully initialized");
+	} else {
+		Serial.println("Error occurred in ProgramChange while loading data");
+	}
+#endif /* DEBUG */
 }
 
 ProgramChange::~ProgramChange() {

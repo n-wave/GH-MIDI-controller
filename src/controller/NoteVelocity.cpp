@@ -17,6 +17,24 @@ NoteVelocity::NoteVelocity() :
 
 }
 
+NoteVelocity::NoteVelocity(const int* data) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("NoteVelocity successfully initialized");
+	} else {
+		Serial.println("Error occurred in NoteVelocity while loading data");
+	}
+#endif /* DEBUG */
+}
+
 NoteVelocity::~NoteVelocity() {
 	// TODO Auto-generated destructor stub
 }

@@ -17,6 +17,26 @@ ControlChange16Bit::ControlChange16Bit() :
 {
 }
 
+ControlChange16Bit::ControlChange16Bit(const int* data) :
+	channel(0),
+	controlChangeNumberMSB(0),
+	controlChangeNumberLSB(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChange16Bit successfully initialized");
+	} else {
+		Serial.println("Error occurred in ControlChange16Bit while loading data");
+	}
+#endif /* DEBUG */
+
+}
+
 ControlChange16Bit::~ControlChange16Bit() {
 	// TODO Auto-generated destructor stub
 }

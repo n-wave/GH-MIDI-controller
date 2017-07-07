@@ -19,6 +19,27 @@ ControlChangeFade8Bit::ControlChangeFade8Bit() :
 {
 }
 
+ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data) :
+	channel(0),
+	controlChangeNumber(0),
+	start(0),
+	hold(0),
+	end(0),
+	fadeIn(0),
+	fadeOut(0),
+	parameter(0)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChangeFade8Bit successfully initialized");
+	} else {
+		Serial.println("Error occurred in ControlChangeFade8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 ControlChangeFade8Bit::~ControlChangeFade8Bit() {
 	// TODO Auto-generated destructor stub
 }

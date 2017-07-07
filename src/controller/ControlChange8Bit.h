@@ -13,6 +13,8 @@
 class ControlChange8Bit : public Controller {
 public:
 	ControlChange8Bit();
+	ControlChange8Bit(const int* data);
+
 	virtual ~ControlChange8Bit();
 
     void execute();

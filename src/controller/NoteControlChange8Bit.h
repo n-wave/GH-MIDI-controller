@@ -13,6 +13,8 @@
 class NoteControlChange8Bit : public Controller {
 public:
 	NoteControlChange8Bit();
+	NoteControlChange8Bit(const int* data);
+
 	~NoteControlChange8Bit();
 
     void execute();

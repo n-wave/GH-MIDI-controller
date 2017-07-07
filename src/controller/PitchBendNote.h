@@ -13,6 +13,7 @@
 class PitchBendNote : public Controller {
 public:
 	PitchBendNote();
+	PitchBendNote(const int* data);
     ~PitchBendNote();
 
     void execute();

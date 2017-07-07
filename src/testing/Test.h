@@ -11,8 +11,6 @@
 #include "Arduino.h"
 #include "configuration.h"
 
-#include "../controller/controller.h"
-
 #include "../controller/ProgramChange.h"
 #include "../controller/PitchBendNote.h"
 #include "../controller/PitchBend.h"
@@ -23,6 +21,7 @@
 #include "../controller/ControlChangeFade16Bit.h"
 #include "../controller/ControlChange8Bit.h"
 #include "../controller/ControlChange16Bit.h"
+#include "../controller/controller.h"
 
 class Test {
 public:

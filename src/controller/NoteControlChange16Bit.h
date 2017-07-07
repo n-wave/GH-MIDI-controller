@@ -13,6 +13,7 @@
 class NoteControlChange16Bit: public Controller {
 public:
 	NoteControlChange16Bit();
+	NoteControlChange16Bit(const int* data);
     ~NoteControlChange16Bit();
 
     void execute();
