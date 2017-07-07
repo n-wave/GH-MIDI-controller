@@ -7,21 +7,81 @@
 
 #include "Test.h"
 
-Test::Test() {
-	// TODO Auto-generated constructor stub
-
+Test::Test() :
+	programChange(ProgramChange()),
+	pitchBendNote(PitchBendNote()),
+	pitchBend(PitchBend()),
+	noteVelocity(NoteVelocity()),
+	noteControlChange8Bit(NoteControlChange8Bit()),
+	noteControlChange16Bit(NoteControlChange16Bit()),
+	controlChangeFade8Bit(ControlChangeFade8Bit()),
+	controlChangeFade16Bit(ControlChangeFade16Bit()),
+	controlChange8Bit(ControlChange8Bit()),
+	controlChange16Bit(ControlChange16Bit())
+{
+	this->initialize();
+	Serial.begin(9600);
 }
 
 Test::~Test() {
-	// TODO Auto-generated destructor stub
+
+}
+
+String Test::getString(int option){
+	String result;
+
+	switch(option){
+		case 0:
+			result = programChange.toString();
+			break;
+		case 1:
+			result = pitchBendNote.toString();
+			break;
+		case 2:
+			result = pitchBend.toString();
+			break;
+		case 3:
+			result = noteVelocity.toString();
+			break;
+		case 4:
+			result = noteControlChange8Bit.toString();
+			break;
+		case 5:
+			result = noteControlChange16Bit.toString();
+			break;
+		case 6:
+			result = controlChangeFade8Bit.toString();
+			break;
+		case 7:
+			result = controlChangeFade16Bit.toString();
+			break;
+		case 8:
+			result = controlChange8Bit.toString();
+			break;
+		case 9:
+			result = controlChange16Bit.toString();
+			break;
+		default:
+			result = String("Couldn't comply");
+			break;
+	}
+	return result;
 }
 
 void Test::initialize(){
-
+	this->initializeProgramChange();
+	this->initializePitchBendNote();
+	this->initializePitchBend();
+	this->initializeNoteVelocity();
+	this->initializeNoteControlChange8Bit();
+	this->initializeNoteControlChange16Bit();
+	this->initializeControlChangeFade8Bit();
+	this->initializeControlChange16Bit();
+	this->initializeControlChange8Bit();
+	this->initializeControlChange16Bit();
 }
 
 void Test::initializeProgramChange(){
-	programChange = ProgramChange();
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -37,7 +97,7 @@ void Test::initializeProgramChange(){
 
 
 void Test::initializePitchBendNote(){
-	pitchBendNote = PitchBendNote();
+
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -52,17 +112,16 @@ void Test::initializePitchBendNote(){
 }
 
 void Test::initializePitchBend(){
-	pitchBend = PitchBend();
-
 	const int data[] = {
 						0xF0, //0 Start Byte
 						0xE3, //1 Option Id
 						0x03, //2 Channel
 						0xFF  //3 End
 					   };
+	pitchBend.setConfiguration(data);
 }
 void Test::initializeNoteVelocity(){
-	noteVelocity = NoteVelocity();
+
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -77,7 +136,7 @@ void Test::initializeNoteVelocity(){
 }
 
 void Test::initializeNoteControlChange8Bit(){
-	noteControlChange8Bit = NoteControlChange8Bit();
+
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -97,7 +156,7 @@ void Test::initializeNoteControlChange8Bit(){
 }
 
 void Test::initializeNoteControlChange16Bit(){
-	noteControlChange16Bit = NoteControlChange16Bit();
+
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -119,7 +178,6 @@ void Test::initializeNoteControlChange16Bit(){
 }
 
 void Test::initializeControlChangeFade8Bit(){
-	controlChangeFade8Bit = ControlChangeFade8Bit();
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -141,7 +199,6 @@ void Test::initializeControlChangeFade8Bit(){
 }
 
 void Test::initializeControlChangeFade16Bit(){
-	controlChangeFade16Bit = ControlChangeFade16Bit();
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -166,7 +223,6 @@ void Test::initializeControlChangeFade16Bit(){
 }
 
 void Test::initializeControlChange8Bit(){
-	controlChange8Bit = ControlChange8Bit();
 
 	const int data[] = {
 						0xF0, //0 Start Byte
@@ -184,7 +240,7 @@ void Test::initializeControlChange8Bit(){
 
 
 void Test::initializeControlChange16Bit(){
-	controlChange16Bit = ControlChange16Bit();
+
 
 	const int data[] = {
 						0xF0, //0 Start Byte

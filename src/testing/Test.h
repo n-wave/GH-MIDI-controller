@@ -29,7 +29,7 @@ public:
 	Test();
     ~Test();
 
-    void printContents();
+    String getString(int option);
 
 private:
     void initialize();
