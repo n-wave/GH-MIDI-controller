@@ -77,7 +77,7 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
 }
 
 #ifdef DEBUG
-    String ControlChange8Bit::toString(){
+    void ControlChange8Bit::printContents(){
     	String result = String("Control Change 8Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";
@@ -86,6 +86,6 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
     	result += (String)"Bottom Value : " + bottomValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
 
-    	return result;
+    	Serial.println(result);
     }
 #endif /* DEBUG */

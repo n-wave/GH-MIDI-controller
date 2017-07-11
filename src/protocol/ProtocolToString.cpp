@@ -431,10 +431,36 @@ String ProtocolToString::controlChangeToString(const int* data){
       values += String(data[14]) + " : Fade Out LSB \n";
       values += String(data[15]) + " : End Byte \n";
         
+      for(int i=3; i<16; i++){
+        if(data[i] == 0x00){
+          values += String(data[i]) + " : Zero Padding \n";
+         } else {
+           values += "Error \n";
+         }
+      }
     } else {
       values = String("Error while parsing Control Change Fade Data \n");
     }      
   return values;  
+}
+
+String ProtocolToString::disabledControllerToString(const int* data){
+	String values;
+	int startByte = data[0];
+	int optionId = data[1];
+	int endByte = data[2];
+
+	if(startByte == 0xF0 && optionId == 0xEF && endByte == 0xFF){
+	  values += String(data[0]) + " : Start Byte \n";
+	  values += String(data[1]) + " : Disabled Controller ID \n";
+	  values += String(data[2]) + " : End Byte \n";
+
+
+	} else {
+	  values = String("Error while parsing Disabled Controller Data \n");
+	}
+
+	return values;
 }
 
 String ProtocolToString::sceneDataToString(const int* data){

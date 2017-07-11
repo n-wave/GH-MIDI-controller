@@ -83,7 +83,7 @@ boolean NoteControlChange8Bit::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-    String NoteControlChange8Bit::toString(){
+    void NoteControlChange8Bit::printContents(){
     	String result = String("Note Control Change 8 Bit \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Pitch        : " + pitch + "\n";
@@ -94,6 +94,6 @@ boolean NoteControlChange8Bit::setConfiguration(const int* data){
     	result += (String)"BottomValue  : " + bottomValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
 
-    	return result;
+    	Serial.println(result);
     }
 #endif /* DEBUG */

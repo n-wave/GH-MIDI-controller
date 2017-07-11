@@ -49,44 +49,42 @@ void PointerTest::initialize(){
 	this->initializeControlChange16Bit();
 }
 
-String PointerTest::getContents(int option){
-	String result;
-
+void PointerTest::printContents(int option){
 	switch(option){
 		case 0:
-			result = controllers[0]->toString();
+			controllers[0]->printContents();
 			break;
 		case 1:
-			result = controllers[1]->toString();
+			controllers[1]->printContents();
 			break;
 		case 2:
-			result = controllers[2]->toString();
+			controllers[2]->printContents();
 			break;
 		case 3:
-			result = controllers[3]->toString();
+			controllers[3]->printContents();
 			break;
 		case 4:
-			result = controllers[4]->toString();
+			controllers[4]->printContents();
 			break;
 		case 5:
-			result = controllers[5]->toString();
+			controllers[5]->printContents();
 			break;
 		case 6:
-			result = controllers[6]->toString();
+			controllers[6]->printContents();
 			break;
 		case 7:
-			result = controllers[7]->toString();
+			controllers[7]->printContents();
 			break;
 		case 8:
-			result = controllers[8]->toString();
+			controllers[8]->printContents();
 			break;
 		case 9:
-			result = controllers[9]->toString();
+			controllers[9]->printContents();
 			break;
 		default:
+			Serial.println("Option out of range");
 			break;
 	}
-	return result;
 }
 
 void PointerTest::initializeProgramChange(){

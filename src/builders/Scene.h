@@ -18,20 +18,23 @@
 class Scene {
 public:
 	Scene();
-	Scene(String name);
-	virtual ~Scene();
+	Scene(const String& name);
 
-	String getName();
+	virtual ~Scene();
 
 	boolean setSceneData(const int* data);
 	boolean setController(int number, int type, const int* data);
 
 #ifdef DEBUG
 	void printPogramChangeContents();
+	void printPogramChangeContent(int index);
+	void printControllerContents();
+	void printControllerContent(int index);
 #endif /* DEBUG */
 
 private:
-	void setName(String name);
+
+	void setName(const String& name);
 
 	int nrOfProgramChanges;
 	String name;

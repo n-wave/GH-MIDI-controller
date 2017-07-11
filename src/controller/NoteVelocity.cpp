@@ -30,7 +30,7 @@ NoteVelocity::NoteVelocity(const int* data) :
 	if(success){
 		Serial.println("NoteVelocity successfully initialized");
 	} else {
-		Serial.println("Error occurred in NoteVelocity while loading data");
+		Serial.println("Error occurred in NoteVelocity::NoteVelocity(const int*) while loading data");
 	}
 #endif /* DEBUG */
 }
@@ -75,14 +75,15 @@ boolean NoteVelocity::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-    String NoteVelocity::toString(){
+    void NoteVelocity::printContents(){
     	String result = String("Note Velocity \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     : " + velocity + "\n";
     	result += (String)"Vel Option   : " + velocityOption + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
-    	return result;
+
+    	Serial.println(result);
     }
 #endif /* DEBUG */
 

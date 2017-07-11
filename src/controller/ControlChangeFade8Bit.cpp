@@ -101,7 +101,7 @@ uint16_t ControlChangeFade8Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-String ControlChangeFade8Bit::toString(){
+void ControlChangeFade8Bit::printContents(){
 	String result = String("Control Change Fade 8Bit \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"CC number    : " + controlChangeNumber + "\n";
@@ -112,6 +112,6 @@ String ControlChangeFade8Bit::toString(){
 	result += (String)"FadeOut      : " + fadeOut + "\n";
 	result += (String)"Parameter    : " + parameter + "\n";
 
-	return result;
+	Serial.println(result);
 }
 #endif /* DEBUG */

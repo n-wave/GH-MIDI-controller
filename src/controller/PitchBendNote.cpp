@@ -70,14 +70,13 @@ boolean PitchBendNote::setConfiguration(const int* data) {
 }
 
 #ifdef DEBUG
-String PitchBendNote::toString(){
+void PitchBendNote::printContents(){
 	String result = String("Pitch Bend Note \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Pitch        : " + pitch + "\n";
 	result += (String)"Velocity     : " + velocity + "\n";
 	result += (String)"Parameter    : " + parameter + "\n";
-	return result;
 
-	return result;
+	Serial.println(result);
 }
 #endif

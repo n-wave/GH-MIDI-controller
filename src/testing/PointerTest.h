@@ -31,7 +31,7 @@ public:
    ~PointerTest();
 
 
-   String getContents(int option);
+   void printContents(int option);
 
 private:
    void initialize();

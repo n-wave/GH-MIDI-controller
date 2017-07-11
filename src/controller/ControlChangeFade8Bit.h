@@ -25,7 +25,7 @@ public:
     boolean setConfiguration(const int* data);
 
 #ifdef DEBUG
-    String toString();
+    void printContents();
 #endif /* DEBUG */
 
 private:

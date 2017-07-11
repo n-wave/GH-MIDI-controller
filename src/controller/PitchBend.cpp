@@ -65,10 +65,11 @@ boolean PitchBend::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-String PitchBend::toString(){
+void PitchBend::printContents(){
 	String result = String("Pitch Bend \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Parameter    : " + parameter + "\n";
-	return result;
+
+	Serial.println(result);
 }
 #endif /* DEUUG */

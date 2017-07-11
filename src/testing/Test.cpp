@@ -27,45 +27,42 @@ Test::~Test() {
 
 }
 
-String Test::getString(int option){
-	String result;
-
+void Test::printContents(int option){
 	switch(option){
 		case 0:
-			result = programChange.toString();
+			programChange.printContents();
 			break;
 		case 1:
-			result = pitchBendNote.toString();
+		    pitchBendNote.printContents();
 			break;
 		case 2:
-			result = pitchBend.toString();
+			pitchBend.printContents();
 			break;
 		case 3:
-			result = noteVelocity.toString();
+			noteVelocity.printContents();
 			break;
 		case 4:
-			result = noteControlChange8Bit.toString();
+			noteControlChange8Bit.printContents();
 			break;
 		case 5:
-			result = noteControlChange16Bit.toString();
+			noteControlChange16Bit.printContents();
 			break;
 		case 6:
-			result = controlChangeFade8Bit.toString();
+			controlChangeFade8Bit.printContents();
 			break;
 		case 7:
-			result = controlChangeFade16Bit.toString();
+			controlChangeFade16Bit.printContents();
 			break;
 		case 8:
-			result = controlChange8Bit.toString();
+			controlChange8Bit.printContents();
 			break;
 		case 9:
-			result = controlChange16Bit.toString();
+			controlChange16Bit.printContents();
 			break;
 		default:
-			result = String("Couldn't comply");
+			Serial.println("Couldn't comply");
 			break;
 	}
-	return result;
 }
 
 void Test::initialize(){

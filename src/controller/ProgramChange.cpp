@@ -72,12 +72,12 @@ boolean ProgramChange::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-    String ProgramChange::toString(){
+    void ProgramChange::printContents(){
     	String result = String("Program Change \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Bank         : " + bank + "\n";
     	result += (String)"program      : " + program + "\n";
 
-    	return result;
+    	Serial.println(result);
     }
 #endif /* DEBUG */

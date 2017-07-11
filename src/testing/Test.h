@@ -28,7 +28,7 @@ public:
 	Test();
     ~Test();
 
-    String getString(int option);
+    void printContents(int option);
 
 private:
     void initialize();

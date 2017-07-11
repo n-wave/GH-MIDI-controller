@@ -19,7 +19,7 @@ class Controller
     virtual boolean setConfiguration(const int* data) = 0;
 
 #ifdef DEBUG
-    virtual String toString() = 0;
+    virtual void printContents() = 0;
 #endif /* DEBUG */
 
 };

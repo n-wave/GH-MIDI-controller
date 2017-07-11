@@ -7,6 +7,7 @@
 
 #include "Scene.h"
 
+#include "../controller/DisabledController.h"
 #include "../controller/PitchBendNote.h"
 #include "../controller/PitchBend.h"
 #include "../controller/NoteVelocity.h"
@@ -31,7 +32,7 @@ Scene::Scene() :
 	}
 }
 
-Scene::Scene(String name) :
+Scene::Scene(const String& name) :
 	nrOfProgramChanges(0),
 	name(String(name)),
 	programChange(NULL)
@@ -92,6 +93,7 @@ boolean Scene::setSceneData(const int* data){
 				dataBuffer[5] = 0xFF;
 
 				programChange[index] = new ProgramChange(dataBuffer);
+				delay(50);
 
 				index++;
 				channelIndex += 3;
@@ -101,30 +103,7 @@ boolean Scene::setSceneData(const int* data){
 				if(index == nrOfProgramChanges){
 					run = false;
 				}
-			#ifdef DEBUG
-				    Serial.println("--------------------");
-					Serial.println("Testing setSceneData");
-				    Serial.println("--------------------");
-					Serial.print("nrOfProgramChanges : ");
-					Serial.println(nrOfProgramChanges);
-					Serial.print("index : ");
-					Serial.println(index);
-					Serial.print("channelIndex : ");
-					Serial.println(channelIndex);
-					Serial.print("bankIndex : ");
-					Serial.println(bankIndex);
-					Serial.print("programIndex : ");
-					Serial.println(programIndex);
 
-					Serial.println("Created Program Change Data");
-
-					for(int i=0; i<6; i++){
-						Serial.print("Byte[");
-						Serial.print(i);
-						Serial.print("] : ");
-						Serial.println(dataBuffer[i]);
-					}
-			#endif /* DEBUG */
 
 			} while(run);
 
@@ -146,33 +125,36 @@ boolean Scene::setController(int number, int type, const int* data){
 	{
 		switch(type){
 			case 0:
-				controllers[number] = new ProgramChange(data);
+				controllers[number] = new DisabledController(data);
 				break;
 			case 1:
-				controllers[number] = new NoteVelocity(data);
+				controllers[number] = new ProgramChange(data);
 				break;
 			case 2:
-				controllers[number] = new NoteControlChange8Bit(data);
+				controllers[number] = new NoteVelocity(data);
 				break;
 			case 3:
-				controllers[number] = new NoteControlChange16Bit(data);
+				controllers[number] = new NoteControlChange8Bit(data);
 				break;
 			case 4:
-				controllers[number] = new PitchBend(data);
+				controllers[number] = new NoteControlChange16Bit(data);
 				break;
 			case 5:
-				controllers[number] = new PitchBendNote(data);
+				controllers[number] = new PitchBend(data);
 				break;
 			case 6:
-				controllers[number] = new ControlChange8Bit(data);
+				controllers[number] = new PitchBendNote(data);
 				break;
 			case 7:
-				controllers[number] = new ControlChange16Bit(data);
+				controllers[number] = new ControlChange8Bit(data);
 				break;
 			case 8:
-				controllers[number] = new ControlChangeFade8Bit(data);
+				controllers[number] = new ControlChange16Bit(data);
 				break;
 			case 9:
+				controllers[number] = new ControlChangeFade8Bit(data);
+				break;
+			case 10:
 				controllers[number] = new ControlChangeFade16Bit(data);
 				break;
 		}
@@ -190,27 +172,45 @@ boolean Scene::setController(int number, int type, const int* data){
 	return result;
 }
 
-void Scene::setName(String name){
+void Scene::setName(const String& name){
 	this->name = name;
-}
-
-String Scene::getName(){
-	return name;
 }
 
 #ifdef DEBUG
 void Scene::printPogramChangeContents(){
-	if(nrOfProgramChanges > 0){
-		String result = String();
+	int tmpNrOfPC = this->nrOfProgramChanges;
 
-		for(int i=0; i<nrOfProgramChanges; i++){
-			result = programChange[i]->toString();
+	if(tmpNrOfPC > 0){
 
+		Serial.println(name);
+		Serial.print("Number Of Program Changes : ");
+		Serial.println(tmpNrOfPC);
+
+		for(int i=0; i<tmpNrOfPC; i++){
+			Serial.print("index : ");
+			Serial.println(i);
+			programChange[i]->printContents();
 			delay(250);
-			Serial.println(result);
 		}
 	} else {
 		Serial.println("No programChange objects initialized");
 	}
 }
+
+void Scene::printPogramChangeContent(int index){
+	int tmpNrOfPC = this->nrOfProgramChanges;
+
+	Serial.println(name);
+	Serial.print("Number Of Program Changes : ");
+	Serial.println(tmpNrOfPC);
+
+	if(index >= 0 && index < tmpNrOfPC){
+
+		programChange[index]->printContents();
+
+	} else {
+		Serial.println("No programChange objects initialized");
+	}
+}
+
 #endif /* DEBUG */

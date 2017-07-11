@@ -6,22 +6,40 @@
  */
 
 #include "ProtocolInterperter.h"
+#include "EEPROM.h"
 
 ProtocolInterperter::ProtocolInterperter() :
 	startIndex(0),
-	endIndex(0)
+	endIndex(0),
+	memCheck(false),
+	crc(CyclicRedundancyCheck())
 {
-	// TODO Auto-generated constructor stub
+	memCheck = this->checkMemory();
 
+#ifdef DEBUG
+	if(memCheck){
+		Serial.println("Memory check passed");
+	} else {
+		Serial.println("Memory check has failed");
+	}
+#endif /* DEBUG */
 }
 
 ProtocolInterperter::~ProtocolInterperter() {
 	// TODO Auto-generated destructor stub
 }
 
+boolean ProtocolInterperter::getMemoryStatus(){
+	return memCheck;
+}
 
 void ProtocolInterperter::configureScene(const Scene& scene, int sceneNumber){
 	if(this->setIndices(sceneNumber)){
+
+
+
+
+
 
 
 
@@ -42,20 +60,20 @@ boolean ProtocolInterperter::setIndices(int sceneNumber){
 	if(sceneNumber >= 0 && sceneNumber < 4){
 		switch(sceneNumber){
 			case 0:
-				startIndex = 0;
-				endIndex = 488;
+				this->startIndex = 0;
+				this->endIndex = 488;
 				break;
 			case 1:
-				startIndex = 488;
-				endIndex = 976;
+				this->startIndex = 488;
+				this->endIndex = 976;
 				break;
 			case 2:
-				startIndex = 976;
-				endIndex = 1464;
+				this->startIndex = 976;
+				this->endIndex = 1464;
 				break;
 			case 3:
-				startIndex = 1464;
-				endIndex = 1952;
+				this->startIndex = 1464;
+				this->endIndex = 1952;
 				break;
 		}
 	result = true;
@@ -69,6 +87,126 @@ boolean ProtocolInterperter::setIndices(int sceneNumber){
 
 	return result;
 }
+
+int ProtocolInterperter::getType(const int* data){
+
+	/* Disabled Controller Data Block*/
+	if(data[0] == 0xF0 && data[1] == 0xEF && data[3] == 0xFF){
+		return 0;
+	}
+	/* Program Change Data Block */
+	if(data[0] == 0xF0 && data[1] == 0xE0 && data[5] == 0xFF){
+		return 1;
+	}
+	/* Note Velocity Data Block */
+	if(data[0] == 0xF0 && data[1] == 0xE1 && data[6] == 0xFF){
+		return 2;
+	}
+    /* Note Control Change 8Bit Data Block */
+	if(data[0] == 0xF0 && data[1] == 0xE2 && data[6] == 0x00 && data[10] == 0xFF){
+		return 3;
+	}
+	/* Note Control Change 16Bit Data Block */
+	if(data[0] == 0xF0 && data[1] == 0xE2 && data[6] == 0x01 && data[12] == 0xFF){
+		return 4;
+	}
+	/* Pitch Bend Data */
+	if(data[0] == 0xF0 && data[1] == 0xE3 && data[3] == 0xFF){
+		return 5;
+	}
+	/* Pitch Bend Note Data */
+	if(data[0] == 0xF0 && data[1] == 0xE4 && data[5] == 0xFF){
+		return 6;
+	}
+	/* Control Change 8Bit Data */
+	if(data[0] == 0xF0 && data[1] == 0xE5 && data[3] == 0x00 && data[7] == 0xFF){
+		return 7;
+	}
+	/* Control Change 16Bit Data */
+	if(data[0] == 0xF0 && data[1] == 0xE5 && data[3] == 0x01 && data[9] == 0xFF){
+		return 8;
+	}
+	/* Control Change Fade 8Bit Data */
+	if(data[0] == 0xF0 && data[1] == 0xE6 && data[3] == 0x00 && data[12] == 0xFF){
+		return 9;
+	}
+	/* Control Change Fade 16Bit Data */
+	if(data[0] == 0xF0 && data[1] == 0xE6 && data[3] == 0x01 && data[15] == 0xFF){
+		return 10;
+	}
+
+	return 0;
+}
+
+
+/* Check if the data stored in EEPROM memory
+ * Hasn't been corrupted in any way, By
+ * checking if the dataBlocks are present
+ * in memory on the specified places defined
+ * by the protocol document. Than proceed
+ * by retrieving the stored crc in the eeprom
+ * and compare it with the calculated eeprom.
+ *
+ */
+
+boolean ProtocolInterperter::checkMemory(){
+	boolean result = false;
+
+	long calCRC = 0L;
+	long retCRC = 0L;
+
+	int index = 0;
+	int crcBuffer[4];
+	int crcBgnBuffer[8];
+	int crcEndBuffer[8];
+
+	/* Fill preset data */
+	for(int i=0; i<1952; i++){
+	  eepromBuffer[i] = EEPROM.read(i);
+	  delayMicroseconds(150);
+	}
+
+	/* calculate crc */
+	calCRC = crc.calculateCyclicRedundancyCheck(this->eepromBuffer, 1952);
+
+	/* fill crcBgnBuffer if data in EEPROM
+	 * is valid it should contain CRCBGNBL
+	 */
+	for(int i=1952; i<1960; i++){
+		crcBgnBuffer[index] = EEPROM.read(i);
+		index++;
+	}
+	index = 0;
+
+	/* fill crcBgnBuffer if data in EEPROM
+	 * is valid it should contain CRCBGNBL
+	 */
+
+	for(int i=1964; i<1972; i++){
+		crcEndBuffer[index] = EEPROM.read(i);
+		index++;
+	}
+
+	if(this->compareCyclicRedundancyCheckBeginBlock(crcBgnBuffer) &&
+	    this->compareCyclicRedundancyCheckEndBlock(crcEndBuffer))
+	{
+
+	/* Fill crcBuffer with crc Stored in EEPROm */
+		crcBuffer[0] = EEPROM.read(1960);
+		crcBuffer[1] = EEPROM.read(1961);
+		crcBuffer[2] = EEPROM.read(1962);
+		crcBuffer[3] = EEPROM.read(1963);
+
+		retCRC = crc.convertToLong(crcBuffer, 4);
+	}
+
+	if(calCRC == retCRC){
+		result = true;
+	}
+
+	return result;
+}
+
 
 boolean ProtocolInterperter::compareSceneBlock(const int* data, int number){
 	boolean result = false;

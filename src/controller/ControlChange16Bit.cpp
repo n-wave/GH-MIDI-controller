@@ -96,7 +96,7 @@ uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-    String ControlChange16Bit::toString(){
+    void ControlChange16Bit::printContents(){
     	String result = String("Control Change 16Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";
@@ -106,6 +106,6 @@ uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
     	result += (String)"Bottom Value : " + bottomValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
 
-    	return result;
+    	Serial.println(result);
     }
 #endif /* DEBUG */
