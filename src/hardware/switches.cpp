@@ -47,7 +47,14 @@ volatile unsigned char switches[16] =  {0,  //neck switch 1
                                         0}; //scene 4
 
 unsigned int switchIndex = 0;
-                                       
+
+/* The Switches on the multiplexer
+ * are hooked to the ground i.e.
+ * The configuration is active Low
+ * When a switch is pressed it is
+ * shorted to the ground.
+ */
+
 void initSwitches() {
   pinMode(COMMON_Z, INPUT_PULLUP); //enable pullup resistor for 16bit channel multiplexer
   pinMode(ADDRESS_0, OUTPUT);

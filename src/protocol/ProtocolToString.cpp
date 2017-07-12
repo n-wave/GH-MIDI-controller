@@ -79,9 +79,6 @@ void ProtocolToString::printContentsToString(){
   }while(run); 
 
   /*Print CRC */ 
-
-  
-  
 }
 
 /** Return an Int Based on the 8 Byte Block supplied 

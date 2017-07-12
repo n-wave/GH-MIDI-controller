@@ -20,12 +20,12 @@ public:
 	~ProtocolInterperter();
 
 	boolean getMemoryStatus();
-	void configureScene(const Scene& scene, int sceneNumber);
+	boolean configureScene(Scene& scene, int sceneNumber);
 
 
 private:
 	boolean checkMemory();
-	boolean setIndices(int sceneNumber);
+	void setSceneBuffer(int* data, int sceneNumber);
 
 	int getType(const int* data);
 
@@ -36,12 +36,8 @@ private:
 	boolean compareCyclicRedundancyCheckEndBlock(const int* data);
 
 
-
-	int startIndex;
-	int endIndex;
 	boolean memCheck;
 	CyclicRedundancyCheck crc;
-	int eepromBuffer[1952];
 };
 
 #endif /* SRC_PROTOCOL_PROTOCOLINTERPERTER_H_ */

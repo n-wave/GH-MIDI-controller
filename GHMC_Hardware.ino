@@ -12,6 +12,8 @@ Scene sceneTwo = Scene("Scene Two");
 Scene sceneThree = Scene("Scene Three");
 Scene sceneFour = Scene("Scene Four");
 
+
+
 boolean run = true;
 String result;
 
@@ -20,7 +22,7 @@ void setup()
 	Serial.begin(9600);
 	delay(1000);
 
-	ProtocolInterperter interperter = ProtocolInterperter();
+
 }
 
 // The loop function is called in an endless loop
@@ -29,13 +31,37 @@ void loop()
 
 	delay(2000);
 	if(run){
-
-		pogramChangeTest();
+		//configureSceneTest();
+		//pogramChangeTest();
 		run = false;
 	}
 }
 
 #ifdef DEBUG
+
+void configureSceneTest(){
+	ProtocolInterperter interperter = ProtocolInterperter();
+
+	interperter.configureScene(sceneOne, 0);
+	delay(250);
+	interperter.configureScene(sceneTwo, 1);
+	delay(250);
+	interperter.configureScene(sceneThree, 2);
+	delay(250);
+	interperter.configureScene(sceneFour, 3);
+	delay(250);
+
+	sceneOne.printControllerContents();
+	sceneTwo.printControllerContents();
+	sceneThree.printControllerContents();
+	sceneFour.printControllerContents();
+}
+
+
+
+
+
+
 void pogramChangeTest(){
 
 

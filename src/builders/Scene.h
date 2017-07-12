@@ -7,7 +7,6 @@
 
 #ifndef SRC_BUILDERS_SCENE_H_
 #define SRC_BUILDERS_SCENE_H_
-#define NROFCONTROLLERS 28
 
 #include "Arduino.h"
 
@@ -33,6 +32,8 @@ public:
 #endif /* DEBUG */
 
 private:
+
+	enum {NROFCONTROLLERS = 28};
 
 	void setName(const String& name);
 

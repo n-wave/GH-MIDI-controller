@@ -9,8 +9,6 @@
 #include "EEPROM.h"
 
 ProtocolInterperter::ProtocolInterperter() :
-	startIndex(0),
-	endIndex(0),
 	memCheck(false),
 	crc(CyclicRedundancyCheck())
 {
@@ -18,9 +16,13 @@ ProtocolInterperter::ProtocolInterperter() :
 
 #ifdef DEBUG
 	if(memCheck){
+		Serial.println("-------------------");
 		Serial.println("Memory check passed");
+		Serial.println("-------------------");
 	} else {
+		Serial.println("-----------------------");
 		Serial.println("Memory check has failed");
+		Serial.println("-----------------------");
 	}
 #endif /* DEBUG */
 }
@@ -33,60 +35,166 @@ boolean ProtocolInterperter::getMemoryStatus(){
 	return memCheck;
 }
 
-void ProtocolInterperter::configureScene(const Scene& scene, int sceneNumber){
-	if(this->setIndices(sceneNumber)){
-
-
-
-
-
-
-
-
-	}
-}
-
-/**
- * The configuration data for one scene is stored in
- * blocks of 488 bytes. The controller has four scenes
- * stored in EEPROM memory. This function sets start
- * and end indices based on the scene number that needs
- * to be configured.
- */
-
-boolean ProtocolInterperter::setIndices(int sceneNumber){
+boolean ProtocolInterperter::configureScene(Scene& scene, int sceneNumber){
 	boolean result = false;
 
-	if(sceneNumber >= 0 && sceneNumber < 4){
-		switch(sceneNumber){
-			case 0:
-				this->startIndex = 0;
-				this->endIndex = 488;
-				break;
-			case 1:
-				this->startIndex = 488;
-				this->endIndex = 976;
-				break;
-			case 2:
-				this->startIndex = 976;
-				this->endIndex = 1464;
-				break;
-			case 3:
-				this->startIndex = 1464;
-				this->endIndex = 1952;
-				break;
+	if(sceneNumber >= 0 && sceneNumber < 4 ){
+		int sceneBuffer[488];
+		int dataBuffer[16];
+		int bufferIndex = 0;
+		int dataIndex = 0;
+
+
+		this->setSceneBuffer(sceneBuffer, sceneNumber);
+
+		while(dataIndex < 8){
+			dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
 		}
-	result = true;
+
+		/* Start Loading Scene Data */
+
+		if(this->compareSceneBlock(dataBuffer,sceneNumber)){
+
+			#ifdef DEBUG
+			Serial.println("loading scene Data");
+			Serial.println("------------------");
+			Serial.print("  Scene Number : ");
+		    Serial.println(sceneNumber);
+			Serial.println("------------------");
+			#endif
+
+			dataIndex = 0; //Reset dataIndex for dataBuffer
+
+			/* Scene nr datablock has beend confirmed
+			 * next 16 Bytes are the SceneData, start
+			 * filling up the dataBuffer from scratch and
+			 * supply it to the scene.
+			 */
+
+			while(dataIndex < 16){
+				dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
+			}
+
+			if(dataBuffer[0] == 0xF0 && dataBuffer[1] == 0xEA && dataBuffer[15] == 0xFF){
+				/* The 16 Bytes in the buffer coincides with the sceneData */
+				scene.setSceneData(dataBuffer);
+
+			} else {
+				#ifdef DEBUG
+				Serial.println("Error occurred in ProtocolInterperter::configureScene(const Scene&, int)");
+				Serial.println("SceneData is corrupted, doesn't coincide with the protocol, exiting method");
+				#endif /* DEBUG */
+				return result;
+			}
+
+		} else {
+			#ifdef DEBUG
+			Serial.println("Error occurred in ProtocolInterperter::configureScene(const Scene&, int)");
+			Serial.println("Couldnt't find the SCENENR data block, exiting method");
+			#endif
+			return result;
+		}
+
+		/* End Loading Scene Data */
+
+		/* Next Step is Loading up the start Block and comparing it */
+		dataIndex = 0;
+
+		while(dataIndex < 8){
+			dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
+		}
+
+		if(this->compareStartBlock(dataBuffer)){
+			/* Start Block Has Been found
+			 * Start loading up the controllers
+			 **/
+
+			#ifdef DEBUG
+			Serial.println("Found Start Block, loading the controller data");
+			#endif
+
+			boolean run = true;
+			int controllerNumber = 0;
+
+
+			while(run){
+				dataIndex = 0;
+
+				while(dataIndex < 8){
+					dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
+				}
+
+				if(this->compareEndBlock(dataBuffer) || bufferIndex >= 488 || controllerNumber >= 28){
+					run = false;
+					result = true;
+				} else {
+					/* Keep filling the Buffer */
+					while(dataIndex < 16){
+						dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
+					}
+
+					int type = this->getType(dataBuffer);
+					scene.setController(controllerNumber, type, dataBuffer);
+					controllerNumber++;
+				}
+			}
+		} else {
+			#ifdef DEBUG
+			Serial.println("Error occurred in ProtocolInterperter::configureScene(const Scene&, int)");
+			Serial.println("Couldnt't find the Start data block, exiting method");
+			#endif
+
+			return result;
+		}
 	}
 #ifdef DEBUG
 	else {
-		Serial.println("Error occurred in ProtocolInterperter::setIndices(int sceneNumber)");
-		Serial.println("Supplied wrong scene Number");
+		Serial.println("Error occurred in ProtocolInterperter::configureScene(int, int*)");
+		Serial.println("Supplied wrong sceneNumber");
 	}
 #endif /* DEBUG */
-
 	return result;
 }
+
+
+void ProtocolInterperter::setSceneBuffer(int* data, int sceneNumber){
+	int bufferIndex = 0;
+	int startIndex = 0;
+	int endIndex = 0;
+	boolean run = true;
+
+	switch(sceneNumber){
+		case 0:
+			startIndex = 0;
+			endIndex = 488;
+			break;
+		case 1:
+			startIndex = 488;
+			endIndex = 976;
+			break;
+		case 2:
+			startIndex = 976;
+			endIndex = 1464;
+			break;
+		case 3:
+			startIndex = 1464;
+			endIndex = 1952;
+			break;
+		}
+
+	while(run){
+		data[bufferIndex] = EEPROM.read(startIndex);
+
+		bufferIndex++;
+		startIndex++;
+
+
+		if(bufferIndex >= 488 || startIndex >= endIndex){
+			run = false;
+		}
+	}
+}
+
 
 int ProtocolInterperter::getType(const int* data){
 
@@ -160,14 +268,16 @@ boolean ProtocolInterperter::checkMemory(){
 	int crcBgnBuffer[8];
 	int crcEndBuffer[8];
 
+	int buffer[1952];
+
 	/* Fill preset data */
 	for(int i=0; i<1952; i++){
-	  eepromBuffer[i] = EEPROM.read(i);
+	  buffer[i] = EEPROM.read(i);
 	  delayMicroseconds(150);
 	}
 
 	/* calculate crc */
-	calCRC = crc.calculateCyclicRedundancyCheck(this->eepromBuffer, 1952);
+	calCRC = crc.calculateCyclicRedundancyCheck(buffer, 1952);
 
 	/* fill crcBgnBuffer if data in EEPROM
 	 * is valid it should contain CRCBGNBL
@@ -224,7 +334,7 @@ boolean ProtocolInterperter::compareSceneBlock(const int* data, int number){
 	{
 		result = true;
 	}
-#ifdef DEBUG
+#ifdef COMPAREBLOCKS
 	else {
 		Serial.println("Error occurred in ProtocolInterperter::compareSceneBlock(const int* data, int number)");
 		Serial.println("Print data in the supplied array");
@@ -236,7 +346,7 @@ boolean ProtocolInterperter::compareSceneBlock(const int* data, int number){
 			Serial.println(data[i]);
 		}
 	}
-#endif /* DEBUG */
+#endif /* COMPAREBLOCKS */
 
 	return result;
 }
@@ -257,7 +367,8 @@ boolean ProtocolInterperter::compareStartBlock(const int* data){
 	{
 		result = true;
 	}
-#ifdef DEBUG
+#ifdef COMPAREBLOCKS
+
 	else {
 		Serial.println("Error occurred in ProtocolInterperter::compareStartBlock(const int *data)");
 		Serial.println("Print data in the supplied array");
@@ -269,7 +380,8 @@ boolean ProtocolInterperter::compareStartBlock(const int* data){
 			Serial.println(data[i]);
 		}
 	}
-#endif /* DEBUG */
+#endif /* COMPAREBLOCKS */
+
 	return result;
 }
 
@@ -289,7 +401,7 @@ boolean ProtocolInterperter::compareEndBlock(const int* data){
 	{
 		result = true;
 	}
-#ifdef DEBUG
+#ifdef COMPAREBLOCKS
 	else {
 		Serial.println("Error occurred in ProtocolInterperter::compareEndBlock(const int* data)");
 		Serial.println("Print data in the supplied array");
@@ -301,7 +413,7 @@ boolean ProtocolInterperter::compareEndBlock(const int* data){
 			Serial.println(data[i]);
 		}
 	}
-#endif /* DEBUG */
+#endif /* COMPAREBLOCKS */
 	return result;
 }
 
@@ -321,7 +433,7 @@ boolean ProtocolInterperter::compareCyclicRedundancyCheckBeginBlock(const int* d
 	{
 		result = true;
 	}
-#ifdef DEBUG
+#ifdef COMPAREBLOCKS
 	else {
 		Serial.println("Error occurred in ProtocolInterperter::compareCyclicRedundancyCheckBeginBlock(const int* data)");
 		Serial.println("Print data in the supplied array");
@@ -333,7 +445,7 @@ boolean ProtocolInterperter::compareCyclicRedundancyCheckBeginBlock(const int* d
 			Serial.println(data[i]);
 		}
 	}
-#endif /* DEBUG */
+#endif /* COMPAREBLOCKS */
 	return result;
 }
 
@@ -353,7 +465,7 @@ boolean ProtocolInterperter::compareCyclicRedundancyCheckEndBlock(const int* dat
 	{
 		result = true;
 	}
-#ifdef DEBUG
+#ifdef COMPAREBLOCKS
 	else {
 		Serial.println("Error occurred in ProtocolInterperter::compareCyclicRedundancyCheckEndBlock(const int* data)");
 		Serial.println("Print data in the supplied array");
@@ -365,6 +477,6 @@ boolean ProtocolInterperter::compareCyclicRedundancyCheckEndBlock(const int* dat
 			Serial.println(data[i]);
 		}
 	}
-#endif /* DEBUG */
+#endif /* COMPAREBLOCKS */
 	return result;
 }

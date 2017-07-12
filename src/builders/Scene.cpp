@@ -103,13 +103,9 @@ boolean Scene::setSceneData(const int* data){
 				if(index == nrOfProgramChanges){
 					run = false;
 				}
-
-
 			} while(run);
-
 		}
 	}
-
 	return result;
 }
 
@@ -120,9 +116,15 @@ boolean Scene::setController(int number, int type, const int* data){
 	   number >= 0 &&
 	   number < 28 &&
 	   type >= 0 &&
-	   type <= 9
+	   type <= 10
 	  )
 	{
+	#ifdef DEBUG
+		Serial.print("Controller nr : ");
+		Serial.print(number);
+		Serial.print(" : ");
+	#endif /* DEBUG */
+
 		switch(type){
 			case 0:
 				controllers[number] = new DisabledController(data);
@@ -158,6 +160,7 @@ boolean Scene::setController(int number, int type, const int* data){
 				controllers[number] = new ControlChangeFade16Bit(data);
 				break;
 		}
+
 		result = true;
 	}
 #ifdef DEBUG
@@ -177,6 +180,7 @@ void Scene::setName(const String& name){
 }
 
 #ifdef DEBUG
+
 void Scene::printPogramChangeContents(){
 	int tmpNrOfPC = this->nrOfProgramChanges;
 
@@ -193,6 +197,9 @@ void Scene::printPogramChangeContents(){
 			delay(250);
 		}
 	} else {
+		Serial.println("Error occurred in Scene::printProgramChangeContents()");
+		Serial.print(name);
+		Serial.print(" : ");
 		Serial.println("No programChange objects initialized");
 	}
 }
@@ -209,8 +216,37 @@ void Scene::printPogramChangeContent(int index){
 		programChange[index]->printContents();
 
 	} else {
-		Serial.println("No programChange objects initialized");
+		Serial.println("Error occurred in Scene::printProgramChangeContent(int)");
+		Serial.print(name);
+		Serial.print(" : ");
+		Serial.println("Index out of bound");
 	}
 }
+
+void Scene::printControllerContents(){
+	Serial.println("-----------");
+	Serial.println(name);
+	Serial.println("-----------");
+
+	for(int i=0; i<NROFCONTROLLERS; i++){
+		Serial.print("Controller : ");
+		Serial.println(i);
+
+		this->printControllerContent(i);
+		delay(200);
+	}
+}
+
+void Scene::printControllerContent(int index){
+	if(index >=0 && index < 28){
+		controllers[index]->printContents();
+	} else {
+		Serial.println("Error occurred in Scene::printControllerContent(int)");
+		Serial.print(name);
+		Serial.print(" : ");
+		Serial.println("Index out of bound");
+	}
+}
+
 
 #endif /* DEBUG */

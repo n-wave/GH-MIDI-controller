@@ -10,5 +10,6 @@
 
 #define NROFCONT 28;
 #define DEBUG
+//#define COMPAREBLOCKS
 
 #endif /* SRC_TESTING_CONFIGURATION_H_ */
