@@ -9,11 +9,13 @@
 #define SRC_CONTROLLER_CONTROLCHANGEFADE16BIT_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class ControlChangeFade16Bit : public Controller {
 public:
 	ControlChangeFade16Bit();
 	ControlChangeFade16Bit(const int* data);
+	ControlChangeFade16Bit(const int* data, Dispatcher* dispatcher);
 
 	virtual ~ControlChangeFade16Bit();
 
@@ -44,6 +46,8 @@ private:
     uint16_t fadeOut;
 
     uint16_t parameter;
+
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_CONTROLCHANGEFADE16BIT_H_ */

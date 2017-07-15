@@ -9,11 +9,14 @@
 #define SRC_CONTROLLER_PITCHBENDNOTE_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class PitchBendNote : public Controller {
 public:
 	PitchBendNote();
 	PitchBendNote(const int* data);
+	PitchBendNote(const int* data, Dispatcher* dispatcher);
+
     ~PitchBendNote();
 
     void execute();
@@ -34,6 +37,7 @@ private:
     uint8_t velocity;
 
     uint16_t parameter;
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_PITCHBENDNOTE_H_ */

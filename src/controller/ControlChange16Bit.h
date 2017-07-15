@@ -9,11 +9,14 @@
 #define SRC_CONTROLLER_CONTROLCHANGE16BIT_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class ControlChange16Bit : public Controller {
 public:
 	ControlChange16Bit();
 	ControlChange16Bit(const int* data);
+	ControlChange16Bit(const int* data, Dispatcher* dispatcher);
+
     ~ControlChange16Bit();
 
     void execute();
@@ -38,6 +41,8 @@ private:
     uint16_t bottomValue;
 
     uint16_t parameter;
+
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_CONTROLCHANGE16BIT_H_ */

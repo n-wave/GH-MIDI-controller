@@ -3,12 +3,14 @@
 
 #include <Arduino.h>
 #include "../testing/configuration.h"
+#include "../dispatcher/Dispatcher.h"
 
 class Controller
 {
   public:
     Controller();
     Controller(const int* data);
+    Controller(const int* data, const Dispatcher* dispatcher);
 
     virtual ~Controller();
     virtual void execute() = 0;

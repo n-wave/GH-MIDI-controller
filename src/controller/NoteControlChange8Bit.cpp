@@ -6,6 +6,7 @@
  */
 
 #include "NoteControlChange8Bit.h"
+#include "../command/NoteControlChange8BitCommand.h"
 
 NoteControlChange8Bit::NoteControlChange8Bit() :
 	channel(0),
@@ -15,7 +16,8 @@ NoteControlChange8Bit::NoteControlChange8Bit() :
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 }
 
@@ -27,7 +29,8 @@ NoteControlChange8Bit::NoteControlChange8Bit(const int* data) :
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -40,16 +43,52 @@ NoteControlChange8Bit::NoteControlChange8Bit(const int* data) :
 #endif /* DEBUG */
 }
 
+NoteControlChange8Bit::NoteControlChange8Bit(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	controlChangeNumber(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("NoteControlChange8Bit successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in NoteControlChange8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 NoteControlChange8Bit::~NoteControlChange8Bit() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void NoteControlChange8Bit::execute(){
 
 }
 
-void NoteControlChange8Bit::update(const uint32_t* time){
+/* NoteControlChange8Bit::update()
+ *
+ * Calculate values.
+ *
+ * add new NoteControlChange8BitCommand
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t pitch
+ * arg 3: uint8_t velocity
+ * arg 4: uint8_t ccNumber
+ * arg 5: uint8_t ccValue
+ *
+ */
 
+void NoteControlChange8Bit::update(const uint32_t* time){
+	dispatcher->addCommand(new NoteControlChange8BitCommand(0, 64, 100, 13, 90));
 }
 
 void NoteControlChange8Bit::setParameter(const uint16_t* value){

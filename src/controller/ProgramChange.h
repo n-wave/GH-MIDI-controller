@@ -7,12 +7,15 @@
 
 #ifndef SRC_CONTROLLER_PROGRAMCHANGE_H_
 #define SRC_CONTROLLER_PROGRAMCHANGE_H_
+
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class ProgramChange : public Controller {
 public:
 	ProgramChange();
 	ProgramChange(const int* data);
+	ProgramChange(const int* data, Dispatcher* dispatcher);
 
     ~ProgramChange();
 
@@ -21,6 +24,7 @@ public:
 
     void setParameter(const uint16_t* value);
     uint16_t getParameter();
+
     boolean setConfiguration(const int* data);
 
 #ifdef DEBUG
@@ -32,6 +36,8 @@ private:
     uint8_t channel;
     uint8_t bank;
     uint8_t program;
+
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_PROGRAMCHANGE_H_ */

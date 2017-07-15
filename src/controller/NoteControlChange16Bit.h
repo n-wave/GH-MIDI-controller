@@ -9,11 +9,13 @@
 #define SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class NoteControlChange16Bit: public Controller {
 public:
 	NoteControlChange16Bit();
 	NoteControlChange16Bit(const int* data);
+	NoteControlChange16Bit(const int* data, Dispatcher* dispatcher);
     ~NoteControlChange16Bit();
 
     void execute();
@@ -41,6 +43,7 @@ private:
     uint16_t bottomValue;
 
     uint16_t parameter;
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_ */

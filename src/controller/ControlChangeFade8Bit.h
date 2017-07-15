@@ -9,11 +9,13 @@
 #define SRC_CONTROLLER_CONTROLCHANGEFADE8BIT_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class ControlChangeFade8Bit : public Controller {
 public:
 	ControlChangeFade8Bit();
 	ControlChangeFade8Bit(const int* data);
+	ControlChangeFade8Bit(const int* data, Dispatcher* dispatcher);
 
 	~ControlChangeFade8Bit();
 
@@ -41,6 +43,8 @@ private:
     uint16_t fadeOut;
 
     uint16_t parameter;
+
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_CONTROLCHANGEFADE8BIT_H_ */

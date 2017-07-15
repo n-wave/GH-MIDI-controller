@@ -6,17 +6,19 @@
  */
 
 #include "PitchBend.h"
+#include "../command/PitchBendCommand.h"
 
 PitchBend::PitchBend() :
 	channel(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
-
 }
 
 PitchBend::PitchBend(const int* data) :
 	channel(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -28,16 +30,44 @@ PitchBend::PitchBend(const int* data) :
 	}
 #endif /* DEBUG */
 }
+
+PitchBend::PitchBend(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("PitchBend successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in PitchBend while loading data");
+	}
+#endif /* DEBUG */
+}
+
 PitchBend::~PitchBend(){
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void PitchBend::execute(){
 
 }
 
-void PitchBend::update(const uint32_t* time){
+/* PitchBend::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBend Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint16_t pbValue
+ *
+ */
 
+void PitchBend::update(const uint32_t* time){
+	dispatcher->addCommand(new PitchBendCommand(1, 14000));
 }
 
 void PitchBend::setParameter(const uint16_t* value){

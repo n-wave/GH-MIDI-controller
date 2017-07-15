@@ -6,6 +6,7 @@
  */
 
 #include "NoteControlChange16Bit.h"
+#include "../command/NoteControlChange16BitCommand.h"
 
 NoteControlChange16Bit::NoteControlChange16Bit() :
 	channel(0),
@@ -16,7 +17,8 @@ NoteControlChange16Bit::NoteControlChange16Bit() :
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
 }
@@ -30,7 +32,8 @@ NoteControlChange16Bit::NoteControlChange16Bit(const int* data) :
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -43,16 +46,55 @@ NoteControlChange16Bit::NoteControlChange16Bit(const int* data) :
 #endif /* DEBUG */
 }
 
+NoteControlChange16Bit::NoteControlChange16Bit(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	controlChangeNumberMSB(0),
+	controlChangeNumberLSB(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("NoteControlChange8Bit successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in NoteControlChange8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 NoteControlChange16Bit::~NoteControlChange16Bit() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void NoteControlChange16Bit::execute(){
 
 }
 
-void NoteControlChange16Bit::update(const uint32_t* value){
+/* NoteControlChange16Bit::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBendNote Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t pitch
+ * arg 3: uint8_t velocity
+ * arg 4: uint8_t ccNumberMSB
+ * arg 5: uint8_t ccValueMSB
+ * arg 6: uint8_t ccNumberLSB
+ * arg 7: uint8_t ccValueLSB
+ *
+ */
 
+void NoteControlChange16Bit::update(const uint32_t* value){
+	dispatcher->addCommand(new NoteControlChange16BitCommand(2, 80, 100, 12, 100, 44, 10));
 }
 
 void NoteControlChange16Bit::setParameter(const uint16_t* value){

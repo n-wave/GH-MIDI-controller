@@ -6,13 +6,15 @@
  */
 
 #include "NoteVelocity.h"
+#include "../command/NoteVelocityCommand.h"
 
 NoteVelocity::NoteVelocity() :
 	channel(0),
 	pitch(0),
 	velocity(0),
 	velocityOption(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 
 }
@@ -22,7 +24,8 @@ NoteVelocity::NoteVelocity(const int* data) :
 	pitch(0),
 	velocity(0),
 	velocityOption(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -35,16 +38,47 @@ NoteVelocity::NoteVelocity(const int* data) :
 #endif /* DEBUG */
 }
 
+NoteVelocity::NoteVelocity(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	velocityOption(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("NoteVelocity successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in NoteVelocity::NoteVelocity(const int*) while loading data");
+	}
+#endif /* DEBUG */
+}
+
 NoteVelocity::~NoteVelocity() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void NoteVelocity::execute(){
 
 }
 
-void NoteVelocity::update(const uint32_t* time){
+/* NoteVelocity::update()
+ *
+ * Calculate values.
+ *
+ * add new NoteVelocityCommand
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t pitch
+ * arg 3: uint8_t velocity
+ *
+ */
 
+void NoteVelocity::update(const uint32_t* time){
+	dispatcher->addCommand(new NoteVelocityCommand(16, 52, 110));
 }
 
 void NoteVelocity::setParameter(const uint16_t* value){

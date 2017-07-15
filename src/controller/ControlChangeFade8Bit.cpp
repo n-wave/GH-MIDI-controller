@@ -6,6 +6,7 @@
  */
 
 #include "ControlChangeFade8Bit.h"
+#include "../command/ControlChange8BitCommand.h"
 
 ControlChangeFade8Bit::ControlChangeFade8Bit() :
 	channel(0),
@@ -15,7 +16,8 @@ ControlChangeFade8Bit::ControlChangeFade8Bit() :
 	end(0),
 	fadeIn(0),
 	fadeOut(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 }
 
@@ -27,7 +29,8 @@ ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data) :
 	end(0),
 	fadeIn(0),
 	fadeOut(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -40,16 +43,50 @@ ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data) :
 #endif /* DEBUG */
 }
 
+ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	controlChangeNumber(0),
+	start(0),
+	hold(0),
+	end(0),
+	fadeIn(0),
+	fadeOut(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChangeFade8Bit successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in ControlChangeFade8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 ControlChangeFade8Bit::~ControlChangeFade8Bit() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void ControlChangeFade8Bit::execute() {
 
 }
 
-void ControlChangeFade8Bit::update(const uint32_t* time) {
+/* ControlChangeFade8Bit::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBendNote Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t ccNumber
+ * arg 3: uint8_t ccValue
+ *
+ */
 
+void ControlChangeFade8Bit::update(const uint32_t* time) {
+	dispatcher->addCommand(new ControlChange8BitCommand(5, 14, 127));
 }
 
 void ControlChangeFade8Bit::setParameter(const uint16_t* value) {

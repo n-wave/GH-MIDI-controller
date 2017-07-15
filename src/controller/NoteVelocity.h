@@ -9,11 +9,14 @@
 #define SRC_CONTROLLER_NOTEVELOCITY_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class NoteVelocity : public Controller {
 public:
 	NoteVelocity();
 	NoteVelocity(const int* data);
+	NoteVelocity(const int* data, Dispatcher* dispatcher);
+
 	~NoteVelocity();
 
     void execute();
@@ -36,6 +39,7 @@ private:
     uint8_t velocityOption;
 
     uint16_t parameter;
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_NOTEVELOCITY_H_ */

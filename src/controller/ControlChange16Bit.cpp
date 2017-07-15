@@ -6,6 +6,7 @@
  */
 
 #include "ControlChange16Bit.h"
+#include "../command/ControlChange16BitCommand.h"
 
 ControlChange16Bit::ControlChange16Bit() :
 	channel(0),
@@ -13,7 +14,8 @@ ControlChange16Bit::ControlChange16Bit() :
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 }
 
@@ -23,7 +25,8 @@ ControlChange16Bit::ControlChange16Bit(const int* data) :
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -34,19 +37,53 @@ ControlChange16Bit::ControlChange16Bit(const int* data) :
 		Serial.println("Error occurred in ControlChange16Bit while loading data");
 	}
 #endif /* DEBUG */
+}
+
+ControlChange16Bit::ControlChange16Bit(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	controlChangeNumberMSB(0),
+	controlChangeNumberLSB(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChange16Bit successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in ControlChange16Bit while loading data");
+	}
+#endif /* DEBUG */
 
 }
 
 ControlChange16Bit::~ControlChange16Bit() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void ControlChange16Bit::execute() {
 
 }
 
-void ControlChange16Bit::update(const uint32_t* time) {
 
+/* ControlChangeFade8Bit::update()
+ *
+ * Calculate values.
+ *
+ * add new ControlChange16BitCommand
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t ccNumberMSB
+ * arg 3: uint8_t ccValueMSB
+ * arg 4: uint8_t ccNumerLSB
+ * arg 5: uint8_t ccValueLSB
+ */
+
+void ControlChange16Bit::update(const uint32_t* time) {
+	dispatcher->addCommand(new ControlChange16BitCommand(1, 8, 120, 40, 4));
 }
 
 void ControlChange16Bit::setParameter(const uint16_t* value) {

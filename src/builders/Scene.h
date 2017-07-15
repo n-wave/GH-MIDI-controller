@@ -13,13 +13,17 @@
 #include "../testing/configuration.h"
 #include "../controller/controller.h"
 #include "../controller/ProgramChange.h"
+#include "../dispatcher/Dispatcher.h"
 
 class Scene {
 public:
 	Scene();
 	Scene(const String& name);
+	Scene(const String& name, Dispatcher* dispatcher);
 
 	virtual ~Scene();
+
+	void updateControllers();
 
 	boolean setSceneData(const int* data);
 	boolean setController(int number, int type, const int* data);
@@ -32,7 +36,6 @@ public:
 #endif /* DEBUG */
 
 private:
-
 	enum {NROFCONTROLLERS = 28};
 
 	void setName(const String& name);
@@ -41,6 +44,7 @@ private:
 	String name;
 	Controller* controllers[NROFCONTROLLERS];
 	ProgramChange** programChange;
+	Dispatcher* dispatcher;
 };
 
 #endif /* SRC_BUILDERS_SCENE_H_ */

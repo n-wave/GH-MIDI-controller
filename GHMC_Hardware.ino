@@ -5,39 +5,62 @@
 #include "src/testing/Test.h"
 #include "src/builders/Scene.h"
 #include "src/protocol/ProtocolInterperter.h"
+#include "src/dispatcher/Dispatcher.h"
 
+Dispatcher dispatcher = Dispatcher();
 
-Scene sceneOne = Scene("Scene One");
-Scene sceneTwo = Scene("Scene Two");
-Scene sceneThree = Scene("Scene Three");
-Scene sceneFour = Scene("Scene Four");
-
-
+Scene sceneOne = Scene("Scene One", &dispatcher);
+Scene sceneTwo = Scene("Scene Two", &dispatcher);
+Scene sceneThree = Scene("Scene Three", &dispatcher);
+Scene sceneFour = Scene("Scene Four", &dispatcher);
 
 boolean run = true;
+int count = 0;
 String result;
+
+long time = 0L;
 
 void setup()
 {
+
+
 	Serial.begin(9600);
 	delay(1000);
+	ProtocolInterperter interperter = ProtocolInterperter();
+	interperter.configureScene(sceneOne, 0);
 
-
+    time = millis();
+	Serial.println(time);
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
 
-	delay(2000);
+
 	if(run){
+		configureDispatcherTest();
 		//configureSceneTest();
 		//pogramChangeTest();
-		run = false;
+		if(count == 100){
+			run = false;
+			time = millis();
+			Serial.println(time);
+		}
+		count++;
 	}
 }
 
 #ifdef DEBUG
+
+void configureDispatcherTest(){
+
+	sceneOne.updateControllers();
+
+	dispatcher.dispatch();
+}
+
+
 
 void configureSceneTest(){
 	ProtocolInterperter interperter = ProtocolInterperter();
@@ -58,14 +81,7 @@ void configureSceneTest(){
 }
 
 
-
-
-
-
 void pogramChangeTest(){
-
-
-
 	int dataTestOne[16] = {
 							0XF0, 0xEA, 0x00, 0x00,
 							0x00, 0x00, 0x00, 0x00,
@@ -93,11 +109,6 @@ void pogramChangeTest(){
 							  0x04, 0x03, 0x04, 0x05,
 							  0x04, 0x05, 0x06, 0xFF
 						    };
-
-
-
-
-
 
 	sceneOne.setSceneData(dataTestOne);
 	sceneTwo.setSceneData(dataTestTwo);

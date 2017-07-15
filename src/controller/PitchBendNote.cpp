@@ -6,12 +6,14 @@
  */
 
 #include "PitchBendNote.h"
+#include "../command/PitchBendNoteCommand.h"
 
 PitchBendNote::PitchBendNote() :
 	channel(0),
 	pitch(0),
 	velocity(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 }
 
@@ -19,7 +21,8 @@ PitchBendNote::PitchBendNote(const int* data) :
 	channel(0),
 	pitch(0),
 	velocity(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -32,16 +35,48 @@ PitchBendNote::PitchBendNote(const int* data) :
 #endif /* DEBUG */
 }
 
+PitchBendNote::PitchBendNote(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	pitch(0),
+	velocity(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("PitchBendNote successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in PitchBendNote while loading data");
+	}
+#endif /* DEBUG */
+}
+
 PitchBendNote::~PitchBendNote() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void PitchBendNote::execute(){
 
 }
 
-void PitchBendNote::update(const uint32_t* time) {
+/* PitchBendNote::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBendNote Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t pitch
+ * arg 3: uint8_t velocity
+ * arg 4: uint16_t pbValue
+ *
+ */
 
+
+void PitchBendNote::update(const uint32_t* time) {
+	dispatcher->addCommand(new PitchBendNoteCommand(0, 60, 100, 14000));
 }
 
 void PitchBendNote::setParameter(const uint16_t* value) {

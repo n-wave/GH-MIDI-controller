@@ -21,8 +21,8 @@
 Scene::Scene() :
 	nrOfProgramChanges(0),
 	name(String()),
-	programChange(NULL)
-
+	programChange(NULL),
+	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
 	setName("Default");
@@ -35,7 +35,16 @@ Scene::Scene() :
 Scene::Scene(const String& name) :
 	nrOfProgramChanges(0),
 	name(String(name)),
-	programChange(NULL)
+	programChange(NULL),
+	dispatcher(NULL)
+{
+}
+
+Scene::Scene(const String& name, Dispatcher* dispatcher) :
+	nrOfProgramChanges(0),
+	name(String(name)),
+	programChange(NULL),
+	dispatcher(dispatcher)
 {
 }
 
@@ -51,6 +60,13 @@ Scene::~Scene() {
 			programChange = NULL;
 		}
 		delete[] programChange;
+	}
+	dispatcher = NULL;
+}
+
+void Scene::updateControllers(){
+	for(int i=0; i<NROFCONTROLLERS; i++){
+		controllers[i]->update(0);
 	}
 }
 
@@ -116,7 +132,8 @@ boolean Scene::setController(int number, int type, const int* data){
 	   number >= 0 &&
 	   number < 28 &&
 	   type >= 0 &&
-	   type <= 10
+	   type <= 10 &&
+	   dispatcher != NULL
 	  )
 	{
 	#ifdef DEBUG
@@ -130,34 +147,34 @@ boolean Scene::setController(int number, int type, const int* data){
 				controllers[number] = new DisabledController(data);
 				break;
 			case 1:
-				controllers[number] = new ProgramChange(data);
+				controllers[number] = new ProgramChange(data, dispatcher);
 				break;
 			case 2:
-				controllers[number] = new NoteVelocity(data);
+				controllers[number] = new NoteVelocity(data, dispatcher);
 				break;
 			case 3:
-				controllers[number] = new NoteControlChange8Bit(data);
+				controllers[number] = new NoteControlChange8Bit(data, dispatcher);
 				break;
 			case 4:
-				controllers[number] = new NoteControlChange16Bit(data);
+				controllers[number] = new NoteControlChange16Bit(data, dispatcher);
 				break;
 			case 5:
-				controllers[number] = new PitchBend(data);
+				controllers[number] = new PitchBend(data, dispatcher);
 				break;
 			case 6:
-				controllers[number] = new PitchBendNote(data);
+				controllers[number] = new PitchBendNote(data, dispatcher);
 				break;
 			case 7:
-				controllers[number] = new ControlChange8Bit(data);
+				controllers[number] = new ControlChange8Bit(data, dispatcher);
 				break;
 			case 8:
-				controllers[number] = new ControlChange16Bit(data);
+				controllers[number] = new ControlChange16Bit(data, dispatcher);
 				break;
 			case 9:
-				controllers[number] = new ControlChangeFade8Bit(data);
+				controllers[number] = new ControlChangeFade8Bit(data, dispatcher);
 				break;
 			case 10:
-				controllers[number] = new ControlChangeFade16Bit(data);
+				controllers[number] = new ControlChangeFade16Bit(data, dispatcher);
 				break;
 		}
 

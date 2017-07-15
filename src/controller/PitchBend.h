@@ -9,11 +9,13 @@
 #define SRC_CONTROLLER_PITCHBEND_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class PitchBend: public Controller {
 public:
 	PitchBend();
 	PitchBend(const int* data);
+	PitchBend(const int* data, Dispatcher* dispatcher);
     ~PitchBend();
 
     void execute();
@@ -32,6 +34,7 @@ private:
     uint8_t channel;
 
     uint16_t parameter;
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_PITCHBEND_H_ */

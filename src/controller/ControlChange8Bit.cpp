@@ -6,13 +6,15 @@
  */
 
 #include "ControlChange8Bit.h"
+#include "../command/ControlChange8BitCommand.h"
 
 ControlChange8Bit::ControlChange8Bit() :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
 }
@@ -22,7 +24,8 @@ ControlChange8Bit::ControlChange8Bit(const int* data) :
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
-	parameter(0)
+	parameter(0),
+	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -35,16 +38,48 @@ ControlChange8Bit::ControlChange8Bit(const int* data) :
 #endif /* DEBUG */
 }
 
+ControlChange8Bit::ControlChange8Bit(const int* data, Dispatcher* dispatcher) :
+	channel(0),
+	controlChangeNumber(0),
+	topValue(0),
+	bottomValue(0),
+	parameter(0),
+	dispatcher(dispatcher)
+{
+	boolean success = this->setConfiguration(data);
+
+#ifdef DEBUG
+	if(success){
+		Serial.println("ControlChange8Bit successfully initialized and dispatcher assigned");
+	} else {
+		Serial.println("Error occurred in ControlChange8Bit while loading data");
+	}
+#endif /* DEBUG */
+}
+
 ControlChange8Bit::~ControlChange8Bit() {
-	// TODO Auto-generated destructor stub
+	dispatcher = NULL;
 }
 
 void ControlChange8Bit::execute() {
 
 }
 
-void ControlChange8Bit::update(const uint32_t* time) {
+/* ControlChangeBit::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBendNote Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t ccNumber
+ * arg 3: uint8_t ccValue
+ *
+ */
 
+
+void ControlChange8Bit::update(const uint32_t* time) {
+	dispatcher->addCommand(new ControlChange8BitCommand(1, 12, 27));
 }
 
 void ControlChange8Bit::setParameter(const uint16_t* value) {

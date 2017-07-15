@@ -9,11 +9,13 @@
 #define SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_
 
 #include "controller.h"
+#include "../dispatcher/Dispatcher.h"
 
 class NoteControlChange8Bit : public Controller {
 public:
 	NoteControlChange8Bit();
 	NoteControlChange8Bit(const int* data);
+	NoteControlChange8Bit(const int* data, Dispatcher* dispatcher);
 
 	~NoteControlChange8Bit();
 
@@ -39,6 +41,7 @@ private:
     uint8_t bottomValue;
 
     uint16_t parameter;
+    Dispatcher* dispatcher;
 };
 
 #endif /* SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_ */
