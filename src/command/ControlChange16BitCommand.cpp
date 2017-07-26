@@ -40,6 +40,9 @@ ControlChange16BitCommand::~ControlChange16BitCommand(){
 }
 
 void ControlChange16BitCommand::operator ()() const {
+	usbMIDI.sendControlChange(ccNumberMSB, ccValueMSB, channel);
+	usbMIDI.sendControlChange(ccNumberLSB, ccValueLSB, channel);
+
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("  Control Change 16Bit  ");

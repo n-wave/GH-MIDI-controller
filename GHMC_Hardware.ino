@@ -39,9 +39,11 @@ void loop()
 
 
 	if(run){
+		#ifdef DEBUG
 		configureDispatcherTest();
 		//configureSceneTest();
 		//pogramChangeTest();
+		#endif /* DEBUG */
 		if(count == 100){
 			run = false;
 			time = millis();

@@ -49,6 +49,7 @@ void PointerTest::initialize(){
 	this->initializeControlChange16Bit();
 }
 
+#ifdef DEBUG
 void PointerTest::printContents(int option){
 	switch(option){
 		case 0:
@@ -85,7 +86,10 @@ void PointerTest::printContents(int option){
 			Serial.println("Option out of range");
 			break;
 	}
+
+
 }
+#endif /* DEBUG */
 
 void PointerTest::initializeProgramChange(){
 	const int data[] = {

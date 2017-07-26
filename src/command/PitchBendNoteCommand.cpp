@@ -35,6 +35,8 @@ PitchBendNoteCommand::~PitchBendNoteCommand() {
 }
 
 void PitchBendNoteCommand::operator ()() const {
+	usbMIDI.sendNoteOn(pitch, velocity, channel);
+    usbMIDI.sendPitchBend(pbValue, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("     Pitch Bend Note    ");

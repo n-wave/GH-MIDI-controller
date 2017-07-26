@@ -31,6 +31,8 @@ ControlChange8BitCommand::~ControlChange8BitCommand() {
 }
 
 void ControlChange8BitCommand::operator ()() const {
+	usbMIDI.sendControlChange(ccNumber, ccValue, channel);
+
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("  Control Change 8Bit   ");

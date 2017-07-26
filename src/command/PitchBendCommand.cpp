@@ -27,6 +27,8 @@ PitchBendCommand::~PitchBendCommand() {
 }
 
 void PitchBendCommand::operator ()() const {
+	usbMIDI.sendPitchBend(pbValue, channel);
+
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("       Pitch Bend       ");

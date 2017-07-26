@@ -37,6 +37,8 @@ NoteControlChange8BitCommand::~NoteControlChange8BitCommand() {
 }
 
 void NoteControlChange8BitCommand::operator ()() const {
+	usbMIDI.sendNoteOn(pitch, velocity, channel);
+	usbMIDI.sendControlChange(ccNumber, ccValue, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("Note ControlChange 8bit ");

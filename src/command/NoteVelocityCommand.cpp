@@ -31,6 +31,7 @@ NoteVelocityCommand::~NoteVelocityCommand() {
 }
 
 void NoteVelocityCommand::operator ()() const {
+
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("      Note Velocity     ");

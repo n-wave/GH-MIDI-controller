@@ -27,6 +27,7 @@ Test::~Test() {
 
 }
 
+#ifdef DEBUG
 void Test::printContents(int option){
 	switch(option){
 		case 0:
@@ -64,6 +65,7 @@ void Test::printContents(int option){
 			break;
 	}
 }
+#endif /* DEBUG */
 
 void Test::initialize(){
 	this->initializeProgramChange();

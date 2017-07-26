@@ -43,6 +43,9 @@ NoteControlChange16BitCommand::~NoteControlChange16BitCommand() {
 }
 
 void NoteControlChange16BitCommand::operator ()() const {
+	usbMIDI.sendNoteOn(pitch, velocity, channel);
+	usbMIDI.sendControlChange(ccNumberMSB, ccValueMSB, channel);
+	usbMIDI.sendControlChange(ccNumberLSB, ccValueLSB, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("Note ControlChange 16Bit");

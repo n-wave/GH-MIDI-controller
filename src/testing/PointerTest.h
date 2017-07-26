@@ -11,6 +11,7 @@
 #define NROFOBJECTS 10
 
 #include "Arduino.h"
+#include "configuration.h"
 
 #include "../controller/controller.h"
 
@@ -30,8 +31,9 @@ public:
 	PointerTest();
    ~PointerTest();
 
-
+#ifdef DEBUG
    void printContents(int option);
+#endif
 
 private:
    void initialize();

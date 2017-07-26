@@ -105,7 +105,7 @@ boolean SerialCommunication::calculateCyclicRedundancyCheckFromEEPROM()
     int bgnIndex = 1952;
     int endIndex = 1964;
     long crcConvert = 0L;
-    long crcCompare = 0L;
+    long crcIntern = 0L;
 
     for(int i=0; i<8; i++){
       bgnBlockBuffer[i] = EEPROM.read(bgnIndex++);
@@ -137,7 +137,7 @@ boolean SerialCommunication::calculateCyclicRedundancyCheckFromEEPROM()
         delayMicroseconds(100);
       }
 
-      long crcIntern = crc.calculateCyclicRedundancyCheck(dataBuffer, 1952);
+      crcIntern = crc.calculateCyclicRedundancyCheck(dataBuffer, 1952);
 
       if(crcIntern == crcConvert){  
         result = true;
