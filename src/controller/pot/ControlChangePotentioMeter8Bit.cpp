@@ -1,14 +1,14 @@
 /*
- * ControlChange8Bit.cpp
+ * ControlChangePotentioMeter8Bit.cpp
  *
- *  Created on: Jul 5, 2017
+ *  Created on: Aug 24, 2017
  *      Author: mario
  */
 
-#include "ControlChange8Bit.h"
-#include "../command/ControlChange8BitCommand.h"
+#include "ControlChangePotentioMeter8Bit.h"
+#include "../../command/ControlChange8BitCommand.h"
 
-ControlChange8Bit::ControlChange8Bit() :
+ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit() :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
@@ -19,7 +19,7 @@ ControlChange8Bit::ControlChange8Bit() :
 	// TODO Auto-generated constructor stub
 }
 
-ControlChange8Bit::ControlChange8Bit(const int* data) :
+ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data) :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
@@ -31,14 +31,14 @@ ControlChange8Bit::ControlChange8Bit(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange8Bit successfully initialized");
+		Serial.println("ControlChangePotentioMeter8Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChange8Bit while loading data");
+		Serial.println("Error occurred in ControlChangePotentioMeter8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange8Bit::ControlChange8Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
@@ -50,20 +50,17 @@ ControlChange8Bit::ControlChange8Bit(const int* data, Dispatcher* dispatcher) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange8Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangePotentioMeter8Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChange8Bit while loading data");
+		Serial.println("Error occurred in ControlChangePotentioMeter8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange8Bit::~ControlChange8Bit() {
+ControlChangePotentioMeter8Bit::~ControlChangePotentioMeter8Bit() {
 	dispatcher = NULL;
 }
 
-void ControlChange8Bit::execute() {
-
-}
 
 /* ControlChangeBit::update()
  *
@@ -78,24 +75,24 @@ void ControlChange8Bit::execute() {
  */
 
 
-void ControlChange8Bit::update(const uint32_t* time) {
+void ControlChangePotentioMeter8Bit::update(const uint32_t* time) {
 	dispatcher->addCommand(new ControlChange8BitCommand(1, 12, 27));
 }
 
-void ControlChange8Bit::setParameter(const uint16_t* value) {
+void ControlChangePotentioMeter8Bit::setParameter(const uint16_t* value) {
 	parameter = *value;
 }
 
-uint16_t ControlChange8Bit::getParameter() {
+uint16_t ControlChangePotentioMeter8Bit::getParameter() {
 	return parameter;
 }
 
-boolean ControlChange8Bit::setConfiguration(const int* data) {
+boolean ControlChangePotentioMeter8Bit::setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[3] == 0x00 &&
 		data[7] == 0xFF
 	  )
@@ -112,7 +109,7 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
 }
 
 #ifdef DEBUG
-    void ControlChange8Bit::printContents(){
+    void ControlChangePotentioMeter8Bit::printContents(){
     	String result = String("Control Change 8Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";

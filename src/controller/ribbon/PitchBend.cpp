@@ -6,7 +6,7 @@
  */
 
 #include "PitchBend.h"
-#include "../command/PitchBendCommand.h"
+#include "../../command/PitchBendCommand.h"
 
 PitchBend::PitchBend() :
 	channel(0),
@@ -51,9 +51,6 @@ PitchBend::~PitchBend(){
 	dispatcher = NULL;
 }
 
-void PitchBend::execute(){
-
-}
 
 /* PitchBend::update()
  *
@@ -83,7 +80,7 @@ boolean PitchBend::setConfiguration(const int* data){
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[3] == 0xFF
 	  )
 	{

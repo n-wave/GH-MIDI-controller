@@ -8,8 +8,8 @@
 #ifndef SRC_CONTROLLER_NOTEVELOCITY_H_
 #define SRC_CONTROLLER_NOTEVELOCITY_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+
+#include "../controller.h"
 
 class NoteVelocity : public Controller {
 public:
@@ -19,7 +19,6 @@ public:
 
 	~NoteVelocity();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -32,7 +31,7 @@ public:
 
 
 private:
-    const uint8_t id = 0xE1;
+    const uint8_t ID = 0xE1;
     uint8_t channel;
     uint8_t pitch;
     uint8_t velocity;

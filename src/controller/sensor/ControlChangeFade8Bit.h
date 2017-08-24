@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_CONTROLCHANGEFADE8BIT_H_
 #define SRC_CONTROLLER_CONTROLCHANGEFADE8BIT_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
 
 class ControlChangeFade8Bit : public Controller {
 public:
@@ -19,7 +18,6 @@ public:
 
 	~ControlChangeFade8Bit();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -33,7 +31,7 @@ public:
 private:
     uint16_t convertBytesTo16Bit(uint8_t msb, uint8_t lsb);
 
-    const uint8_t id = 0xE6;
+    const uint8_t ID = 0xE6;
     uint8_t channel;
     uint8_t controlChangeNumber;
     uint8_t start;

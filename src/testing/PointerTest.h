@@ -16,15 +16,15 @@
 #include "../controller/controller.h"
 
 #include "../controller/ProgramChange.h"
-#include "../controller/PitchBendNote.h"
-#include "../controller/PitchBend.h"
-#include "../controller/NoteVelocity.h"
-#include "../controller/NoteControlChange8Bit.h"
-#include "../controller/NoteControlChange16Bit.h"
-#include "../controller/ControlChangeFade8Bit.h"
-#include "../controller/ControlChangeFade16Bit.h"
-#include "../controller/ControlChange8Bit.h"
-#include "../controller/ControlChange16Bit.h"
+#include "../controller/ribbon/PitchBendNote.h"
+#include "../controller/ribbon/PitchBend.h"
+#include "../controller/sensor/NoteVelocity.h"
+#include "../controller/sensor/NoteControlChange8Bit.h"
+#include "../controller/sensor/NoteControlChange16Bit.h"
+#include "../controller/sensor/ControlChangeFade8Bit.h"
+#include "../controller/sensor/ControlChangeFade16Bit.h"
+#include "../controller/sensor/ControlChange8Bit.h"
+#include "../controller/sensor/ControlChange16Bit.h"
 
 class PointerTest {
 public:

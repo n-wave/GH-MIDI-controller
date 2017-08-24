@@ -6,6 +6,7 @@
  */
 
 #include "ProgramChange.h"
+
 #include "../command/ProgramChangeCommand.h"
 
 
@@ -57,9 +58,6 @@ ProgramChange::~ProgramChange() {
 	dispatcher = NULL;
 }
 
-void ProgramChange::execute(){
-
-}
 
 /* ProgramChange::update()
  *
@@ -88,7 +86,7 @@ boolean ProgramChange::setConfiguration(const int* data){
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[5] == 0xFF
 	  )
 	{

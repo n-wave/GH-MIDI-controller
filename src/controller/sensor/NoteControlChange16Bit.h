@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_
 #define SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
 
 class NoteControlChange16Bit: public Controller {
 public:
@@ -18,7 +17,6 @@ public:
 	NoteControlChange16Bit(const int* data, Dispatcher* dispatcher);
     ~NoteControlChange16Bit();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -32,7 +30,7 @@ public:
 private:
     uint16_t convertBytesTo14Bit(uint8_t msb, uint8_t lsb);
 
-    const uint8_t id = 0xE2;
+    const uint8_t ID = 0xE2;
     uint8_t channel;
     uint8_t pitch;
     uint8_t velocity;

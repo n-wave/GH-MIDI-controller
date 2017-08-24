@@ -1,8 +1,8 @@
 
 #include "src/testing/configuration.h"
 
-#include "src/testing/PointerTest.h"
-#include "src/testing/Test.h"
+//#include "src/testing/PointerTest.h"
+//#include "src/testing/Test.h"
 #include "src/builders/Scene.h"
 #include "src/protocol/ProtocolInterperter.h"
 #include "src/dispatcher/Dispatcher.h"
@@ -40,7 +40,7 @@ void loop()
 
 	if(run){
 		#ifdef DEBUG
-		configureDispatcherTest();
+		//configureDispatcherTest();
 		//configureSceneTest();
 		//pogramChangeTest();
 		#endif /* DEBUG */
@@ -53,7 +53,9 @@ void loop()
 	}
 }
 
-#ifdef DEBUG
+//#ifdef DEBUG
+
+/*
 
 void configureDispatcherTest(){
 
@@ -62,7 +64,7 @@ void configureDispatcherTest(){
 	dispatcher.dispatch();
 }
 
-
+/*
 
 void configureSceneTest(){
 	ProtocolInterperter interperter = ProtocolInterperter();
@@ -126,15 +128,16 @@ void pogramChangeTest(){
 
 
 
+*/
 
-
-
+/*
 void pointerTest(){
 	/**
 	 *  Dynamic Initialization should take place in loop
 	 * 	If defined as global variable, the class will not be
 	 * 	successfully intialialized on the heap.
 	 **/
+/*
 	PointerTest* test = new PointerTest();
 
 	for(int i=0; i<10; i++){
@@ -156,3 +159,4 @@ void pointerTest(){
 
 
 #endif
+*/

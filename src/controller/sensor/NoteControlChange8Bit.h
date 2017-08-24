@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_
 #define SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
 
 class NoteControlChange8Bit : public Controller {
 public:
@@ -19,7 +18,6 @@ public:
 
 	~NoteControlChange8Bit();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -31,7 +29,7 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t id = 0xE2;
+    const uint8_t ID = 0xE2;
     uint8_t channel;
     uint8_t pitch;
     uint8_t velocity;

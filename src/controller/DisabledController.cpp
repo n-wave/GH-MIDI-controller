@@ -32,7 +32,6 @@ DisabledController::~DisabledController() {
 	// TODO Auto-generated destructor stub
 }
 
-void DisabledController::execute(){}
 
 void DisabledController::update(const uint32_t* time){}
 
@@ -49,7 +48,7 @@ boolean DisabledController::setConfiguration(const int* data){
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[2] == 0xFF
 	  )
 	{

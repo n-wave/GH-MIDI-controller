@@ -1,14 +1,14 @@
 /*
- * ControlChange16Bit.cpp
+ * ControlChangePotentioMeter16Bit.cpp
  *
- *  Created on: Jul 5, 2017
+ *  Created on: Aug 24, 2017
  *      Author: mario
  */
 
-#include "ControlChange16Bit.h"
-#include "../command/ControlChange16BitCommand.h"
+#include "ControlChangePotentioMeter16Bit.h"
+#include "../../command/ControlChange16BitCommand.h"
 
-ControlChange16Bit::ControlChange16Bit() :
+ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit() :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -19,7 +19,7 @@ ControlChange16Bit::ControlChange16Bit() :
 {
 }
 
-ControlChange16Bit::ControlChange16Bit(const int* data) :
+ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -32,14 +32,14 @@ ControlChange16Bit::ControlChange16Bit(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange16Bit successfully initialized");
+		Serial.println("ControlChangePotentioMeter16Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChange16Bit while loading data");
+		Serial.println("Error occurred in ControlChangePotentioMeter16Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange16Bit::ControlChange16Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -52,20 +52,16 @@ ControlChange16Bit::ControlChange16Bit(const int* data, Dispatcher* dispatcher) 
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange16Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangePotentioMeter16Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChange16Bit while loading data");
+		Serial.println("Error occurred in ControlChangePotentioMeter16Bit while loading data");
 	}
 #endif /* DEBUG */
 
 }
 
-ControlChange16Bit::~ControlChange16Bit() {
+ControlChangePotentioMeter16Bit::~ControlChangePotentioMeter16Bit() {
 	dispatcher = NULL;
-}
-
-void ControlChange16Bit::execute() {
-
 }
 
 
@@ -73,7 +69,7 @@ void ControlChange16Bit::execute() {
  *
  * Calculate values.
  *
- * add new ControlChange16BitCommand
+ * add new ControlChangePotentioMeter16BitCommand
  *
  * arg 1: uint8_t channel
  * arg 2: uint8_t ccNumberMSB
@@ -82,24 +78,24 @@ void ControlChange16Bit::execute() {
  * arg 5: uint8_t ccValueLSB
  */
 
-void ControlChange16Bit::update(const uint32_t* time) {
+void ControlChangePotentioMeter16Bit::update(const uint32_t* time) {
 	dispatcher->addCommand(new ControlChange16BitCommand(1, 8, 120, 40, 4));
 }
 
-void ControlChange16Bit::setParameter(const uint16_t* value) {
-
+void ControlChangePotentioMeter16Bit::setParameter(const uint16_t* value) {
+	parameter = *value;
 }
 
-uint16_t ControlChange16Bit::getParameter() {
-	return 0;
+uint16_t ControlChangePotentioMeter16Bit::getParameter() {
+	return parameter;
 }
 
-boolean ControlChange16Bit:: setConfiguration(const int* data) {
+boolean ControlChangePotentioMeter16Bit:: setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[3] == 0x01 &&
 		data[9] == 0xFF
 	  )
@@ -122,7 +118,7 @@ boolean ControlChange16Bit:: setConfiguration(const int* data) {
  *  the result in a 16Bit value
  */
 
-uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
+uint16_t ControlChangePotentioMeter16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 	uint16_t result = 0;
 	uint16_t MSB = (msb & 0x7F) << 7;
 	uint16_t LSB = lsb & 0x7F;
@@ -133,7 +129,7 @@ uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-    void ControlChange16Bit::printContents(){
+    void ControlChangePotentioMeter16Bit::printContents(){
     	String result = String("Control Change 16Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";

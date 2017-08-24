@@ -6,7 +6,7 @@
  */
 
 #include "NoteControlChange16Bit.h"
-#include "../command/NoteControlChange16BitCommand.h"
+#include "../../command/NoteControlChange16BitCommand.h"
 
 NoteControlChange16Bit::NoteControlChange16Bit() :
 	channel(0),
@@ -39,9 +39,9 @@ NoteControlChange16Bit::NoteControlChange16Bit(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("NoteControlChange8Bit successfully initialized");
+		Serial.println("NoteControlChange16Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in NoteControlChange8Bit while loading data");
+		Serial.println("Error occurred in NoteControlChange16Bit::NoteControlChange16Bit(const int*) while loading data");
 	}
 #endif /* DEBUG */
 }
@@ -62,9 +62,9 @@ NoteControlChange16Bit::NoteControlChange16Bit(const int* data, Dispatcher* disp
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("NoteControlChange8Bit successfully initialized and dispatcher assigned");
+		Serial.println("NoteControlChange16Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in NoteControlChange8Bit while loading data");
+		Serial.println("Error occurred in NoteControlChange16Bit::NoteControlChange16Bit(const int*, Dispatcher* )while loading data");
 	}
 #endif /* DEBUG */
 }
@@ -73,15 +73,11 @@ NoteControlChange16Bit::~NoteControlChange16Bit() {
 	dispatcher = NULL;
 }
 
-void NoteControlChange16Bit::execute(){
-
-}
-
 /* NoteControlChange16Bit::update()
  *
  * Calculate values.
  *
- * add new PitchBendNote Command
+ * add new NoteControlChangeCommand Command
  *
  * arg 1: uint8_t channel
  * arg 2: uint8_t pitch
@@ -110,7 +106,7 @@ boolean NoteControlChange16Bit::setConfiguration(const int* data){
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[6] == 0x01 &&
 		data[12] == 0xFF
 	  )

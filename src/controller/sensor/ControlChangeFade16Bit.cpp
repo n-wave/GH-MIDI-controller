@@ -6,7 +6,7 @@
  */
 
 #include "ControlChangeFade16Bit.h"
-#include "../command/ControlChange16BitCommand.h"
+#include "../../command/ControlChange16BitCommand.h"
 
 ControlChangeFade16Bit::ControlChangeFade16Bit() :
 	channel(0),
@@ -74,10 +74,6 @@ ControlChangeFade16Bit::~ControlChangeFade16Bit() {
 	// TODO Auto-generated destructor stub
 }
 
-void ControlChangeFade16Bit::execute() {
-
-}
-
 /* ControlChangeFade8Bit::update()
  *
  * Calculate values.
@@ -108,7 +104,7 @@ boolean ControlChangeFade16Bit::setConfiguration(const int* data) {
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[3] == 0x01 &&
 		data[15] == 0xFF
 	  )

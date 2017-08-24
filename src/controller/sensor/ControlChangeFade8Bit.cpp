@@ -6,7 +6,7 @@
  */
 
 #include "ControlChangeFade8Bit.h"
-#include "../command/ControlChange8BitCommand.h"
+#include "../../command/ControlChange8BitCommand.h"
 
 ControlChangeFade8Bit::ControlChangeFade8Bit() :
 	channel(0),
@@ -69,9 +69,6 @@ ControlChangeFade8Bit::~ControlChangeFade8Bit() {
 	dispatcher = NULL;
 }
 
-void ControlChangeFade8Bit::execute() {
-
-}
 
 /* ControlChangeFade8Bit::update()
  *
@@ -102,7 +99,7 @@ boolean ControlChangeFade8Bit::setConfiguration(const int* data) {
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[3] == 0x00 &&
 		data[12] == 0xFF
 	  )

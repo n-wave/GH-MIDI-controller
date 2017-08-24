@@ -6,7 +6,7 @@
  */
 
 #include "PitchBendNote.h"
-#include "../command/PitchBendNoteCommand.h"
+#include "../../command/PitchBendNoteCommand.h"
 
 PitchBendNote::PitchBendNote() :
 	channel(0),
@@ -57,9 +57,6 @@ PitchBendNote::~PitchBendNote() {
 	dispatcher = NULL;
 }
 
-void PitchBendNote::execute(){
-
-}
 
 /* PitchBendNote::update()
  *
@@ -92,7 +89,7 @@ boolean PitchBendNote::setConfiguration(const int* data) {
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[5] == 0xFF
 	  )
 	{

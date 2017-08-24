@@ -38,7 +38,11 @@ public:
 private:
 	enum {NROFCONTROLLERS = 28};
 
+	const uint8_t ID = 0xEE;
+
 	void setName(const String& name);
+
+
 
 	int nrOfProgramChanges;
 	String name;

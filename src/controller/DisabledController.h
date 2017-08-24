@@ -16,7 +16,6 @@ public:
 	DisabledController(const int* data);
 	~DisabledController();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -26,7 +25,7 @@ public:
 #ifdef DEBUG
     void printContents();
 #endif /* DEBUG */
-    const uint8_t id = 0xEF;
+    const uint8_t ID = 0xEF;
     uint16_t parameter;
 };
 

@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_CONTROLCHANGEFADE16BIT_H_
 #define SRC_CONTROLLER_CONTROLCHANGEFADE16BIT_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
 
 class ControlChangeFade16Bit : public Controller {
 public:
@@ -17,9 +16,8 @@ public:
 	ControlChangeFade16Bit(const int* data);
 	ControlChangeFade16Bit(const int* data, Dispatcher* dispatcher);
 
-	virtual ~ControlChangeFade16Bit();
+	~ControlChangeFade16Bit();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -35,7 +33,7 @@ private:
     uint16_t convertBytesTo14Bit(uint8_t msb, uint8_t lsb);
     uint16_t convertBytesTo16Bit(uint8_t msb, uint8_t lsb);
 
-    const uint8_t id = 0xE6;
+    const uint8_t ID = 0xE6;
     uint8_t channel;
     uint8_t controlChangeNumberMSB;
     uint8_t controlChangeNumberLSB;

@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_CONTROLCHANGE8BIT_H_
 #define SRC_CONTROLLER_CONTROLCHANGE8BIT_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
 
 class ControlChange8Bit : public Controller {
 public:
@@ -18,9 +17,8 @@ public:
 	ControlChange8Bit(const int* data, Dispatcher* dispatcher);
 
 
-	virtual ~ControlChange8Bit();
+	~ControlChange8Bit();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -32,7 +30,7 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t id = 0xE5;
+    const uint8_t ID = 0xE5;
     uint8_t channel;
     uint8_t controlChangeNumber;
     uint8_t topValue;

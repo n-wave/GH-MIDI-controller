@@ -6,7 +6,7 @@
  */
 
 #include "NoteControlChange8Bit.h"
-#include "../command/NoteControlChange8BitCommand.h"
+#include "../../command/NoteControlChange8BitCommand.h"
 
 NoteControlChange8Bit::NoteControlChange8Bit() :
 	channel(0),
@@ -69,9 +69,6 @@ NoteControlChange8Bit::~NoteControlChange8Bit() {
 	dispatcher = NULL;
 }
 
-void NoteControlChange8Bit::execute(){
-
-}
 
 /* NoteControlChange8Bit::update()
  *
@@ -104,7 +101,7 @@ boolean NoteControlChange8Bit::setConfiguration(const int* data){
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[6] == 0x00 &&
 		data[10] == 0xFF
       )

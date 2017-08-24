@@ -9,7 +9,6 @@
 #define SRC_CONTROLLER_PROGRAMCHANGE_H_
 
 #include "controller.h"
-#include "../dispatcher/Dispatcher.h"
 
 class ProgramChange : public Controller {
 public:
@@ -19,7 +18,6 @@ public:
 
     ~ProgramChange();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -32,7 +30,7 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t id = 0xE0;
+    const uint8_t ID = 0xE0;
     uint8_t channel;
     uint8_t bank;
     uint8_t program;

@@ -8,8 +8,8 @@
 #ifndef SRC_CONTROLLER_PITCHBENDNOTE_H_
 #define SRC_CONTROLLER_PITCHBENDNOTE_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
+
 
 class PitchBendNote : public Controller {
 public:
@@ -19,7 +19,6 @@ public:
 
     ~PitchBendNote();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -31,7 +30,7 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t id = 0xE4;
+    const uint8_t ID = 0xE4;
     uint8_t channel;
     uint8_t pitch;
     uint8_t velocity;

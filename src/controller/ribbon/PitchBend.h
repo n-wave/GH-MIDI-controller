@@ -8,8 +8,8 @@
 #ifndef SRC_CONTROLLER_PITCHBEND_H_
 #define SRC_CONTROLLER_PITCHBEND_H_
 
-#include "controller.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../controller.h"
+
 
 class PitchBend: public Controller {
 public:
@@ -18,7 +18,6 @@ public:
 	PitchBend(const int* data, Dispatcher* dispatcher);
     ~PitchBend();
 
-    void execute();
     void update(const uint32_t* time);
 
     void setParameter(const uint16_t* value);
@@ -30,7 +29,7 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t id = 0xE3;
+    const uint8_t ID = 0xE3;
     uint8_t channel;
 
     uint16_t parameter;

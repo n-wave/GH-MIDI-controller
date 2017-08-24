@@ -1,14 +1,14 @@
 /*
- * NoteVelocity.cpp
+ * NoteVelocitySwitch.cpp
  *
- *  Created on: Jul 4, 2017
+ *  Created on: Aug 24, 2017
  *      Author: mario
  */
 
-#include "NoteVelocity.h"
-#include "../command/NoteVelocityCommand.h"
+#include "NoteVelocitySwitch.h"
+#include "../../command/NoteVelocityCommand.h"
 
-NoteVelocity::NoteVelocity() :
+NoteVelocitySwitch::NoteVelocitySwitch() :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -16,10 +16,9 @@ NoteVelocity::NoteVelocity() :
 	parameter(0),
 	dispatcher(NULL)
 {
-
 }
 
-NoteVelocity::NoteVelocity(const int* data) :
+NoteVelocitySwitch::NoteVelocitySwitch(const int* data) :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -31,14 +30,14 @@ NoteVelocity::NoteVelocity(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("NoteVelocity successfully initialized");
+		Serial.println("NoteVelocitySwitch successfully initialized");
 	} else {
-		Serial.println("Error occurred in NoteVelocity::NoteVelocity(const int*) while loading data");
+		Serial.println("Error occurred in NoteVelocitySwitch::NoteVelocitySwitch(const int*) while loading data");
 	}
 #endif /* DEBUG */
 }
 
-NoteVelocity::NoteVelocity(const int* data, Dispatcher* dispatcher) :
+NoteVelocitySwitch::NoteVelocitySwitch(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -50,26 +49,22 @@ NoteVelocity::NoteVelocity(const int* data, Dispatcher* dispatcher) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("NoteVelocity successfully initialized and dispatcher assigned");
+		Serial.println("NoteVelocitySwitch successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in NoteVelocity::NoteVelocity(const int*) while loading data");
+		Serial.println("Error occurred in NoteVelocitySwitch::NoteVelocitySwitch(const int*, Dispatcher) while loading data");
 	}
 #endif /* DEBUG */
 }
 
-NoteVelocity::~NoteVelocity() {
+NoteVelocitySwitch::~NoteVelocitySwitch() {
 	dispatcher = NULL;
 }
 
-void NoteVelocity::execute(){
-
-}
-
-/* NoteVelocity::update()
+/* NoteVelocitySwitch::update()
  *
  * Calculate values.
  *
- * add new NoteVelocityCommand
+ * add new NoteVelocitySwitchCommand
  *
  * arg 1: uint8_t channel
  * arg 2: uint8_t pitch
@@ -77,24 +72,24 @@ void NoteVelocity::execute(){
  *
  */
 
-void NoteVelocity::update(const uint32_t* time){
+void NoteVelocitySwitch::update(const uint32_t* time){
 	dispatcher->addCommand(new NoteVelocityCommand(16, 52, 110));
 }
 
-void NoteVelocity::setParameter(const uint16_t* value){
+void NoteVelocitySwitch::setParameter(const uint16_t* value){
 	parameter = *value;
 }
 
-uint16_t NoteVelocity::getParameter(){
+uint16_t NoteVelocitySwitch::getParameter(){
 	return parameter;
 }
 
-boolean NoteVelocity::setConfiguration(const int* data){
+boolean NoteVelocitySwitch::setConfiguration(const int* data){
 	boolean result = false;
 
 	if(
 		data[0] == 0xF0 &&
-		data[1] == id &&
+		data[1] == ID &&
 		data[6] == 0xFF
 	  )
 	{
@@ -109,8 +104,8 @@ boolean NoteVelocity::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-    void NoteVelocity::printContents(){
-    	String result = String("Note Velocity \n");
+    void NoteVelocitySwitch::printContents(){
+    	String result = String("Note Velocity Switch \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     : " + velocity + "\n";
