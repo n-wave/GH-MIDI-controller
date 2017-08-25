@@ -27,8 +27,8 @@ void PointerTest::initialize(){
 	}
 
 	controllers[0] = new ProgramChange();
-	controllers[1] = new PitchBendNote();
-	controllers[2] = new PitchBend();
+	controllers[1] = new PitchBendNoteRibbon();
+	controllers[2] = new PitchBendRibbon();
 	controllers[3] = new NoteVelocity();
 	controllers[4] = new NoteControlChange8Bit();
 	controllers[5] = new NoteControlChange16Bit();

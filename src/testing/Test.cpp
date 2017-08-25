@@ -9,8 +9,8 @@
 
 Test::Test() :
 	programChange(ProgramChange()),
-	pitchBendNote(PitchBendNote()),
-	pitchBend(PitchBend()),
+	pitchBendNote(PitchBendNoteRibbon()),
+	pitchBend(PitchBendRibbon()),
 	noteVelocity(NoteVelocity()),
 	noteControlChange8Bit(NoteControlChange8Bit()),
 	noteControlChange16Bit(NoteControlChange16Bit()),

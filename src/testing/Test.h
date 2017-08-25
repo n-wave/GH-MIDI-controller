@@ -12,8 +12,6 @@
 #include "configuration.h"
 
 #include "../controller/ProgramChange.h"
-#include "../controller/ribbon/PitchBendNote.h"
-#include "../controller/ribbon/PitchBend.h"
 #include "../controller/sensor/NoteControlChange8Bit.h"
 #include "../controller/sensor/NoteControlChange16Bit.h"
 #include "../controller/sensor/ControlChangeFade8Bit.h"
@@ -21,6 +19,8 @@
 #include "../controller/sensor/ControlChange8Bit.h"
 #include "../controller/sensor/ControlChange16Bit.h"
 #include "../controller/controller.h"
+#include "../controller/ribbon/PitchBendNoteRibbon.h"
+#include "../controller/ribbon/PitchBendRibbon.h"
 #include "../controller/sensor/NoteVelocity.h"
 
 class Test {
@@ -44,8 +44,8 @@ private:
     void initializeControlChange16Bit();
 
     ProgramChange programChange;
-    PitchBendNote pitchBendNote;
-    PitchBend pitchBend;
+    PitchBendNoteRibbon pitchBendNote;
+    PitchBendRibbon pitchBend;
     NoteVelocity noteVelocity;
     NoteControlChange8Bit noteControlChange8Bit;
     NoteControlChange16Bit noteControlChange16Bit;

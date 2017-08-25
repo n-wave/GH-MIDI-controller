@@ -16,8 +16,8 @@
 #include "../controller/controller.h"
 
 #include "../controller/ProgramChange.h"
-#include "../controller/ribbon/PitchBendNote.h"
-#include "../controller/ribbon/PitchBend.h"
+#include "../controller/ribbon/PitchBendNoteRibbon.h"
+#include "../controller/ribbon/PitchBendRibbon.h"
 #include "../controller/sensor/NoteVelocity.h"
 #include "../controller/sensor/NoteControlChange8Bit.h"
 #include "../controller/sensor/NoteControlChange16Bit.h"

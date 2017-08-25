@@ -1,23 +1,22 @@
 /*
- * PitchBendNote.h
+ * PitchBend.h
  *
  *  Created on: Jul 5, 2017
  *      Author: mario
  */
 
-#ifndef SRC_CONTROLLER_PITCHBENDNOTE_H_
-#define SRC_CONTROLLER_PITCHBENDNOTE_H_
+#ifndef SRC_CONTROLLER_PITCHBEND_H_
+#define SRC_CONTROLLER_PITCHBEND_H_
 
 #include "../controller.h"
 
 
-class PitchBendNote : public Controller {
+class PitchBendRibbon: public Controller {
 public:
-	PitchBendNote();
-	PitchBendNote(const int* data);
-	PitchBendNote(const int* data, Dispatcher* dispatcher);
-
-    ~PitchBendNote();
+	PitchBendRibbon();
+	PitchBendRibbon(const int* data);
+	PitchBendRibbon(const int* data, Dispatcher* dispatcher);
+    ~PitchBendRibbon();
 
     void update(const uint32_t* time);
 
@@ -30,13 +29,11 @@ public:
 #endif /* DEBUG */
 
 private:
-    const uint8_t ID = 0xE4;
+    const uint8_t ID = 0xE3;
     uint8_t channel;
-    uint8_t pitch;
-    uint8_t velocity;
 
     uint16_t parameter;
     Dispatcher* dispatcher;
 };
 
-#endif /* SRC_CONTROLLER_PITCHBENDNOTE_H_ */
+#endif /* SRC_CONTROLLER_PITCHBEND_H_ */

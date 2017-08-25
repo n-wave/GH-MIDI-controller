@@ -5,17 +5,17 @@
  *      Author: mario
  */
 
-#include "PitchBend.h"
 #include "../../command/PitchBendCommand.h"
+#include "PitchBendRibbon.h"
 
-PitchBend::PitchBend() :
+PitchBendRibbon::PitchBendRibbon() :
 	channel(0),
 	parameter(0),
 	dispatcher(NULL)
 {
 }
 
-PitchBend::PitchBend(const int* data) :
+PitchBendRibbon::PitchBendRibbon(const int* data) :
 	channel(0),
 	parameter(0),
 	dispatcher(NULL)
@@ -31,7 +31,7 @@ PitchBend::PitchBend(const int* data) :
 #endif /* DEBUG */
 }
 
-PitchBend::PitchBend(const int* data, Dispatcher* dispatcher) :
+PitchBendRibbon::PitchBendRibbon(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	parameter(0),
 	dispatcher(dispatcher)
@@ -47,7 +47,7 @@ PitchBend::PitchBend(const int* data, Dispatcher* dispatcher) :
 #endif /* DEBUG */
 }
 
-PitchBend::~PitchBend(){
+PitchBendRibbon::~PitchBendRibbon(){
 	dispatcher = NULL;
 }
 
@@ -63,19 +63,19 @@ PitchBend::~PitchBend(){
  *
  */
 
-void PitchBend::update(const uint32_t* time){
+void PitchBendRibbon::update(const uint32_t* time){
 	dispatcher->addCommand(new PitchBendCommand(1, 14000));
 }
 
-void PitchBend::setParameter(const uint16_t* value){
+void PitchBendRibbon::setParameter(const uint16_t* value){
 	parameter = *value;
 }
 
-uint16_t PitchBend::getParameter(){
+uint16_t PitchBendRibbon::getParameter(){
 	return parameter;
 }
 
-boolean PitchBend::setConfiguration(const int* data){
+boolean PitchBendRibbon::setConfiguration(const int* data){
 	boolean result = false;
 
 	if(
@@ -92,7 +92,7 @@ boolean PitchBend::setConfiguration(const int* data){
 }
 
 #ifdef DEBUG
-void PitchBend::printContents(){
+void PitchBendRibbon::printContents(){
 	String result = String("Pitch Bend \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Parameter    : " + parameter + "\n";

@@ -1,14 +1,14 @@
 /*
- * PitchBendNote.cpp
+ * PitchBendNoteRibbon.cpp
  *
  *  Created on: Jul 5, 2017
  *      Author: mario
  */
 
-#include "PitchBendNote.h"
 #include "../../command/PitchBendNoteCommand.h"
+#include "PitchBendNoteRibbon.h"
 
-PitchBendNote::PitchBendNote() :
+PitchBendNoteRibbon::PitchBendNoteRibbon() :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -17,7 +17,7 @@ PitchBendNote::PitchBendNote() :
 {
 }
 
-PitchBendNote::PitchBendNote(const int* data) :
+PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data) :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -35,7 +35,7 @@ PitchBendNote::PitchBendNote(const int* data) :
 #endif /* DEBUG */
 }
 
-PitchBendNote::PitchBendNote(const int* data, Dispatcher* dispatcher) :
+PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	pitch(0),
 	velocity(0),
@@ -46,23 +46,23 @@ PitchBendNote::PitchBendNote(const int* data, Dispatcher* dispatcher) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("PitchBendNote successfully initialized and dispatcher assigned");
+		Serial.println("PitchBendNoteRibbon successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in PitchBendNote while loading data");
+		Serial.println("Error occurred in PitchBendNoteRibbon while loading data");
 	}
 #endif /* DEBUG */
 }
 
-PitchBendNote::~PitchBendNote() {
+PitchBendNoteRibbon::~PitchBendNoteRibbon() {
 	dispatcher = NULL;
 }
 
 
-/* PitchBendNote::update()
+/* PitchBendNoteRibbon::update()
  *
  * Calculate values.
  *
- * add new PitchBendNote Command
+ * add new PitchBendNoteRibbon Command
  *
  * arg 1: uint8_t channel
  * arg 2: uint8_t pitch
@@ -72,19 +72,19 @@ PitchBendNote::~PitchBendNote() {
  */
 
 
-void PitchBendNote::update(const uint32_t* time) {
+void PitchBendNoteRibbon::update(const uint32_t* time) {
 	dispatcher->addCommand(new PitchBendNoteCommand(0, 60, 100, 14000));
 }
 
-void PitchBendNote::setParameter(const uint16_t* value) {
+void PitchBendNoteRibbon::setParameter(const uint16_t* value) {
 	parameter = *value;
 }
 
-uint16_t PitchBendNote::getParameter() {
+uint16_t PitchBendNoteRibbon::getParameter() {
 	return parameter;
 }
 
-boolean PitchBendNote::setConfiguration(const int* data) {
+boolean PitchBendNoteRibbon::setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
@@ -102,7 +102,7 @@ boolean PitchBendNote::setConfiguration(const int* data) {
 }
 
 #ifdef DEBUG
-void PitchBendNote::printContents(){
+void PitchBendNoteRibbon::printContents(){
 	String result = String("Pitch Bend Note \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"Pitch        : " + pitch + "\n";

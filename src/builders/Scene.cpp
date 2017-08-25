@@ -8,8 +8,8 @@
 #include "Scene.h"
 
 #include "../controller/DisabledController.h"
-#include "../controller/ribbon/PitchBendNote.h"
-#include "../controller/ribbon/PitchBend.h"
+#include "../controller/ribbon/PitchBendNoteRibbon.h"
+#include "../controller/ribbon/PitchBendRibbon.h"
 #include "../controller/sensor/NoteControlChange8Bit.h"
 #include "../controller/sensor/NoteControlChange16Bit.h"
 #include "../controller/sensor/ControlChangeFade8Bit.h"
@@ -159,10 +159,10 @@ boolean Scene::setController(int number, int type, const int* data){
 				controllers[number] = new NoteControlChange16Bit(data, dispatcher);
 				break;
 			case 5:
-				controllers[number] = new PitchBend(data, dispatcher);
+				controllers[number] = new PitchBendRibbon(data, dispatcher);
 				break;
 			case 6:
-				controllers[number] = new PitchBendNote(data, dispatcher);
+				controllers[number] = new PitchBendNoteRibbon(data, dispatcher);
 				break;
 			case 7:
 				controllers[number] = new ControlChange8Bit(data, dispatcher);
