@@ -10,13 +10,13 @@
 
 #include "../controller.h"
 
-class ControlChange16Bit : public Controller {
+class ControlChangePressure16Bit : public Controller {
 public:
-	ControlChange16Bit();
-	ControlChange16Bit(const int* data);
-	ControlChange16Bit(const int* data, Dispatcher* dispatcher);
+	ControlChangePressure16Bit();
+	ControlChangePressure16Bit(const int* data);
+	ControlChangePressure16Bit(const int* data, Dispatcher* dispatcher);
 
-    ~ControlChange16Bit();
+    ~ControlChangePressure16Bit();
 
     void update(const uint32_t* time);
 
@@ -39,7 +39,11 @@ private:
     uint16_t topValue;
     uint16_t bottomValue;
 
+    uint16_t range;
+    uint16_t value14Bit;
     uint16_t parameter;
+
+    boolean updated;
 
     Dispatcher* dispatcher;
 };

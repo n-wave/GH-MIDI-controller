@@ -10,13 +10,13 @@
 
 #include "../controller.h"
 
-class ControlChangeFade8Bit : public Controller {
+class ControlChangeFadePressure8Bit : public Controller {
 public:
-	ControlChangeFade8Bit();
-	ControlChangeFade8Bit(const int* data);
-	ControlChangeFade8Bit(const int* data, Dispatcher* dispatcher);
+	ControlChangeFadePressure8Bit();
+	ControlChangeFadePressure8Bit(const int* data);
+	ControlChangeFadePressure8Bit(const int* data, Dispatcher* dispatcher);
 
-	~ControlChangeFade8Bit();
+	~ControlChangeFadePressure8Bit();
 
     void update(const uint32_t* time);
 

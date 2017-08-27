@@ -10,13 +10,13 @@
 
 #include "../controller.h"
 
-class ControlChangeFade16Bit : public Controller {
+class ControlChangeFadePressure16Bit : public Controller {
 public:
-	ControlChangeFade16Bit();
-	ControlChangeFade16Bit(const int* data);
-	ControlChangeFade16Bit(const int* data, Dispatcher* dispatcher);
+	ControlChangeFadePressure16Bit();
+	ControlChangeFadePressure16Bit(const int* data);
+	ControlChangeFadePressure16Bit(const int* data, Dispatcher* dispatcher);
 
-	~ControlChangeFade16Bit();
+	~ControlChangeFadePressure16Bit();
 
     void update(const uint32_t* time);
 

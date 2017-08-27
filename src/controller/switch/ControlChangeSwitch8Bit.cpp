@@ -15,6 +15,7 @@ ControlChangeSwitch8Bit::ControlChangeSwitch8Bit() :
 	topValue(0),
 	bottomValue(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
@@ -26,13 +27,14 @@ ControlChangeSwitch8Bit::ControlChangeSwitch8Bit(const int* data) :
 	topValue(0),
 	bottomValue(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChangeSwitch8Bit successfully initialized");
+		Serial.println("ControlChangeSwitch8Bit successfully initialized and dispatcher assigned");
 	} else {
 		Serial.println("Error occurred in ControlChangeSwitch8Bit while loading data");
 	}
@@ -45,6 +47,7 @@ ControlChangeSwitch8Bit::ControlChangeSwitch8Bit(const int* data, Dispatcher* di
 	topValue(0),
 	bottomValue(0),
 	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -77,11 +80,25 @@ ControlChangeSwitch8Bit::~ControlChangeSwitch8Bit() {
 
 
 void ControlChangeSwitch8Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange8BitCommand(1, 12, 27));
+	if(updated){
+		if(parameter > 0){
+			dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																controlChangeNumber,
+																topValue));
+		} else {
+			dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																controlChangeNumber,
+																bottomValue));
+		}
+		updated = false;
+	}
 }
 
 void ControlChangeSwitch8Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangeSwitch8Bit::getParameter() {

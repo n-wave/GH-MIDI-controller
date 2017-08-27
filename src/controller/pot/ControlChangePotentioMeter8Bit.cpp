@@ -14,8 +14,9 @@ ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit() :
 	topValue(0),
 	bottomValue(0),
 	range(127),
-	value7Bit(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
@@ -27,8 +28,9 @@ ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data) 
 	topValue(0),
 	bottomValue(0),
 	range(127),
-	value7Bit(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -48,8 +50,9 @@ ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data, 
 	topValue(0),
 	bottomValue(0),
 	range(127),
-	value7Bit(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -82,17 +85,25 @@ ControlChangePotentioMeter8Bit::~ControlChangePotentioMeter8Bit() {
 
 
 void ControlChangePotentioMeter8Bit::update(const uint32_t* time) {
-	uint16_t scalar = 0;
+	if(updated == true){
+		uint8_t  scalar = 0;
 
-	scalar = (value7Bit*range) >> 7; //Multiply with range and convert back to 7Bit (max amount = 2^14)
-	scalar += bottomValue;			//Add offset i.e. the bottom value
+		scalar = (value7Bit*range) >> 7; //Multiply with range and convert back to 7Bit (max amount = 2^14)
+		scalar += bottomValue;			//Add offset i.e. the bottom value
 
-	dispatcher->addCommand(new ControlChange8BitCommand(channel, controlChangeNumber, scalar));
+		dispatcher->addCommand(new ControlChange8BitCommand(channel, controlChangeNumber, scalar));
+		updated = false;
+	}
 }
 
 void ControlChangePotentioMeter8Bit::setParameter(const uint16_t* value) {
-	parameter = *value; //Raw ADC Value 16Bit
-	value7Bit = parameter >> 9;
+	uint8_t tmp = *value >> 9;
+
+	if(tmp != value7Bit){
+		parameter = *value; //Raw ADC Value 16Bit
+		value7Bit = tmp;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangePotentioMeter8Bit::getParameter() {

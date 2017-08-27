@@ -5,63 +5,71 @@
  *      Author: mario
  */
 
-#include "ControlChange16Bit.h"
-
 #include "../../command/ControlChange16BitCommand.h"
+#include "ControlChangePressure16Bit.h"
 
-ControlChange16Bit::ControlChange16Bit() :
+ControlChangePressure16Bit::ControlChangePressure16Bit() :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 }
 
-ControlChange16Bit::ControlChange16Bit(const int* data) :
+ControlChangePressure16Bit::ControlChangePressure16Bit(const int* data) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange16Bit successfully initialized");
+		Serial.println("ControlChangePressure16Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChange16Bit while loading data");
+		Serial.println("Error occurred in ControlChangePressure16Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange16Bit::ControlChange16Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangePressure16Bit::ControlChangePressure16Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange16Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangePressure16Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChange16Bit while loading data");
+		Serial.println("Error occurred in ControlChangePressure16Bit while loading data");
 	}
 #endif /* DEBUG */
 
 }
 
-ControlChange16Bit::~ControlChange16Bit() {
+ControlChangePressure16Bit::~ControlChangePressure16Bit() {
 	dispatcher = NULL;
 }
 
@@ -70,7 +78,7 @@ ControlChange16Bit::~ControlChange16Bit() {
  *
  * Calculate values.
  *
- * add new ControlChange16BitCommand
+ * add new ControlChangePressure16BitCommand
  *
  * arg 1: uint8_t channel
  * arg 2: uint8_t ccNumberMSB
@@ -79,19 +87,42 @@ ControlChange16Bit::~ControlChange16Bit() {
  * arg 5: uint8_t ccValueLSB
  */
 
-void ControlChange16Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange16BitCommand(1, 8, 120, 40, 4));
+void ControlChangePressure16Bit::update(const uint32_t* time) {
+	if(updated == true){
+		uint8_t controlChangeValueMSB = 0;
+		uint8_t controlChangeValueLSB = 0;
+
+		uint16_t scalar = 0;  // Temporary holder
+		scalar = (range*value14Bit) >> 14;
+		scalar += bottomValue;
+
+		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
+		controlChangeValueLSB = scalar & 0B01111111; //Mask only needed bytes
+
+		dispatcher->addCommand(new ControlChange16BitCommand(channel,				  //Midi Channel
+															 controlChangeNumberMSB,  //Control Change MSB
+															 controlChangeValueMSB,   //MSB Value
+															 controlChangeNumberLSB,  //Control Change LSB
+															 controlChangeValueLSB)); //LSB Value
+		updated = false;
+	}
 }
 
-void ControlChange16Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+void ControlChangePressure16Bit::setParameter(const uint16_t* value) {
+	uint16_t tmp = *value >> 2;
+
+	if(tmp != value14Bit){
+		parameter = *value;
+		value14Bit = parameter >> 2;
+		updated = true;
+	}
 }
 
-uint16_t ControlChange16Bit::getParameter() {
+uint16_t ControlChangePressure16Bit::getParameter() {
 	return parameter;
 }
 
-boolean ControlChange16Bit:: setConfiguration(const int* data) {
+boolean ControlChangePressure16Bit:: setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
@@ -108,6 +139,8 @@ boolean ControlChange16Bit:: setConfiguration(const int* data) {
 		topValue = this->convertBytesTo14Bit(data[5], data[6]);
 		bottomValue = this->convertBytesTo14Bit(data[7], data[8]);
 
+		range = topValue - bottomValue;
+
 		result = true;
 	}
 	return result;
@@ -119,7 +152,7 @@ boolean ControlChange16Bit:: setConfiguration(const int* data) {
  *  the result in a 16Bit value
  */
 
-uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
+uint16_t ControlChangePressure16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 	uint16_t result = 0;
 	uint16_t MSB = (msb & 0x7F) << 7;
 	uint16_t LSB = lsb & 0x7F;
@@ -130,7 +163,7 @@ uint16_t ControlChange16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-    void ControlChange16Bit::printContents(){
+    void ControlChangePressure16Bit::printContents(){
     	String result = String("Control Change 16Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";

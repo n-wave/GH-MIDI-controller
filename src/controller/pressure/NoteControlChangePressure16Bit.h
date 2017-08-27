@@ -10,12 +10,12 @@
 
 #include "../controller.h"
 
-class NoteControlChange16Bit: public Controller {
+class NoteControlChangePressure16Bit: public Controller {
 public:
-	NoteControlChange16Bit();
-	NoteControlChange16Bit(const int* data);
-	NoteControlChange16Bit(const int* data, Dispatcher* dispatcher);
-    ~NoteControlChange16Bit();
+	NoteControlChangePressure16Bit();
+	NoteControlChangePressure16Bit(const int* data);
+	NoteControlChangePressure16Bit(const int* data, Dispatcher* dispatcher);
+    ~NoteControlChangePressure16Bit();
 
     void update(const uint32_t* time);
 
@@ -37,10 +37,16 @@ private:
     uint8_t velocityOption;
     uint8_t controlChangeNumberMSB;
     uint8_t controlChangeNumberLSB;
+
     uint16_t topValue;
     uint16_t bottomValue;
-
+    uint16_t range;
     uint16_t parameter;
+
+    uint16_t value14Bit;
+    boolean updated;
+    boolean sendNote;
+
     Dispatcher* dispatcher;
 };
 

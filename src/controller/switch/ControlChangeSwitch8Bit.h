@@ -36,6 +36,7 @@ private:
     uint8_t bottomValue;
 
     uint16_t parameter;
+    boolean updated;
 
     Dispatcher* dispatcher;
 };

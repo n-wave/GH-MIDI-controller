@@ -35,7 +35,12 @@ private:
     uint8_t pitch;
     uint8_t velocity;
 
+    uint16_t value14Bit;
     uint16_t parameter;
+
+    boolean updated;
+    boolean sendNote;
+
     Dispatcher* dispatcher;
 };
 

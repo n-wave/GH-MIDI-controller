@@ -29,13 +29,13 @@ void PointerTest::initialize(){
 	controllers[0] = new ProgramChange();
 	controllers[1] = new PitchBendNoteRibbon();
 	controllers[2] = new PitchBendRibbon();
-	controllers[3] = new NoteVelocity();
-	controllers[4] = new NoteControlChange8Bit();
-	controllers[5] = new NoteControlChange16Bit();
-	controllers[6] = new ControlChangeFade8Bit();
-	controllers[7] = new ControlChangeFade16Bit();
-	controllers[8] = new ControlChange8Bit();
-	controllers[9] = new ControlChange16Bit();
+	controllers[3] = new NoteVelocityPressure();
+	controllers[4] = new NoteControlChangePressure8Bit();
+	controllers[5] = new NoteControlChangePressure16Bit();
+	controllers[6] = new ControlChangeFadePressure8Bit();
+	controllers[7] = new ControlChangeFadePressure16Bit();
+	controllers[8] = new ControlChangePressure8Bit();
+	controllers[9] = new ControlChangePressure16Bit();
 
 	this->initializeProgramChange();
 	this->initializePitchBendNote();

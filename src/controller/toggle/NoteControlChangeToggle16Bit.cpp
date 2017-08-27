@@ -15,10 +15,13 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit() :
 	velocity(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
-	enabled(0),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -31,10 +34,13 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data) :
 	velocity(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
-	enabled(0),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -56,10 +62,13 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data, Disp
 	velocity(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
-	enabled(0),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(dispatcher)
 {
@@ -81,14 +90,21 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data, uint
 	velocity(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
-	enabled(0),
+	toggle(false),
+	updated(false),
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
+
+	pinMode(ledPin, OUTPUT);
+	digitalWrite(ledPin, LOW);
+
 #ifdef DEBUG
 	if(success){
 		Serial.println("NoteControlChange16Bit successfully initialized");
@@ -102,13 +118,74 @@ NoteControlChangeToggle16Bit::~NoteControlChangeToggle16Bit() {
 	dispatcher = NULL;
 }
 
+/* NoteControlChange16Bit::update()
+ *
+ * Calculate values.
+ *
+ * add new NoteControlChangeCommand Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t pitch
+ * arg 3: uint8_t velocity
+ * arg 4: uint8_t ccNumberMSB
+ * arg 5: uint8_t ccValueMSB
+ * arg 6: uint8_t ccNumberLSB
+ * arg 7: uint8_t ccValueLSB
+ *
+ */
 
 void NoteControlChangeToggle16Bit::update(const uint32_t* time){
-	dispatcher->addCommand(new NoteControlChange16BitCommand(2, 80, 100, 12, 100, 44, 10));
+	if(updated){
+		if(toggleOption == 1){
+			if(toggle){
+				dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
+																		 pitch,
+																		 velocity,
+																		 controlChangeNumberMSB,
+																		 onValueMSB,
+																		 controlChangeNumberLSB,
+																		 onValueLSB));
+			} else {
+				dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
+																		 pitch,
+																		 0,
+																		 controlChangeNumberMSB,
+																		 offValueMSB,
+																		 controlChangeNumberLSB,
+																		 offValueLSB));
+			}
+			digitalWrite(ledPin, toggle);
+		} else {
+			if(parameter != 0){
+				dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
+																		 pitch,
+																		 velocity,
+																		 controlChangeNumberMSB,
+																		 onValueMSB,
+																		 controlChangeNumberLSB,
+																		 onValueLSB));
+			} else {
+				dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
+																		 pitch,
+																		 0,
+																		 controlChangeNumberMSB,
+																		 offValueMSB,
+																		 controlChangeNumberLSB,
+																		 offValueLSB));
+			}
+			digitalWrite(ledPin, parameter);
+			}
+		updated = false;
+	}
 }
 
 void NoteControlChangeToggle16Bit::setParameter(const uint16_t* value){
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+		toggle = !toggle;
+
+		updated = true;
+	}
 }
 
 uint16_t NoteControlChangeToggle16Bit::getParameter(){
@@ -132,8 +209,11 @@ boolean NoteControlChangeToggle16Bit::setConfiguration(const int* data){
 		controlChangeNumberMSB = data[7];
 		controlChangeNumberLSB = controlChangeNumberMSB + 32;
 
-		topValue = this->convertBytesTo14Bit(data[8], data[9]);
-		bottomValue = this->convertBytesTo14Bit(data[10], data[11]);
+		onValueMSB = data[8];
+		onValueLSB = data[9];
+
+		offValueMSB = data[10];
+		offValueLSB = data[11];
 
 		result = true;
 	}
@@ -158,6 +238,9 @@ uint16_t NoteControlChangeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t 
 
 #ifdef DEBUG
     void NoteControlChangeToggle16Bit::printContents(){
+    	uint16_t onValue = this->convertBytesTo14Bit(onValueMSB, onValueLSB);
+    	uint16_t offValue = this->convertBytesTo14Bit(onValueMSB, onValueLSB);
+
     	String result = String("Note Control Change 16Bit \n");
     	result += (String)"Toggle Option: " + toggleOption + "\n";
     	result += (String)"MIDI Channel : " + channel + "\n";
@@ -165,11 +248,10 @@ uint16_t NoteControlChangeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t 
     	result += (String)"Velocity     : " + velocity + "\n";
     	result += (String)"CC nr MSB    : " + controlChangeNumberMSB + "\n";
     	result += (String)"CC nr LSB    : " + controlChangeNumberLSB + "\n";
-    	result += (String)"Top Value    : " + topValue + "\n";
-    	result += (String)"Bottom Value : " + bottomValue + "\n";
-
+    	result += (String)"Top Value    : " + onValue + "\n";
+    	result += (String)"Bottom Value : " + offValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
-    	result += (String)"Enabled      : " + enabled + "\n";
+    	result += (String)"Toggle       : " + toggle + "\n";
     	result += (String)"LedPin       : " + ledPin + "\n";
 
     	Serial.println(result);

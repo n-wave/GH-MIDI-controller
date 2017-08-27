@@ -36,7 +36,11 @@ private:
     uint8_t topValue;
     uint8_t bottomValue;
 
-    uint16_t parameter;
+    uint8_t range;
+    uint16_t parameter; //Raw data from ADC
+
+    uint8_t value7Bit; //converted 7Bit
+    boolean updated;
 
     Dispatcher* dispatcher;
 };

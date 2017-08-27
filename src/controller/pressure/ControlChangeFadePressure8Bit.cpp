@@ -5,10 +5,10 @@
  *      Author: mario
  */
 
-#include "ControlChangeFade8Bit.h"
 #include "../../command/ControlChange8BitCommand.h"
+#include "ControlChangeFadePressure8Bit.h"
 
-ControlChangeFade8Bit::ControlChangeFade8Bit() :
+ControlChangeFadePressure8Bit::ControlChangeFadePressure8Bit() :
 	channel(0),
 	controlChangeNumber(0),
 	start(0),
@@ -21,7 +21,7 @@ ControlChangeFade8Bit::ControlChangeFade8Bit() :
 {
 }
 
-ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data) :
+ControlChangeFadePressure8Bit::ControlChangeFadePressure8Bit(const int* data) :
 	channel(0),
 	controlChangeNumber(0),
 	start(0),
@@ -36,14 +36,14 @@ ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChangeFade8Bit successfully initialized");
+		Serial.println("ControlChangeFadePressure8Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChangeFade8Bit while loading data");
+		Serial.println("Error occurred in ControlChangeFadePressure8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangeFadePressure8Bit::ControlChangeFadePressure8Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumber(0),
 	start(0),
@@ -58,19 +58,19 @@ ControlChangeFade8Bit::ControlChangeFade8Bit(const int* data, Dispatcher* dispat
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChangeFade8Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangeFadePressure8Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChangeFade8Bit while loading data");
+		Serial.println("Error occurred in ControlChangeFadePressure8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChangeFade8Bit::~ControlChangeFade8Bit() {
+ControlChangeFadePressure8Bit::~ControlChangeFadePressure8Bit() {
 	dispatcher = NULL;
 }
 
 
-/* ControlChangeFade8Bit::update()
+/* ControlChangeFadePressure8Bit::update()
  *
  * Calculate values.
  *
@@ -82,19 +82,19 @@ ControlChangeFade8Bit::~ControlChangeFade8Bit() {
  *
  */
 
-void ControlChangeFade8Bit::update(const uint32_t* time) {
+void ControlChangeFadePressure8Bit::update(const uint32_t* time) {
 	dispatcher->addCommand(new ControlChange8BitCommand(5, 14, 127));
 }
 
-void ControlChangeFade8Bit::setParameter(const uint16_t* value) {
+void ControlChangeFadePressure8Bit::setParameter(const uint16_t* value) {
 	parameter = *value;
 }
 
-uint16_t ControlChangeFade8Bit::getParameter() {
+uint16_t ControlChangeFadePressure8Bit::getParameter() {
 	return parameter;
 }
 
-boolean ControlChangeFade8Bit::setConfiguration(const int* data) {
+boolean ControlChangeFadePressure8Bit::setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
@@ -124,7 +124,7 @@ boolean ControlChangeFade8Bit::setConfiguration(const int* data) {
  *  the result in a 16Bit value
  */
 
-uint16_t ControlChangeFade8Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
+uint16_t ControlChangeFadePressure8Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 	uint16_t result = 0;
 	uint16_t MSB = (msb & 0XFF) << 8;
 	uint16_t LSB = lsb & 0xFF;
@@ -135,7 +135,7 @@ uint16_t ControlChangeFade8Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-void ControlChangeFade8Bit::printContents(){
+void ControlChangeFadePressure8Bit::printContents(){
 	String result = String("Control Change Fade 8Bit \n");
 	result += (String)"MIDI Channel : " + channel + "\n";
 	result += (String)"CC number    : " + controlChangeNumber + "\n";

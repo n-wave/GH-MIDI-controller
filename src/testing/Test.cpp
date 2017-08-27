@@ -11,13 +11,13 @@ Test::Test() :
 	programChange(ProgramChange()),
 	pitchBendNote(PitchBendNoteRibbon()),
 	pitchBend(PitchBendRibbon()),
-	noteVelocity(NoteVelocity()),
-	noteControlChange8Bit(NoteControlChange8Bit()),
-	noteControlChange16Bit(NoteControlChange16Bit()),
-	controlChangeFade8Bit(ControlChangeFade8Bit()),
-	controlChangeFade16Bit(ControlChangeFade16Bit()),
-	controlChange8Bit(ControlChange8Bit()),
-	controlChange16Bit(ControlChange16Bit())
+	noteVelocity(NoteVelocityPressure()),
+	noteControlChange8Bit(NoteControlChangePressure8Bit()),
+	noteControlChange16Bit(NoteControlChangePressure16Bit()),
+	controlChangeFade8Bit(ControlChangeFadePressure8Bit()),
+	controlChangeFade16Bit(ControlChangeFadePressure16Bit()),
+	controlChange8Bit(ControlChangePressure8Bit()),
+	controlChange16Bit(ControlChangePressure16Bit())
 {
 	this->initialize();
 	Serial.begin(9600);

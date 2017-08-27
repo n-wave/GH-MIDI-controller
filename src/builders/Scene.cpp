@@ -8,15 +8,15 @@
 #include "Scene.h"
 
 #include "../controller/DisabledController.h"
+#include "../controller/pressure/ControlChangeFadePressure16Bit.h"
+#include "../controller/pressure/ControlChangeFadePressure8Bit.h"
+#include "../controller/pressure/ControlChangePressure16Bit.h"
+#include "../controller/pressure/ControlChangePressure8Bit.h"
+#include "../controller/pressure/NoteControlChangePressure16Bit.h"
+#include "../controller/pressure/NoteControlChangePressure8Bit.h"
+#include "../controller/pressure/NoteVelocityPressure.h"
 #include "../controller/ribbon/PitchBendNoteRibbon.h"
 #include "../controller/ribbon/PitchBendRibbon.h"
-#include "../controller/sensor/NoteControlChange8Bit.h"
-#include "../controller/sensor/NoteControlChange16Bit.h"
-#include "../controller/sensor/ControlChangeFade8Bit.h"
-#include "../controller/sensor/ControlChangeFade16Bit.h"
-#include "../controller/sensor/ControlChange8Bit.h"
-#include "../controller/sensor/ControlChange16Bit.h"
-#include "../controller/sensor/NoteVelocity.h"
 
 Scene::Scene() :
 	nrOfProgramChanges(0),
@@ -150,13 +150,13 @@ boolean Scene::setController(int number, int type, const int* data){
 				controllers[number] = new ProgramChange(data, dispatcher);
 				break;
 			case 2:
-				controllers[number] = new NoteVelocity(data, dispatcher);
+				controllers[number] = new NoteVelocityPressure(data, dispatcher);
 				break;
 			case 3:
-				controllers[number] = new NoteControlChange8Bit(data, dispatcher);
+				controllers[number] = new NoteControlChangePressure8Bit(data, dispatcher);
 				break;
 			case 4:
-				controllers[number] = new NoteControlChange16Bit(data, dispatcher);
+				controllers[number] = new NoteControlChangePressure16Bit(data, dispatcher);
 				break;
 			case 5:
 				controllers[number] = new PitchBendRibbon(data, dispatcher);
@@ -165,16 +165,16 @@ boolean Scene::setController(int number, int type, const int* data){
 				controllers[number] = new PitchBendNoteRibbon(data, dispatcher);
 				break;
 			case 7:
-				controllers[number] = new ControlChange8Bit(data, dispatcher);
+				controllers[number] = new ControlChangePressure8Bit(data, dispatcher);
 				break;
 			case 8:
-				controllers[number] = new ControlChange16Bit(data, dispatcher);
+				controllers[number] = new ControlChangePressure16Bit(data, dispatcher);
 				break;
 			case 9:
-				controllers[number] = new ControlChangeFade8Bit(data, dispatcher);
+				controllers[number] = new ControlChangeFadePressure8Bit(data, dispatcher);
 				break;
 			case 10:
-				controllers[number] = new ControlChangeFade16Bit(data, dispatcher);
+				controllers[number] = new ControlChangeFadePressure16Bit(data, dispatcher);
 				break;
 		}
 

@@ -14,7 +14,10 @@ ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit() :
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 }
@@ -25,7 +28,10 @@ ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -45,7 +51,10 @@ ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data
 	controlChangeNumberLSB(0),
 	topValue(0),
 	bottomValue(0),
+    range(0),
+    value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -79,11 +88,34 @@ ControlChangePotentioMeter16Bit::~ControlChangePotentioMeter16Bit() {
  */
 
 void ControlChangePotentioMeter16Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange16BitCommand(1, 8, 120, 40, 4));
+	if(updated == true){
+		uint8_t controlChangeValueMSB = 0;
+		uint8_t controlChangeValueLSB = 0;
+
+		uint16_t scalar = 0;  // Temporary holder
+		scalar = (range*value14Bit) >> 14;
+		scalar += bottomValue;
+
+		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
+		controlChangeValueLSB = scalar & 0B01111111; //Mask only needed bytes
+
+		dispatcher->addCommand(new ControlChange16BitCommand(channel,				  //Midi Channel
+															 controlChangeNumberMSB,  //Control Change MSB
+															 controlChangeValueMSB,   //MSB Value
+															 controlChangeNumberLSB,  //Control Change LSB
+															 controlChangeValueLSB)); //LSB Value
+		updated = false;
+	}
 }
 
 void ControlChangePotentioMeter16Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+	uint16_t tmp = *value >> 2;
+
+	if(tmp != value14Bit){
+		parameter = *value;
+		value14Bit = parameter >> 2;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangePotentioMeter16Bit::getParameter() {
@@ -106,6 +138,8 @@ boolean ControlChangePotentioMeter16Bit:: setConfiguration(const int* data) {
 
 		topValue = this->convertBytesTo14Bit(data[5], data[6]);
 		bottomValue = this->convertBytesTo14Bit(data[7], data[8]);
+
+		range = topValue - bottomValue;
 
 		result = true;
 	}

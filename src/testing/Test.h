@@ -12,16 +12,16 @@
 #include "configuration.h"
 
 #include "../controller/ProgramChange.h"
-#include "../controller/sensor/NoteControlChange8Bit.h"
-#include "../controller/sensor/NoteControlChange16Bit.h"
-#include "../controller/sensor/ControlChangeFade8Bit.h"
-#include "../controller/sensor/ControlChangeFade16Bit.h"
-#include "../controller/sensor/ControlChange8Bit.h"
-#include "../controller/sensor/ControlChange16Bit.h"
 #include "../controller/controller.h"
+#include "../controller/pressure/ControlChangeFadePressure16Bit.h"
+#include "../controller/pressure/ControlChangeFadePressure8Bit.h"
+#include "../controller/pressure/ControlChangePressure16Bit.h"
+#include "../controller/pressure/ControlChangePressure8Bit.h"
+#include "../controller/pressure/NoteControlChangePressure16Bit.h"
+#include "../controller/pressure/NoteControlChangePressure8Bit.h"
+#include "../controller/pressure/NoteVelocityPressure.h"
 #include "../controller/ribbon/PitchBendNoteRibbon.h"
 #include "../controller/ribbon/PitchBendRibbon.h"
-#include "../controller/sensor/NoteVelocity.h"
 
 class Test {
 public:
@@ -46,13 +46,13 @@ private:
     ProgramChange programChange;
     PitchBendNoteRibbon pitchBendNote;
     PitchBendRibbon pitchBend;
-    NoteVelocity noteVelocity;
-    NoteControlChange8Bit noteControlChange8Bit;
-    NoteControlChange16Bit noteControlChange16Bit;
-    ControlChangeFade8Bit controlChangeFade8Bit;
-    ControlChangeFade16Bit controlChangeFade16Bit;
-    ControlChange8Bit controlChange8Bit;
-    ControlChange16Bit controlChange16Bit;
+    NoteVelocityPressure noteVelocity;
+    NoteControlChangePressure8Bit noteControlChange8Bit;
+    NoteControlChangePressure16Bit noteControlChange16Bit;
+    ControlChangeFadePressure8Bit controlChangeFade8Bit;
+    ControlChangeFadePressure16Bit controlChangeFade16Bit;
+    ControlChangePressure8Bit controlChange8Bit;
+    ControlChangePressure16Bit controlChange16Bit;
 
 
 };

@@ -14,10 +14,11 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit() :
 	pitch(0),
 	velocity(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -29,10 +30,11 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data) :
 	pitch(0),
 	velocity(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -54,10 +56,11 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data, Dispat
 	pitch(0),
 	velocity(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(dispatcher)
 {
@@ -78,14 +81,18 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data, uint8_
 	pitch(0),
 	velocity(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
+
+	pinMode(ledPin, OUTPUT);
+	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
 	if(success){
@@ -118,12 +125,50 @@ NoteControlChangeToggle8Bit::~NoteControlChangeToggle8Bit()
 
 
 void NoteControlChangeToggle8Bit::update(const uint32_t* time){
-	dispatcher->addCommand(new NoteControlChange8BitCommand(0, 64, 100, 13, 90));
+	if(updated){
+		if(toggleOption == 1){
+			if(toggle){
+				dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
+																		pitch,
+																		velocity,
+																		controlChangeNumber,
+																		onValue));
+			} else {
+				dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
+																		pitch,
+																		0,
+																		controlChangeNumber,
+																		offValue));
+			}
+			digitalWrite(ledPin, toggle);
+		} else {
+			if(parameter != 0){
+				dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
+																		pitch,
+																		velocity,
+																		controlChangeNumber,
+																		onValue));
+			} else {
+				dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
+																		pitch,
+																		0,
+																		controlChangeNumber,
+																		offValue));
+			}
+			digitalWrite(ledPin, parameter);
+		}
+		updated = false;
+	}
 }
 
 
 void NoteControlChangeToggle8Bit::setParameter(const uint16_t* value){
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+		toggle = !toggle;
+
+		updated = true;
+	}
 }
 
 uint16_t NoteControlChangeToggle8Bit::getParameter(){
@@ -145,8 +190,8 @@ boolean NoteControlChangeToggle8Bit::setConfiguration(const int* data){
 		pitch = data[4];
 		velocity = data[5];
 		controlChangeNumber = data[7];
-		topValue = data[8];
-		bottomValue = data[9];
+		onValue = data[8];
+		offValue = data[9];
 		result = true;
 	}
 	return result;
@@ -160,10 +205,10 @@ boolean NoteControlChangeToggle8Bit::setConfiguration(const int* data){
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     ; " + velocity + "\n";
     	result += (String)"CC nr        : " + controlChangeNumber + "\n";
-    	result += (String)"TopValue     : " + topValue + "\n";
-    	result += (String)"BottomValue  : " + bottomValue + "\n";
+    	result += (String)"OnValue      : " + onValue + "\n";
+    	result += (String)"OffValue     : " + offValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
-    	result += (String)"Enabled      : " + enabled + "\n";
+    	result += (String)"Toggle       : " + toggle + "\n";
     	result += (String)"Led Pin      : " + ledPin + "\n";
 
     	Serial.println(result);

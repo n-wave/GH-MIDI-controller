@@ -5,6 +5,8 @@
  *      Author: mario
  */
 
+#include "../../command/NoteVelocityCommand.h"
+#include "../../command/PitchBendCommand.h"
 #include "../../command/PitchBendNoteCommand.h"
 #include "PitchBendNoteRibbon.h"
 
@@ -12,7 +14,10 @@ PitchBendNoteRibbon::PitchBendNoteRibbon() :
 	channel(0),
 	pitch(0),
 	velocity(0),
+	value14Bit(0),
 	parameter(0),
+	updated(false),
+	sendNote(false),
 	dispatcher(NULL)
 {
 }
@@ -21,7 +26,10 @@ PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data) :
 	channel(0),
 	pitch(0),
 	velocity(0),
+	value14Bit(0),
 	parameter(0),
+	updated(false),
+	sendNote(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -39,7 +47,10 @@ PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data, Dispatcher* dispatcher
 	channel(0),
 	pitch(0),
 	velocity(0),
+	value14Bit(0),
 	parameter(0),
+	updated(false),
+	sendNote(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -73,11 +84,41 @@ PitchBendNoteRibbon::~PitchBendNoteRibbon() {
 
 
 void PitchBendNoteRibbon::update(const uint32_t* time) {
-	dispatcher->addCommand(new PitchBendNoteCommand(0, 60, 100, 14000));
+	if(updated){
+		if(value14Bit != 0){
+			if(sendNote){
+				dispatcher->addCommand(new PitchBendNoteCommand(channel,
+																pitch,
+																velocity,
+																value14Bit));
+			} else {
+				dispatcher->addCommand(new PitchBendCommand(channel,
+														    value14Bit));
+			}
+			sendNote = false;
+		} else {
+			dispatcher->addCommand(new PitchBendNoteCommand(channel,
+															pitch,
+															0,
+															0));
+			sendNote = false;
+		}
+		updated = false;
+	}
 }
 
 void PitchBendNoteRibbon::setParameter(const uint16_t* value) {
-	parameter = *value;
+	uint16_t tmp = *value >> 2;
+
+	if(tmp != value14Bit){
+		if(value14Bit == 0){
+			sendNote = true;
+		}
+
+		parameter = *value;
+		value14Bit = tmp;
+		updated = true;
+	}
 }
 
 uint16_t PitchBendNoteRibbon::getParameter() {

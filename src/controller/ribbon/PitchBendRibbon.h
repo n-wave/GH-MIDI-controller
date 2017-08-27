@@ -32,7 +32,9 @@ private:
     const uint8_t ID = 0xE3;
     uint8_t channel;
 
+    uint16_t value14Bit;
     uint16_t parameter;
+    boolean updated;
     Dispatcher* dispatcher;
 };
 

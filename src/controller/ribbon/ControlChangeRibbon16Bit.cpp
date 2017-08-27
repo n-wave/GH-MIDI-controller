@@ -18,6 +18,7 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit() :
     range(0),
     value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 }
@@ -31,6 +32,7 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data) :
     range(0),
     value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -53,6 +55,7 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data, Dispatcher* 
     range(0),
     value14Bit(0),
 	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -86,26 +89,33 @@ ControlChangeRibbon16Bit::~ControlChangeRibbon16Bit() {
  */
 
 void ControlChangeRibbon16Bit::update(const uint32_t* time) {
-	uint8_t controlChangeValueMSB = 0;
-	uint8_t controlChangeValueLSB = 0;
+	if(updated){
+		uint8_t controlChangeValueMSB = 0;
+		uint8_t controlChangeValueLSB = 0;
 
-	uint32_t scalar = 0;  // Temporary holder
-	scalar = (range*value14Bit) >> 14;
-	scalar += bottomValue;
+		uint8_t scalar = (range*value14Bit) >> 14;
+		scalar += bottomValue;
 
-	controlChangeValueMSB = (scalar >> 7) & 0B01111111;
-	controlChangeValueLSB = scalar & 0B01111111; //Mask only needed bytes
+		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
+		controlChangeValueLSB = scalar & 0B01111111; //Mask only needed bytes
 
-	dispatcher->addCommand(new ControlChange16BitCommand(channel,				  //Midi Channel
-														 controlChangeNumberMSB,  //Control Change MSB
-														 controlChangeValueMSB,   //MSB Value
-														 controlChangeNumberLSB,  //Control Change LSB
-														 controlChangeValueLSB)); //LSB Value
+		dispatcher->addCommand(new ControlChange16BitCommand(channel,				  //Midi Channel
+															 controlChangeNumberMSB,  //Control Change MSB
+															 controlChangeValueMSB,   //MSB Value
+															 controlChangeNumberLSB,  //Control Change LSB
+															 controlChangeValueLSB)); //LSB Value
+		updated = false;
+	}
 }
 
 void ControlChangeRibbon16Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
-	value14Bit = parameter >> 2;
+	uint16_t tmp = *value >> 2;
+
+	if(tmp != value14Bit){
+		parameter = *value;
+		value14Bit = parameter >> 2;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangeRibbon16Bit::getParameter() {

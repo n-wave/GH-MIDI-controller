@@ -39,7 +39,11 @@ private:
     uint16_t topValue;
     uint16_t bottomValue;
 
+    uint16_t range;
+    uint16_t value14Bit;
     uint16_t parameter;
+
+    boolean updated;
 
     Dispatcher* dispatcher;
 };

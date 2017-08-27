@@ -34,9 +34,10 @@ private:
     uint8_t channel;
     uint8_t pitch;
     uint8_t velocity;
-    uint8_t velocityOption;
 
     uint16_t parameter;
+    boolean updated;
+
     Dispatcher* dispatcher;
 };
 

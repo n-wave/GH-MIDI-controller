@@ -37,12 +37,13 @@ private:
     uint8_t pitch;
     uint8_t velocity;
     uint8_t controlChangeNumber;
-    uint8_t topValue;
-    uint8_t bottomValue;
+    uint8_t onValue;
+    uint8_t offValue;
 
     uint16_t parameter;
 
-	boolean enabled;
+	boolean toggle;
+	boolean updated;
 	uint8_t ledPin;
 
     Dispatcher* dispatcher;

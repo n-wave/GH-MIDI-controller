@@ -14,7 +14,8 @@ NoteVelocityToggle::NoteVelocityToggle() :
 	pitch(0),
 	velocity(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {}
@@ -25,7 +26,8 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data) :
 	pitch(0),
 	velocity(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -46,7 +48,8 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data, Dispatcher* dispatcher) 
 	pitch(0),
 	velocity(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(dispatcher)
 {
@@ -67,11 +70,15 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data, uint8_t ledPin, Dispatch
 	pitch(0),
 	velocity(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
+
+	pinMode(ledPin, OUTPUT);
+	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
 	if(success){
@@ -88,11 +95,31 @@ NoteVelocityToggle::~NoteVelocityToggle() {
 
 
 void NoteVelocityToggle::update(const uint32_t* time){
-	dispatcher->addCommand(new NoteVelocityCommand(16, 52, 110));
+	if(updated){
+		if(toggleOption == 1){
+			if(toggle){
+				dispatcher->addCommand(new NoteVelocityCommand(channel, pitch, velocity));
+			} else {
+				dispatcher->addCommand(new NoteVelocityCommand(channel, pitch, 0));
+			}
+			digitalWrite(ledPin, toggle);
+		} else {
+			uint8_t tmp = parameter*velocity;
+
+			dispatcher->addCommand(new NoteVelocityCommand(channel, pitch, tmp));
+			digitalWrite(ledPin, parameter);
+		}
+		updated = false;
+	}
 }
 
 void NoteVelocityToggle::setParameter(const uint16_t* value){
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+		toggle = !toggle;
+
+		updated = true;
+	}
 }
 
 uint16_t NoteVelocityToggle::getParameter(){
@@ -126,7 +153,7 @@ boolean NoteVelocityToggle::setConfiguration(const int* data){
     	result += (String)"Pitch        : " + pitch + "\n";
     	result += (String)"Velocity     : " + velocity + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
-    	result += (String)"Enabled      : " + enabled + "\n";
+    	result += (String)"Toggle       : " + toggle + "\n";
     	result += (String)"Led Pin      : " + ledPin + "\n";
 
     	Serial.println(result);

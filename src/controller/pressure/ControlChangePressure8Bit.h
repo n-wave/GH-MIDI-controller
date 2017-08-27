@@ -10,14 +10,14 @@
 
 #include "../controller.h"
 
-class ControlChange8Bit : public Controller {
+class ControlChangePressure8Bit : public Controller {
 public:
-	ControlChange8Bit();
-	ControlChange8Bit(const int* data);
-	ControlChange8Bit(const int* data, Dispatcher* dispatcher);
+	ControlChangePressure8Bit();
+	ControlChangePressure8Bit(const int* data);
+	ControlChangePressure8Bit(const int* data, Dispatcher* dispatcher);
 
 
-	~ControlChange8Bit();
+	~ControlChangePressure8Bit();
 
     void update(const uint32_t* time);
 
@@ -35,8 +35,10 @@ private:
     uint8_t controlChangeNumber;
     uint8_t topValue;
     uint8_t bottomValue;
-
+    uint8_t range;
     uint16_t parameter;
+    uint8_t value7Bit;
+    boolean updated;
 
     Dispatcher* dispatcher;
 };

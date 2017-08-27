@@ -18,13 +18,13 @@
 #include "../controller/ProgramChange.h"
 #include "../controller/ribbon/PitchBendNoteRibbon.h"
 #include "../controller/ribbon/PitchBendRibbon.h"
-#include "../controller/sensor/NoteVelocity.h"
-#include "../controller/sensor/NoteControlChange8Bit.h"
-#include "../controller/sensor/NoteControlChange16Bit.h"
-#include "../controller/sensor/ControlChangeFade8Bit.h"
-#include "../controller/sensor/ControlChangeFade16Bit.h"
-#include "../controller/sensor/ControlChange8Bit.h"
-#include "../controller/sensor/ControlChange16Bit.h"
+#include "../controller/pressure/NoteVelocityPressure.h"
+#include "../controller/pressure/NoteControlChangePressure8Bit.h"
+#include "../controller/pressure/NoteControlChangePressure16Bit.h"
+#include "../controller/pressure/ControlChangeFadePressure8Bit.h"
+#include "../controller/pressure/ControlChangeFadePressure16Bit.h"
+#include "../controller/pressure/ControlChangePressure8Bit.h"
+#include "../controller/pressure/ControlChangePressure16Bit.h"
 
 class PointerTest {
 public:

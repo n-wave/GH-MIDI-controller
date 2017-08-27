@@ -10,13 +10,13 @@
 
 #include "../controller.h"
 
-class NoteControlChange8Bit : public Controller {
+class NoteControlChangePressure8Bit : public Controller {
 public:
-	NoteControlChange8Bit();
-	NoteControlChange8Bit(const int* data);
-	NoteControlChange8Bit(const int* data, Dispatcher* dispatcher);
+	NoteControlChangePressure8Bit();
+	NoteControlChangePressure8Bit(const int* data);
+	NoteControlChangePressure8Bit(const int* data, Dispatcher* dispatcher);
 
-	~NoteControlChange8Bit();
+	~NoteControlChangePressure8Bit();
 
     void update(const uint32_t* time);
 
@@ -39,6 +39,12 @@ private:
     uint8_t bottomValue;
 
     uint16_t parameter;
+
+    uint8_t range;
+    uint8_t value7Bit;
+    boolean updated;
+    boolean sendNote;
+
     Dispatcher* dispatcher;
 };
 

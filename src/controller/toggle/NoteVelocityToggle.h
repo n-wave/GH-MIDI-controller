@@ -38,7 +38,8 @@ private:
 
 	uint16_t parameter;
 
-	boolean enabled;
+	boolean toggle;
+	boolean updated;
 	uint8_t ledPin;
 
 	Dispatcher* dispatcher;

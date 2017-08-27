@@ -5,60 +5,68 @@
  *      Author: mario
  */
 
-#include "ControlChange8Bit.h"
-
 #include "../../command/ControlChange8BitCommand.h"
+#include "ControlChangePressure8Bit.h"
 
-ControlChange8Bit::ControlChange8Bit() :
+ControlChangePressure8Bit::ControlChangePressure8Bit() :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
 }
 
-ControlChange8Bit::ControlChange8Bit(const int* data) :
+ControlChangePressure8Bit::ControlChangePressure8Bit(const int* data) :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange8Bit successfully initialized");
+		Serial.println("ControlChangePressure8Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChange8Bit while loading data");
+		Serial.println("Error occurred in ControlChangePressure8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange8Bit::ControlChange8Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangePressure8Bit::ControlChangePressure8Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChange8Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangePressure8Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChange8Bit while loading data");
+		Serial.println("Error occurred in ControlChangePressure8Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChange8Bit::~ControlChange8Bit() {
+ControlChangePressure8Bit::~ControlChangePressure8Bit() {
 	dispatcher = NULL;
 }
 
@@ -76,19 +84,33 @@ ControlChange8Bit::~ControlChange8Bit() {
  */
 
 
-void ControlChange8Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange8BitCommand(1, 12, 27));
+void ControlChangePressure8Bit::update(const uint32_t* time) {
+	if(updated == true){
+		uint8_t  scalar = 0;
+
+		scalar = (value7Bit*range) >> 7; //Multiply with range and convert back to 7Bit (max amount = 2^14)
+		scalar += bottomValue;			//Add offset i.e. the bottom value
+
+		dispatcher->addCommand(new ControlChange8BitCommand(channel, controlChangeNumber, scalar));
+		updated = false;
+	}
 }
 
-void ControlChange8Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+void ControlChangePressure8Bit::setParameter(const uint16_t* value) {
+	uint8_t tmp = *value >> 9;
+
+	if(tmp != value7Bit){
+		parameter = *value; //Raw ADC Value 16Bit
+		value7Bit = tmp;
+		updated = true;
+	}
 }
 
-uint16_t ControlChange8Bit::getParameter() {
+uint16_t ControlChangePressure8Bit::getParameter() {
 	return parameter;
 }
 
-boolean ControlChange8Bit::setConfiguration(const int* data) {
+boolean ControlChangePressure8Bit::setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
@@ -102,7 +124,7 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
 		controlChangeNumber = data[4];
 		topValue = data[5];
 		bottomValue = data[6];
-
+		range = topValue - bottomValue;
 		result = true;
 	}
 
@@ -110,7 +132,7 @@ boolean ControlChange8Bit::setConfiguration(const int* data) {
 }
 
 #ifdef DEBUG
-    void ControlChange8Bit::printContents(){
+    void ControlChangePressure8Bit::printContents(){
     	String result = String("Control Change 8Bit \n");
 
     	result += (String)"MIDI Channel : " + channel + "\n";

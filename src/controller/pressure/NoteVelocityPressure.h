@@ -11,13 +11,13 @@
 
 #include "../controller.h"
 
-class NoteVelocity : public Controller {
+class NoteVelocityPressure : public Controller {
 public:
-	NoteVelocity();
-	NoteVelocity(const int* data);
-	NoteVelocity(const int* data, Dispatcher* dispatcher);
+	NoteVelocityPressure();
+	NoteVelocityPressure(const int* data);
+	NoteVelocityPressure(const int* data, Dispatcher* dispatcher);
 
-	~NoteVelocity();
+	~NoteVelocityPressure();
 
     void update(const uint32_t* time);
 
@@ -38,6 +38,11 @@ private:
     uint8_t velocityOption;
 
     uint16_t parameter;
+
+    uint8_t value7Bit;
+    boolean updated;
+
+
     Dispatcher* dispatcher;
 };
 

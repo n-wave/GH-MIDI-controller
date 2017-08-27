@@ -36,10 +36,14 @@ private:
 	uint8_t channel;
 	uint8_t controlChangeNumberMSB;
 	uint8_t controlChangeNumberLSB;
-	uint16_t topValue;
-	uint16_t bottomValue;
+
+	uint8_t onValueMSB;
+	uint8_t onValueLSB;
+	uint8_t offValueMSB;
+	uint8_t offValueLSB;
 
 	uint16_t parameter;
+	boolean updated;
 
 	Dispatcher* dispatcher;
 };

@@ -12,10 +12,11 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit() :
     toggleOption(0),
 	channel(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 
@@ -28,10 +29,11 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data) :
 	toggleOption(0),
 	channel(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(NULL)
 {
@@ -50,10 +52,11 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data, Dispatcher* di
 	toggleOption(0),
 	channel(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
+	toggle(false),
+	updated(false),
 	ledPin(0),
 	dispatcher(dispatcher)
 {
@@ -72,14 +75,18 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data, uint8_t ledPin
 	toggleOption(0),
 	channel(0),
 	controlChangeNumber(0),
-	topValue(0),
-	bottomValue(0),
+	onValue(0),
+	offValue(0),
 	parameter(0),
-	enabled(false),
-	ledPin(0),
+	toggle(false),
+	updated(false),
+	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
+
+	pinMode(ledPin, OUTPUT);
+	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
 	if(success){
@@ -95,13 +102,58 @@ ControlChangeToggle8Bit::~ControlChangeToggle8Bit()
 	dispatcher = NULL;
 }
 
+/* ControlChangeBit::update()
+ *
+ * Calculate values.
+ *
+ * add new PitchBendNote Command
+ *
+ * arg 1: uint8_t channel
+ * arg 2: uint8_t ccNumber
+ * arg 3: uint8_t ccValue
+ *
+ */
+
 
 void ControlChangeToggle8Bit::update(const uint32_t* time){
+	if(updated){
+		if(toggleOption == 1){
+			if(toggle){
+				dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																	controlChangeNumber,
+																	onValue));
+			} else {
+				dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																	controlChangeNumber,
+																	offValue));
+			}
 
+			digitalWrite(ledPin, toggle);
+
+		} else {
+			if(parameter != 0){
+				dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																	controlChangeNumber,
+																	onValue));
+			} else {
+				dispatcher->addCommand(new ControlChange8BitCommand(channel,
+																	controlChangeNumber,
+																	offValue));
+			}
+
+			digitalWrite(ledPin, parameter);
+		}
+		updated = false;
+	}
 }
 
 void ControlChangeToggle8Bit::setParameter(const uint16_t* value){
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+
+		toggle = !toggle;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangeToggle8Bit::getParameter(){
@@ -121,8 +173,8 @@ boolean ControlChangeToggle8Bit::setConfiguration(const int* data){
 		toggleOption = data[2];
 		channel = data[3];
 		controlChangeNumber = data[5];
-		topValue = data[6];
-		bottomValue = data[7];
+		onValue = data[6];
+		offValue = data[7];
 
 		result = true;
 	}
@@ -137,11 +189,10 @@ boolean ControlChangeToggle8Bit::setConfiguration(const int* data){
     	result += (String)"Toggle Option: " + toggleOption + "\n";
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"CC nr        : " + controlChangeNumber + "\n";
-    	result += (String)"Top Value    : " + topValue + "\n";
-    	result += (String)"Bottom Value : " + bottomValue + "\n";
+    	result += (String)"On Value     : " + onValue + "\n";
+    	result += (String)"Off Value    : " + offValue + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
-
-    	result += (String)"Enabled      : " + enabled + "\n";
+    	result += (String)"Toggle       : " + toggle + "\n";
     	result += (String)"LedPin       : " + ledPin + "\n";
     	Serial.println(result);
     }

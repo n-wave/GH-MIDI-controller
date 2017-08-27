@@ -5,10 +5,10 @@
  *      Author: mario
  */
 
-#include "ControlChangeFade16Bit.h"
 #include "../../command/ControlChange16BitCommand.h"
+#include "ControlChangeFadePressure16Bit.h"
 
-ControlChangeFade16Bit::ControlChangeFade16Bit() :
+ControlChangeFadePressure16Bit::ControlChangeFadePressure16Bit() :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -24,7 +24,7 @@ ControlChangeFade16Bit::ControlChangeFade16Bit() :
 
 }
 
-ControlChangeFade16Bit::ControlChangeFade16Bit(const int* data) :
+ControlChangeFadePressure16Bit::ControlChangeFadePressure16Bit(const int* data) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -40,14 +40,14 @@ ControlChangeFade16Bit::ControlChangeFade16Bit(const int* data) :
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChangeFade16Bit successfully initialized");
+		Serial.println("ControlChangeFadePressure16Bit successfully initialized");
 	} else {
-		Serial.println("Error occurred in ControlChangeFade16Bit while loading data");
+		Serial.println("Error occurred in ControlChangeFadePressure16Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChangeFade16Bit::ControlChangeFade16Bit(const int* data, Dispatcher* dispatcher) :
+ControlChangeFadePressure16Bit::ControlChangeFadePressure16Bit(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
@@ -63,14 +63,14 @@ ControlChangeFade16Bit::ControlChangeFade16Bit(const int* data, Dispatcher* disp
 
 #ifdef DEBUG
 	if(success){
-		Serial.println("ControlChangeFade16Bit successfully initialized and dispatcher assigned");
+		Serial.println("ControlChangeFadePressure16Bit successfully initialized and dispatcher assigned");
 	} else {
-		Serial.println("Error occurred in ControlChangeFade16Bit while loading data");
+		Serial.println("Error occurred in ControlChangeFadePressure16Bit while loading data");
 	}
 #endif /* DEBUG */
 }
 
-ControlChangeFade16Bit::~ControlChangeFade16Bit() {
+ControlChangeFadePressure16Bit::~ControlChangeFadePressure16Bit() {
 	// TODO Auto-generated destructor stub
 }
 
@@ -87,19 +87,19 @@ ControlChangeFade16Bit::~ControlChangeFade16Bit() {
  * arg 5: uint8_t ccValueLSB
  */
 
-void ControlChangeFade16Bit::update(const uint32_t* time) {
+void ControlChangeFadePressure16Bit::update(const uint32_t* time) {
 	dispatcher->addCommand(new ControlChange16BitCommand(10, 11, 13, 43, 10));
 }
 
-void ControlChangeFade16Bit::setParameter(const uint16_t* value) {
+void ControlChangeFadePressure16Bit::setParameter(const uint16_t* value) {
 	parameter = *value;
 }
 
-uint16_t ControlChangeFade16Bit::getParameter() {
+uint16_t ControlChangeFadePressure16Bit::getParameter() {
 	return parameter;
 }
 
-boolean ControlChangeFade16Bit::setConfiguration(const int* data) {
+boolean ControlChangeFadePressure16Bit::setConfiguration(const int* data) {
 	boolean result = false;
 
 	if(
@@ -131,7 +131,7 @@ boolean ControlChangeFade16Bit::setConfiguration(const int* data) {
  *  the result in a 16Bit value
  */
 
-uint16_t ControlChangeFade16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
+uint16_t ControlChangeFadePressure16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 	uint16_t result = 0;
 	uint16_t MSB = (msb & 0x7F) << 7;
 	uint16_t LSB = lsb & 0x7F;
@@ -147,7 +147,7 @@ uint16_t ControlChangeFade16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
  *  the result in a 16Bit value
  */
 
-uint16_t ControlChangeFade16Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
+uint16_t ControlChangeFadePressure16Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 	uint16_t result = 0;
 	uint16_t MSB = (msb & 0xFF) << 8;
 	uint16_t LSB = lsb & 0xFF;
@@ -158,7 +158,7 @@ uint16_t ControlChangeFade16Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
 }
 
 #ifdef DEBUG
-    void ControlChangeFade16Bit::printContents(){
+    void ControlChangeFadePressure16Bit::printContents(){
     	String result = String("Control Change Fade 16 Bit \n");
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"CC number msb: " + controlChangeNumberMSB + "\n";

@@ -34,11 +34,11 @@ public:
 	    uint8_t controlChangeNumber;
 	    uint8_t topValue;
 	    uint8_t bottomValue;
-
 	    uint8_t range;
-	    uint8_t value7Bit; //converted 7Bit value;
-
 	    uint16_t parameter; //Raw data from ADC
+
+	    uint8_t value7Bit; //converted 7Bit
+	    boolean updated;
 
 	    Dispatcher* dispatcher;
 };

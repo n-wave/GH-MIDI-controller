@@ -13,9 +13,12 @@ ControlChangeSwitch16Bit::ControlChangeSwitch16Bit() :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 }
@@ -24,9 +27,12 @@ ControlChangeSwitch16Bit::ControlChangeSwitch16Bit(const int* data) :
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -44,9 +50,12 @@ ControlChangeSwitch16Bit::ControlChangeSwitch16Bit(const int* data, Dispatcher* 
 	channel(0),
 	controlChangeNumberMSB(0),
 	controlChangeNumberLSB(0),
-	topValue(0),
-	bottomValue(0),
+	onValueMSB(0),
+	onValueLSB(0),
+	offValueMSB(0),
+	offValueLSB(0),
 	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -73,18 +82,36 @@ ControlChangeSwitch16Bit::~ControlChangeSwitch16Bit() {
  * add new ControlChangeSwitch16BitCommand
  *
  * arg 1: uint8_t channel
- * arg 2: uint8_t ccNumberMSB
- * arg 3: uint8_t ccValueMSB
- * arg 4: uint8_t ccNumerLSB
- * arg 5: uint8_t ccValueLSB
+ * arg 2: uint8_t controlChangeNumberMSB
+ * arg 3: uint8_t controlChangeValueMSB
+ * arg 4: uint8_t controlChangeNumberLSB
+ * arg 5: uint8_t controlChangeValueLSB
  */
 
 void ControlChangeSwitch16Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange16BitCommand(1, 8, 120, 40, 4));
+	if(updated){
+		if(parameter > 0){
+			dispatcher->addCommand(new ControlChange16BitCommand(channel,
+																 controlChangeNumberMSB,
+																 onValueMSB,
+																 controlChangeNumberLSB,
+																 onValueLSB));
+		} else {
+			dispatcher->addCommand(new ControlChange16BitCommand(channel,
+																 controlChangeNumberMSB,
+																 offValueMSB,
+																 controlChangeNumberLSB,
+																 offValueLSB));
+		}
+		updated = false;
+	}
 }
 
 void ControlChangeSwitch16Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+	if(parameter != *value){
+		parameter = *value;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangeSwitch16Bit::getParameter() {
@@ -105,8 +132,10 @@ boolean ControlChangeSwitch16Bit:: setConfiguration(const int* data) {
 		controlChangeNumberMSB = data[4];
 		controlChangeNumberLSB = controlChangeNumberMSB + 32;
 
-		topValue = this->convertBytesTo14Bit(data[5], data[6]);
-		bottomValue = this->convertBytesTo14Bit(data[7], data[8]);
+		onValueMSB = data[5];
+		onValueLSB = data[6];
+		offValueMSB = data[7];
+		offValueLSB = data[8];
 
 		result = true;
 	}
@@ -133,11 +162,19 @@ uint16_t ControlChangeSwitch16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb)
     void ControlChangeSwitch16Bit::printContents(){
     	String result = String("Control Change Switch 16Bit \n");
 
+    	uint16_t onValue = convertBytesTo14Bit(onValueMSB, onValueLSB);
+    	uint16_t offValue = convertBytesTo14Bit(offValueMSB, offValueLSB);
+
+
     	result += (String)"MIDI Channel : " + channel + "\n";
     	result += (String)"CC nr MSB    : " + controlChangeNumberMSB + "\n";
     	result += (String)"CC nr LSB    : " + controlChangeNumberLSB + "\n";
-    	result += (String)"Top Value    : " + topValue + "\n";
-    	result += (String)"Bottom Value : " + bottomValue + "\n";
+    	result += (String)"On Value     : " + onValue + "\n";
+    	result += (String)"On Value MSB : " + onValueMSB + "\n";
+    	result += (String)"On Value LSB : " + onValueLSB + "\n";
+    	result += (String)"Off Value    : " + offValue + "\n";
+    	result += (String)"Off Value MSB: " + offValueMSB + "\n";
+    	result += (String)"Off Value LSB: " + offValueLSB + "\n";
     	result += (String)"Parameter    : " + parameter + "\n";
 
     	Serial.println(result);

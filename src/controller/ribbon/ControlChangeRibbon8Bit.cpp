@@ -14,7 +14,10 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit() :
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
@@ -25,7 +28,10 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data) :
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -44,7 +50,10 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data, Dispatcher* di
 	controlChangeNumber(0),
 	topValue(0),
 	bottomValue(0),
+	range(0),
 	parameter(0),
+	value7Bit(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -77,11 +86,23 @@ ControlChangeRibbon8Bit::~ControlChangeRibbon8Bit() {
 
 
 void ControlChangeRibbon8Bit::update(const uint32_t* time) {
-	dispatcher->addCommand(new ControlChange8BitCommand(1, 12, 27));
+	if(updated){
+		uint8_t scalar = (value7Bit*range) >> 7;
+		scalar += bottomValue;
+
+		dispatcher->addCommand(new ControlChange8BitCommand(channel, controlChangeNumber, scalar));
+		updated = false;
+	}
 }
 
 void ControlChangeRibbon8Bit::setParameter(const uint16_t* value) {
-	parameter = *value;
+	uint8_t tmp = *value >> 9;
+
+	if(tmp != value7Bit){
+		parameter = *value; //Raw ADC Value 16Bit
+		value7Bit = tmp;
+		updated = true;
+	}
 }
 
 uint16_t ControlChangeRibbon8Bit::getParameter() {
@@ -102,6 +123,8 @@ boolean ControlChangeRibbon8Bit::setConfiguration(const int* data) {
 		controlChangeNumber = data[4];
 		topValue = data[5];
 		bottomValue = data[6];
+
+		range = topValue - bottomValue;
 
 		result = true;
 	}

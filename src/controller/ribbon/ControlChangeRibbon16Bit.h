@@ -43,6 +43,8 @@ private:
     uint16_t value14Bit;
     uint16_t parameter;
 
+    boolean updated;
+
     Dispatcher* dispatcher;
 };
 #endif /* SRC_CONTROLLER_RIBBON_CONTROLCHANGERIBBON16BIT_H_ */
