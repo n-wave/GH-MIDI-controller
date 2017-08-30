@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_PITCHBEND_H_
 #define SRC_CONTROLLER_PITCHBEND_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 
 class PitchBendRibbon: public Controller {
@@ -31,8 +31,6 @@ public:
 private:
     const uint8_t ID = 0xE3;
     uint8_t channel;
-
-    uint16_t value14Bit;
     uint16_t parameter;
     boolean updated;
     Dispatcher* dispatcher;

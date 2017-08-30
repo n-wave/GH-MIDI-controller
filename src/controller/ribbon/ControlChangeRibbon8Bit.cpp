@@ -16,7 +16,6 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit() :
 	bottomValue(0),
 	range(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(NULL)
 {
@@ -30,7 +29,6 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data) :
 	bottomValue(0),
 	range(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(NULL)
 {
@@ -52,7 +50,6 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data, Dispatcher* di
 	bottomValue(0),
 	range(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(dispatcher)
 {
@@ -87,7 +84,7 @@ ControlChangeRibbon8Bit::~ControlChangeRibbon8Bit() {
 
 void ControlChangeRibbon8Bit::update(const uint32_t* time) {
 	if(updated){
-		uint8_t scalar = (value7Bit*range) >> 7;
+		uint8_t scalar = (parameter*range) >> 7;
 		scalar += bottomValue;
 
 		dispatcher->addCommand(new ControlChange8BitCommand(channel, controlChangeNumber, scalar));
@@ -96,11 +93,10 @@ void ControlChangeRibbon8Bit::update(const uint32_t* time) {
 }
 
 void ControlChangeRibbon8Bit::setParameter(const uint16_t* value) {
-	uint8_t tmp = *value >> 9;
+	uint8_t tmp = *value >> 7;
 
-	if(tmp != value7Bit){
-		parameter = *value; //Raw ADC Value 16Bit
-		value7Bit = tmp;
+	if(tmp != parameter){
+		parameter = tmp; //Raw ADC Value 16Bit
 		updated = true;
 	}
 }

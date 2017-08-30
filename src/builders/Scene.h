@@ -11,8 +11,8 @@
 #include "Arduino.h"
 
 #include "../testing/configuration.h"
-#include "../controller/controller.h"
-#include "../controller/ProgramChange.h"
+#include "../controller/common/controller.h"
+#include "../controller/common/ProgramChange.h"
 #include "../dispatcher/Dispatcher.h"
 
 class Scene {

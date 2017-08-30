@@ -37,6 +37,12 @@ private:
   String pitchBendNoteToString(const int* data);
   String controlChangeToString(const int* data);
   String controlChangeFadeToString(const int* data);
+
+  String noteVelocityToggleToString(const int* data);
+  String noteControlChangeToggleToString(const int* data);
+  String controlChangeToggleToString(const int* data);
+  String controlChangeFadeToggleToString(const int* data);
+
   String disabledControllerToString(const int* data);
   String sceneDataToString(const int* data);
 

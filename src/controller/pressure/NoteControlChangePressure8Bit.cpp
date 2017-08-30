@@ -20,7 +20,6 @@ NoteControlChangePressure8Bit::NoteControlChangePressure8Bit() :
 	bottomValue(0),
 	parameter(0),
 	range(0),
-	value7Bit(0),
 	updated(false),
 	sendNote(false),
 	dispatcher(NULL)
@@ -37,7 +36,6 @@ NoteControlChangePressure8Bit::NoteControlChangePressure8Bit(const int* data) :
 	bottomValue(0),
 	parameter(0),
 	range(0),
-	value7Bit(0),
 	updated(false),
 	sendNote(false),
 	dispatcher(NULL)
@@ -63,7 +61,6 @@ NoteControlChangePressure8Bit::NoteControlChangePressure8Bit(const int* data, Di
 	bottomValue(0),
 	parameter(0),
 	range(0),
-	value7Bit(0),
 	updated(false),
 	sendNote(false),
 	dispatcher(dispatcher)
@@ -100,14 +97,14 @@ NoteControlChangePressure8Bit::~NoteControlChangePressure8Bit() {
 
 void NoteControlChangePressure8Bit::update(const uint32_t* time){
 	if(updated){
-		if(value7Bit != 0){
+		if(parameter != 0){
 			uint8_t scalar = 0;
-			scalar = (range * value7Bit) >> 7;
+			scalar = (range * parameter) >> 7;
 			scalar += bottomValue;
 
 			if(sendNote == true){
 				if(velocityOption == 1){
-					uint8_t tmpVelocity = (velocity * value7Bit) >> 7;
+					uint8_t tmpVelocity = (velocity * parameter) >> 7;
 
 					dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
 																			pitch,
@@ -141,14 +138,13 @@ void NoteControlChangePressure8Bit::update(const uint32_t* time){
 }
 
 void NoteControlChangePressure8Bit::setParameter(const uint16_t* value){
-	uint8_t tmp = *value >> 9;
+	uint8_t tmp = *value >> 7;
 
-	if(tmp != value7Bit){
-		if(value7Bit == 0){
+	if(tmp != parameter){
+		if(parameter == 0){
 			sendNote = true;
 		}
-		value7Bit = tmp;
-		parameter = *value;
+		parameter = tmp;
 		updated = true;
 	}
 }

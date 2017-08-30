@@ -10,7 +10,6 @@
 
 PitchBendRibbon::PitchBendRibbon() :
 	channel(0),
-	value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -19,7 +18,6 @@ PitchBendRibbon::PitchBendRibbon() :
 
 PitchBendRibbon::PitchBendRibbon(const int* data) :
 	channel(0),
-	value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -37,7 +35,6 @@ PitchBendRibbon::PitchBendRibbon(const int* data) :
 
 PitchBendRibbon::PitchBendRibbon(const int* data, Dispatcher* dispatcher) :
 	channel(0),
-	value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(dispatcher)
@@ -71,17 +68,16 @@ PitchBendRibbon::~PitchBendRibbon(){
 
 void PitchBendRibbon::update(const uint32_t* time){
 	if(updated){
-		dispatcher->addCommand(new PitchBendCommand(channel, value14Bit));
+		dispatcher->addCommand(new PitchBendCommand(channel, parameter));
 		updated = false;
 	}
 }
 
 void PitchBendRibbon::setParameter(const uint16_t* value){
-	uint16_t tmp = *value >> 2;
+	uint16_t tmp = *value;
 
-	if(tmp != value14Bit){
-		parameter = *value;
-		value14Bit = tmp;
+	if(tmp != parameter){
+		parameter = tmp;
 		updated = true;
 	}
 }

@@ -11,17 +11,7 @@
 #include "Arduino.h"
 #include "configuration.h"
 
-#include "../controller/ProgramChange.h"
-#include "../controller/controller.h"
-#include "../controller/pressure/ControlChangeFadePressure16Bit.h"
-#include "../controller/pressure/ControlChangeFadePressure8Bit.h"
-#include "../controller/pressure/ControlChangePressure16Bit.h"
-#include "../controller/pressure/ControlChangePressure8Bit.h"
-#include "../controller/pressure/NoteControlChangePressure16Bit.h"
-#include "../controller/pressure/NoteControlChangePressure8Bit.h"
-#include "../controller/pressure/NoteVelocityPressure.h"
-#include "../controller/ribbon/PitchBendNoteRibbon.h"
-#include "../controller/ribbon/PitchBendRibbon.h"
+#include "../controller/includeControllers.h"
 
 class Test {
 public:

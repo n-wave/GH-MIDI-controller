@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_RIBBON_CONTROLCHANGERIBBON8BIT_H_
 #define SRC_CONTROLLER_RIBBON_CONTROLCHANGERIBBON8BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangeRibbon8Bit: public Controller {
 public:
@@ -37,9 +37,7 @@ private:
     uint8_t bottomValue;
 
     uint8_t range;
-    uint16_t parameter; //Raw data from ADC
-
-    uint8_t value7Bit; //converted 7Bit
+    uint8_t parameter;
     boolean updated;
 
     Dispatcher* dispatcher;

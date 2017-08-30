@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTEVELOCITYTOGGLE_H_
 #define SRC_CONTROLLER_NOTEVELOCITYTOGGLE_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class NoteVelocityToggle: public Controller {
 public:

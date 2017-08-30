@@ -1,19 +1,27 @@
 /*
  * ProgramChange.cpp
  *
- *  Created on: Jul 4, 2017
+ *  Created on: Aug 30, 2017
  *      Author: mario
  */
 
 #include "ProgramChange.h"
 
-#include "../command/ProgramChangeCommand.h"
+/*
+ * ProgramChange.cpp
+ *
+ *  Created on: Aug 29, 2017
+ *      Author: mario
+ */
 
+#include "../../command/ProgramChangeCommand.h"
 
 ProgramChange::ProgramChange() :
 	channel(0),
 	bank(0),
 	program(0),
+	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	// TODO Auto-generated constructor stub
@@ -23,6 +31,8 @@ ProgramChange::ProgramChange(const int* data) :
 	channel(0),
 	bank(0),
 	program(0),
+	parameter(0),
+	updated(false),
 	dispatcher(NULL)
 {
 	boolean success = this->setConfiguration(data);
@@ -40,6 +50,8 @@ ProgramChange::ProgramChange(const int* data, Dispatcher* dispatcher) :
 	channel(0),
 	bank(0),
 	program(0),
+	parameter(0),
+	updated(false),
 	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
@@ -72,13 +84,24 @@ ProgramChange::~ProgramChange() {
  */
 
 void ProgramChange::update(const uint32_t* time){
-	dispatcher->addCommand(new ProgramChangeCommand(0, 50, 100));
+	if(updated){
+		if(parameter > 0){
+			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
+		}
+		updated = false;
+	}
 }
 
-void ProgramChange::setParameter(const uint16_t * value){}
+void ProgramChange::setParameter(const uint16_t * value)
+{
+	if(parameter != *value){
+		parameter = *value;
+		updated = true;
+	}
+}
 
 uint16_t ProgramChange::getParameter(){
-	return -1;
+	return parameter;
 }
 
 boolean ProgramChange::setConfiguration(const int* data){

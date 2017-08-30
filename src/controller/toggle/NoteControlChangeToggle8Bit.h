@@ -8,8 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTECONTROLCHANGETOGGLE8BIT_H_
 #define SRC_CONTROLLER_NOTECONTROLCHANGETOGGLE8BIT_H_
 
-#include "../controller.h"
-
+#include "../common/controller.h"
 
 class NoteControlChangeToggle8Bit: public Controller {
 public:

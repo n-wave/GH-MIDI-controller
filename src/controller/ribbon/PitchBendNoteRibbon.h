@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_PITCHBENDNOTE_H_
 #define SRC_CONTROLLER_PITCHBENDNOTE_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 
 class PitchBendNoteRibbon : public Controller {
@@ -35,7 +35,6 @@ private:
     uint8_t pitch;
     uint8_t velocity;
 
-    uint16_t value14Bit;
     uint16_t parameter;
 
     boolean updated;

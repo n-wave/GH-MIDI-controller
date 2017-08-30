@@ -16,7 +16,6 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit() :
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -30,7 +29,6 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data) :
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -53,7 +51,6 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data, Dispatcher* 
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(dispatcher)
@@ -93,7 +90,7 @@ void ControlChangeRibbon16Bit::update(const uint32_t* time) {
 		uint8_t controlChangeValueMSB = 0;
 		uint8_t controlChangeValueLSB = 0;
 
-		uint8_t scalar = (range*value14Bit) >> 14;
+		uint8_t scalar = (range*parameter) >> 14;
 		scalar += bottomValue;
 
 		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
@@ -109,11 +106,10 @@ void ControlChangeRibbon16Bit::update(const uint32_t* time) {
 }
 
 void ControlChangeRibbon16Bit::setParameter(const uint16_t* value) {
-	uint16_t tmp = *value >> 2;
+	uint16_t tmp = *value;
 
-	if(tmp != value14Bit){
-		parameter = *value;
-		value14Bit = parameter >> 2;
+	if(tmp != parameter){
+		parameter = tmp;
 		updated = true;
 	}
 }

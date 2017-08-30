@@ -9,7 +9,7 @@
 #define SRC_CONTROLLER_NOTEVELOCITY_H_
 
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class NoteVelocityPressure : public Controller {
 public:
@@ -39,7 +39,6 @@ private:
 
     uint16_t parameter;
 
-    uint8_t value7Bit;
     boolean updated;
 
 

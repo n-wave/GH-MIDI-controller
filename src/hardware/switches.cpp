@@ -14,8 +14,8 @@
  * resistor. switches are connected
  * to GND
  * 
- * i.e IDLE STATE HIGH Active LOW 
- * Invert state when polling
+ * i.e IDLE STATE LOW Active HIGH
+ * The address pins are inverted
  * 
  * Channels are selected by anding
  * GPIO_PBOR with for loop index
@@ -47,16 +47,9 @@ volatile unsigned char switches[16] =  {0,  //neck switch 1
                                         0}; //scene 4
 
 unsigned int switchIndex = 0;
-
-/* The Switches on the multiplexer
- * are hooked to the ground i.e.
- * The configuration is active Low
- * When a switch is pressed it is
- * shorted to the ground.
- */
-
+                                       
 void initSwitches() {
-  pinMode(COMMON_Z, INPUT_PULLUP); //enable pullup resistor for 16bit channel multiplexer
+  pinMode(COMMON_Z, INPUT); //enable pullup resistor for 16bit channel multiplexer
   pinMode(ADDRESS_0, OUTPUT);
   pinMode(ADDRESS_1, OUTPUT);
   pinMode(ADDRESS_2, OUTPUT);
@@ -66,13 +59,12 @@ void initSwitches() {
 }
 
 void readSwitches(){
-  GPIOB_PDOR = switchIndex;
+  GPIOB_PDOR = 15-switchIndex;
   
-  delayMicroseconds(5);
-  switches[switchIndex] = !digitalReadFast(COMMON_Z);
+  delayMicroseconds(3);
+  switches[switchIndex] = digitalReadFast(COMMON_Z);
     
    switchIndex++;
    switchIndex &= 15;
 }
-
 

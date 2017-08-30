@@ -7,16 +7,7 @@
 
 #include "Scene.h"
 
-#include "../controller/DisabledController.h"
-#include "../controller/pressure/ControlChangeFadePressure16Bit.h"
-#include "../controller/pressure/ControlChangeFadePressure8Bit.h"
-#include "../controller/pressure/ControlChangePressure16Bit.h"
-#include "../controller/pressure/ControlChangePressure8Bit.h"
-#include "../controller/pressure/NoteControlChangePressure16Bit.h"
-#include "../controller/pressure/NoteControlChangePressure8Bit.h"
-#include "../controller/pressure/NoteVelocityPressure.h"
-#include "../controller/ribbon/PitchBendNoteRibbon.h"
-#include "../controller/ribbon/PitchBendRibbon.h"
+#include "../controller/includeControllers.h"
 
 Scene::Scene() :
 	nrOfProgramChanges(0),
@@ -125,6 +116,14 @@ boolean Scene::setSceneData(const int* data){
 	return result;
 }
 
+/*
+ * Set controller based on the controller number, which represent
+ * different sensors. Make a decision based on the current
+ * selected controller and the type provided by the data structure
+ * residing in the EEPROM memory and initialize the corresponding
+ * object.
+ */
+
 boolean Scene::setController(int number, int type, const int* data){
 	boolean result = false;
 
@@ -132,7 +131,7 @@ boolean Scene::setController(int number, int type, const int* data){
 	   number >= 0 &&
 	   number < 28 &&
 	   type >= 0 &&
-	   type <= 10 &&
+	   type <= 17 &&
 	   dispatcher != NULL
 	  )
 	{
@@ -142,40 +141,120 @@ boolean Scene::setController(int number, int type, const int* data){
 		Serial.print(" : ");
 	#endif /* DEBUG */
 
-		switch(type){
-			case 0:
-				controllers[number] = new DisabledController(data);
-				break;
-			case 1:
-				controllers[number] = new ProgramChange(data, dispatcher);
-				break;
-			case 2:
-				controllers[number] = new NoteVelocityPressure(data, dispatcher);
-				break;
-			case 3:
-				controllers[number] = new NoteControlChangePressure8Bit(data, dispatcher);
-				break;
-			case 4:
-				controllers[number] = new NoteControlChangePressure16Bit(data, dispatcher);
-				break;
-			case 5:
-				controllers[number] = new PitchBendRibbon(data, dispatcher);
-				break;
-			case 6:
-				controllers[number] = new PitchBendNoteRibbon(data, dispatcher);
-				break;
-			case 7:
-				controllers[number] = new ControlChangePressure8Bit(data, dispatcher);
-				break;
-			case 8:
-				controllers[number] = new ControlChangePressure16Bit(data, dispatcher);
-				break;
-			case 9:
-				controllers[number] = new ControlChangeFadePressure8Bit(data, dispatcher);
-				break;
-			case 10:
-				controllers[number] = new ControlChangeFadePressure16Bit(data, dispatcher);
-				break;
+		if(type == 0){
+			controllers[number] = new DisabledController();
+			return true;
+		}
+
+		if((number >= 0 && number <= 5) || (number >= 11 && number <= 15)){
+			switch(type){
+				case 7:
+					controllers[number] = new ControlChangePotentioMeter8Bit(data, dispatcher);
+					break;
+				case 8:
+					controllers[number] = new ControlChangePotentioMeter16Bit(data, dispatcher);
+					break;
+			}
+		}
+
+		if(number >= 6 && number <= 7){
+			switch(type){
+				case 5:
+					controllers[number] = new PitchBendRibbon(data, dispatcher);
+					break;
+				case 6:
+					controllers[number] = new PitchBendNoteRibbon(data, dispatcher);
+					break;
+				case 7:
+					controllers[number] = new ControlChangeRibbon8Bit(data, dispatcher);
+					break;
+				case 8:
+					controllers[number] = new ControlChangeRibbon16Bit(data, dispatcher);
+					break;
+			}
+		}
+
+		if(number >= 8 && number <= 10){
+			switch(type){
+				case 2:
+					controllers[number] = new NoteVelocityPressure(data, dispatcher);
+					break;
+				case 3:
+					controllers[number] = new NoteControlChangePressure8Bit(data,dispatcher);
+					break;
+				case 4:
+					controllers[number] = new NoteControlChangePressure16Bit(data, dispatcher);
+					break;
+				case 7:
+					controllers[number] = new ControlChangePressure8Bit(data,dispatcher);
+					break;
+				case 8:
+					controllers[number] = new ControlChangePressure16Bit(data, dispatcher);
+					break;
+				case 9:
+					controllers[number] = new ControlChangeFadePressure8Bit(data, dispatcher);
+					break;
+				case 10:
+					controllers[number] = new ControlChangeFadePressure16Bit(data, dispatcher);
+					break;
+			}
+		}
+
+		if(number >= 16 && number <= 29){
+			switch(type){
+				case 1:
+					controllers[number] = new ProgramChangeSwitch(data, dispatcher);
+					break;
+				case 2:
+					controllers[number] = new NoteVelocitySwitch(data, dispatcher);
+					break;
+				case 7:
+					controllers[number] = new ControlChangeSwitch8Bit(data, dispatcher);
+					break;
+				case 8:
+					controllers[number] = new ControlChangeSwitch16Bit(data, dispatcher);
+					break;
+				case 9:
+					controllers[number] = new ControlChangeFadeSwitch8Bit(data, dispatcher);
+					break;
+				case 10:
+					controllers[number] = new ControlChangeFadeSwitch16Bit(data, dispatcher);
+					break;
+			}
+		}
+
+		if(number >= 30 && number <= 31){
+			int ledPin = 0;
+
+			if(number == 30){
+				ledPin = 21; //Joy Stick Switch Led
+			} else {
+				ledPin = 22; //Foot Switch led
+			}
+
+			switch(type){
+				case 11:
+					controllers[number] = new NoteVelocityToggle(data, ledPin, dispatcher);
+					break;
+				case 12:
+					controllers[number] = new NoteControlChangeToggle8Bit(data, ledPin, dispatcher);
+					break;
+				case 13:
+					controllers[number] = new NoteControlChangeToggle16Bit(data, ledPin, dispatcher);
+					break;
+				case 14:
+					controllers[number] = new ControlChangeToggle8Bit(data, ledPin, dispatcher);
+					break;
+				case 15:
+					controllers[number] = new ControlChangeToggle16Bit(data, ledPin, dispatcher);
+					break;
+				case 16:
+					controllers[number] = new ControlChangeFadeToggle8Bit(data, ledPin, dispatcher);
+					break;
+				case 17:
+					controllers[number] = new ControlChangeFadeToggle16Bit(data, ledPin, dispatcher);
+					break;
+			}
 		}
 
 		result = true;
@@ -230,7 +309,7 @@ void Scene::printPogramChangeContent(int index){
 
 	if(index >= 0 && index < tmpNrOfPC){
 
-		programChange[index]->printContents();
+	//	programChange[index]->printContents();
 
 	} else {
 		Serial.println("Error occurred in Scene::printProgramChangeContent(int)");

@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_RIBBON_CONTROLCHANGERIBBON16BIT_H_
 #define SRC_CONTROLLER_RIBBON_CONTROLCHANGERIBBON16BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangeRibbon16Bit : public Controller {
 public:
@@ -40,8 +40,7 @@ private:
     uint16_t bottomValue;
 
     uint16_t range;
-    uint16_t value14Bit;
-    uint16_t parameter;
+    uint8_t parameter;
 
     boolean updated;
 

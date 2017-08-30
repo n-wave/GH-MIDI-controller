@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_SWITCH_NOTEVELOCITYSWITCH_H_
 #define SRC_CONTROLLER_SWITCH_NOTEVELOCITYSWITCH_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class NoteVelocitySwitch: public Controller {
 public:
@@ -35,7 +35,7 @@ private:
     uint8_t pitch;
     uint8_t velocity;
 
-    uint16_t parameter;
+    uint8_t parameter;
     boolean updated;
 
     Dispatcher* dispatcher;

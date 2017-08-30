@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_
 #define SRC_CONTROLLER_NOTECONTROLCHANGE8BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class NoteControlChangePressure8Bit : public Controller {
 public:
@@ -38,10 +38,9 @@ private:
     uint8_t topValue;
     uint8_t bottomValue;
 
-    uint16_t parameter;
+    uint8_t parameter;
 
     uint8_t range;
-    uint8_t value7Bit;
     boolean updated;
     boolean sendNote;
 

@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_
 #define SRC_CONTROLLER_NOTECONTROLCHANGE16BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class NoteControlChangePressure16Bit: public Controller {
 public:
@@ -43,7 +43,6 @@ private:
     uint16_t range;
     uint16_t parameter;
 
-    uint16_t value14Bit;
     boolean updated;
     boolean sendNote;
 

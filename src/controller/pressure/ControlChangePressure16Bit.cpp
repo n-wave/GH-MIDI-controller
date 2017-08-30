@@ -15,7 +15,6 @@ ControlChangePressure16Bit::ControlChangePressure16Bit() :
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -29,7 +28,6 @@ ControlChangePressure16Bit::ControlChangePressure16Bit(const int* data) :
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(NULL)
@@ -52,7 +50,6 @@ ControlChangePressure16Bit::ControlChangePressure16Bit(const int* data, Dispatch
 	topValue(0),
 	bottomValue(0),
     range(0),
-    value14Bit(0),
 	parameter(0),
 	updated(false),
 	dispatcher(dispatcher)
@@ -93,7 +90,7 @@ void ControlChangePressure16Bit::update(const uint32_t* time) {
 		uint8_t controlChangeValueLSB = 0;
 
 		uint16_t scalar = 0;  // Temporary holder
-		scalar = (range*value14Bit) >> 14;
+		scalar = (range*parameter) >> 14;
 		scalar += bottomValue;
 
 		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
@@ -109,11 +106,10 @@ void ControlChangePressure16Bit::update(const uint32_t* time) {
 }
 
 void ControlChangePressure16Bit::setParameter(const uint16_t* value) {
-	uint16_t tmp = *value >> 2;
+	uint16_t tmp = *value;
 
-	if(tmp != value14Bit){
-		parameter = *value;
-		value14Bit = parameter >> 2;
+	if(tmp != parameter){
+		parameter = tmp;
 		updated = true;
 	}
 }

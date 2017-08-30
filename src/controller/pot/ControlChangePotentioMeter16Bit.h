@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_POT_CONTROLCHANGEPOTENTIOMETER16BIT_H_
 #define SRC_CONTROLLER_POT_CONTROLCHANGEPOTENTIOMETER16BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangePotentioMeter16Bit: public Controller {
 public:
@@ -22,6 +22,7 @@ public:
 
     void setParameter(const uint16_t* value);
     uint16_t getParameter();
+
     boolean setConfiguration(const int* data);
 
 #ifdef DEBUG
@@ -40,7 +41,7 @@ private:
     uint16_t bottomValue;
 
     uint16_t range;
-    uint16_t value14Bit;
+
     uint16_t parameter;
 
     boolean updated;

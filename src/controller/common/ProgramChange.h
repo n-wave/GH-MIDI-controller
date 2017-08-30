@@ -1,12 +1,12 @@
 /*
  * ProgramChange.h
  *
- *  Created on: Jul 4, 2017
+ *  Created on: Aug 30, 2017
  *      Author: mario
  */
 
-#ifndef SRC_CONTROLLER_PROGRAMCHANGE_H_
-#define SRC_CONTROLLER_PROGRAMCHANGE_H_
+#ifndef SRC_CONTROLLER_COMMON_PROGRAMCHANGE_H_
+#define SRC_CONTROLLER_COMMON_PROGRAMCHANGE_H_
 
 #include "controller.h"
 
@@ -34,8 +34,10 @@ private:
     uint8_t channel;
     uint8_t bank;
     uint8_t program;
+    uint16_t parameter;
+
+    boolean updated;
 
     Dispatcher* dispatcher;
 };
-
-#endif /* SRC_CONTROLLER_PROGRAMCHANGE_H_ */
+#endif /* SRC_CONTROLLER_COMMON_PROGRAMCHANGE_H_ */

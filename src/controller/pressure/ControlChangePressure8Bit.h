@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_CONTROLCHANGE8BIT_H_
 #define SRC_CONTROLLER_CONTROLCHANGE8BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangePressure8Bit : public Controller {
 public:
@@ -36,8 +36,7 @@ private:
     uint8_t topValue;
     uint8_t bottomValue;
     uint8_t range;
-    uint16_t parameter;
-    uint8_t value7Bit;
+    uint8_t parameter;
     boolean updated;
 
     Dispatcher* dispatcher;

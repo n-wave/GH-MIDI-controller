@@ -2,8 +2,8 @@
 #define SRC_CONTROLLER_CONTROLLER_H
 
 #include <Arduino.h>
-#include "../testing/configuration.h"
-#include "../dispatcher/Dispatcher.h"
+#include "../../testing/configuration.h"
+#include "../../dispatcher/Dispatcher.h"
 
 class Controller
 {

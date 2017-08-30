@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_SWITCH_CONTROLCHANGESWITCH16BIT_H_
 #define SRC_CONTROLLER_SWITCH_CONTROLCHANGESWITCH16BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangeSwitch16Bit : public Controller{
 public:
@@ -42,7 +42,7 @@ private:
 	uint8_t offValueMSB;
 	uint8_t offValueLSB;
 
-	uint16_t parameter;
+	uint8_t parameter;
 	boolean updated;
 
 	Dispatcher* dispatcher;

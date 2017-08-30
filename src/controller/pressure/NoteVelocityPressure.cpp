@@ -14,7 +14,6 @@ NoteVelocityPressure::NoteVelocityPressure() :
 	velocity(0),
 	velocityOption(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(NULL)
 {
@@ -27,7 +26,6 @@ NoteVelocityPressure::NoteVelocityPressure(const int* data) :
 	velocity(0),
 	velocityOption(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(NULL)
 {
@@ -48,7 +46,6 @@ NoteVelocityPressure::NoteVelocityPressure(const int* data, Dispatcher* dispatch
 	velocity(0),
 	velocityOption(0),
 	parameter(0),
-	value7Bit(0),
 	updated(false),
 	dispatcher(dispatcher)
 {
@@ -81,9 +78,9 @@ NoteVelocityPressure::~NoteVelocityPressure() {
 
 void NoteVelocityPressure::update(const uint32_t* time){
 	if(updated){
-			if(value7Bit != 0){
+			if(parameter != 0){
 				if(velocityOption == 1){
-					uint8_t tmp = (value7Bit * velocity) >> 7;
+					uint8_t tmp = (parameter * velocity) >> 7;
 					dispatcher->addCommand(new NoteVelocityCommand(channel,
 																   pitch,
 																   tmp));
@@ -102,16 +99,15 @@ void NoteVelocityPressure::update(const uint32_t* time){
 	}
 }
 void NoteVelocityPressure::setParameter(const uint16_t* value){
-	uint8_t tmp = *value >> 9;
+	uint8_t tmp = *value >> 7;
 
-	if(tmp != value7Bit){
+	if(tmp != parameter){
 		/** transition from zero to positive
 		 *  or vice versa
 		 */
-		if(value7Bit == 0 || tmp == 0)
+		if(parameter == 0 || tmp == 0)
 		{
-			value7Bit = tmp;
-			parameter = *value;
+			parameter = tmp;
 			updated = true;
 		}
 	}

@@ -8,7 +8,7 @@
 #ifndef SRC_CONTROLLER_CONTROLCHANGETOGGLE16BIT_H_
 #define SRC_CONTROLLER_CONTROLCHANGETOGGLE16BIT_H_
 
-#include "../controller.h"
+#include "../common/controller.h"
 
 class ControlChangeToggle16Bit: public Controller {
 public:
