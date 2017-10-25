@@ -3,31 +3,48 @@
 
 
 ProtocolToString::ProtocolToString() :
+  sceneBlockFound(0),
   crc(CyclicRedundancyCheck())
 {
   for(int i=0; i<1984; i++){
     eepromBuffer[i] = EEPROM.read(i);
-    delayMicroseconds(150);
+    delayMicroseconds(25);
   }
 }
 
 ProtocolToString::~ProtocolToString(){}
 
+void ProtocolToString::printEEPROM(){
+    for(int i=0; i<1984; i++ ){
+      uint8_t tmp = EEPROM.read(i);
+      delayMicroseconds(25);
+
+      Serial.print("byte");
+      Serial.print("[");
+      Serial.print(i+1);
+      Serial.print("]");
+      Serial.println(tmp, HEX);
+  }
+}
+
+
 void ProtocolToString::printContentsToString(){
   String values;
   boolean run = true;
-  int dataIndex = 0; 
+
   int crcBuffer[4];
   long crcValue = 0L;
-    
-  do {
-    int dataBuffer[16];
-    int bufferIndex = 0;
-    int state = 0;
+  int state = 0;
 
-    for(int i=0; i<16; i++){
-      dataBuffer[i] = 0x00;
-    }
+  int dataIndex = 0;
+  int dataBuffer[16];
+  int bufferIndex = 0;
+    
+  while(run)
+  {
+    bufferIndex = 0;
+    values = "";
+    dataBuffer[16] = {0};
     
     while(bufferIndex < 8){
       dataBuffer[bufferIndex] = eepromBuffer[dataIndex];
@@ -44,9 +61,28 @@ void ProtocolToString::printContentsToString(){
         dataIndex++;
       }
       values += dataStructureToString(dataBuffer);  
-    } else if(state > 0 && state < 4){
+    }
+
+    if(state == 1)
+    {
+      values += String(":----------------: \n");
+      values += dataBlockToString(state);
+      values += dataBuffer[7];
+      values += "\n";
+      values += String(":----------------: \n");
+
+      state = 0;
+    }
+
+    if(state > 1 && state < 4){
+        values += String("/----------------/\n");
         values += dataBlockToString(state);
-    } else if(state == 4){
+        values += String("/----------------/\n");
+
+
+    }
+
+    if(state == 4){
       
         values += dataBlockToString(state);
         bufferIndex = 0;
@@ -54,9 +90,11 @@ void ProtocolToString::printContentsToString(){
         while(bufferIndex < 4){
           crcBuffer[bufferIndex] = eepromBuffer[dataIndex];
 
-          values += String("Byte : [");
+          values += String("Byte[");
           values += String(bufferIndex);
-          values += String("] \n");
+          values += String("]");
+          values += crcBuffer[bufferIndex];
+          values += String("\n");
           
           bufferIndex++;
           dataIndex++;
@@ -69,15 +107,18 @@ void ProtocolToString::printContentsToString(){
     }
 
     /** End of the contents  have been reached **/
-    if(dataIndex >= 1984 || state == 5){
+    if(state == 5){
       values += dataBlockToString(state);
       values += String("End has been reached. Exiting loop");
       run = false;     
     }
     Serial.print(values);
-    delay(25);
-  }while(run); 
-
+    delay(10);
+  }
+  Serial.print("Bytes read : ");
+  Serial.println(dataIndex);
+  Serial.print("nr times compare sceneblock called : ");
+  Serial.print(sceneBlockFound);
   /*Print CRC */ 
 }
 
@@ -87,6 +128,7 @@ void ProtocolToString::printContentsToString(){
 
 int ProtocolToString::compareProtocolBlocks(const int* data){
   if(compareSceneBlock(data)){
+    sceneBlockFound++;
     return 1; // Scene Block
   }
 
@@ -114,7 +156,7 @@ String ProtocolToString::dataBlockToString(int option){
   
   switch(option){
     case 1:      
-      values += String("   Scene Block \n");  
+      values += String("   Scene nr : ");
       break;
     case 2:
       values += String("   Start Block \n");
@@ -130,8 +172,6 @@ String ProtocolToString::dataBlockToString(int option){
       break;  
   }
 
-values += String("------------------\n");  
-
   return values;
 }
 
@@ -139,48 +179,46 @@ String ProtocolToString::dataStructureToString(const int* data){
   String values;
   int id = data[1];
 
-  values += String("------------------\n");
-
   switch(id){
     case 0xE0: //Program Change
-    	values += programChangeToString(data);
-    	break;
+      values += programChangeToString(data);
+      break;
     case 0XE1: //Note Velocity
-    	values += noteVelocityToString(data);
-    	break;
+      values += noteVelocityToString(data);
+      break;
     case 0xE2: //Note Control Change  
-    	values += noteControlChangeToString(data);
-    	break;
+      values += noteControlChangeToString(data);
+      break;
     case 0xE3: //Pitch Bend  
-    	values += pitchBendToString(data);
-    	break;
+      values += pitchBendToString(data);
+      break;
     case 0xE4: //Pitch Bend Note
-    	values += pitchBendNoteToString(data);
-    	break;
+      values += pitchBendNoteToString(data);
+      break;
     case 0xE5: //Control Change 
-    	values += controlChangeToString(data);
-    	break;
+      values += controlChangeToString(data);
+      break;
     case 0xE6: //Control Change Fade
-    	values += controlChangeFadeToString(data);
-    	break;
+      values += controlChangeFadeToString(data);
+      break;
     case 0xE7: //Note Velocity Toggle
-    	values += noteVelocityToggleToString(data);
-    	break;
+      values += noteVelocityToggleToString(data);
+      break;
     case 0xE8: //Note Control Change toggle
-    	values += noteControlChangeToggleToString(data);
-    	break;
+      values += noteControlChangeToggleToString(data);
+      break;
     case 0xE9: //Control Change Toggle
-    	values += controlChangeToggleToString(data);
-    	break;
+      values += controlChangeToggleToString(data);
+      break;
     case 0xEA: //Control Change Fade Toggle
-    	values += controlChangeFadeToggleToString(data);
-    	break;
+      values += controlChangeFadeToggleToString(data);
+      break;
     case 0xEE: //Scene Data
-    	values += sceneDataToString(data);
-    	break;
+      values += sceneDataToString(data);
+      break;
     case 0xEF: //Disabled Controller
-    	values += disabledControllerToString(data);
-    	break;
+      values += disabledControllerToString(data);
+      break;
   }
 
   return values;
@@ -201,6 +239,7 @@ String ProtocolToString::programChangeToString(const int* data){
     values += String(data[5]) + " : End Byte \n";
 
     for(int i=6; i<16; i++){
+      delayMicroseconds(10);
       if(data[i] == 0x00){
         values += String(data[i]) + " : Zero Padding \n";
       } else {
@@ -229,6 +268,7 @@ String ProtocolToString::noteVelocityToString(const int* data){
     values += String(data[6]) + " : End Byte \n";
 
     for(int i=7; i<16; i++){
+      delayMicroseconds(10);
       if(data[i] == 0x00){
         values += String(data[i]) + " : Zero Padding \n";
       } else {
@@ -261,6 +301,7 @@ String ProtocolToString::noteControlChangeToString(const int* data){
     values += String(data[10]) + " : End Byte \n";  
 
     for(int i=11; i<16; i++){
+       delayMicroseconds(10);
        if(data[i] == 0x00){
             values += String(data[i]) + " : Zero Padding \n";
           } else {
@@ -283,6 +324,7 @@ String ProtocolToString::noteControlChangeToString(const int* data){
       values += String(data[12]) + " : End Byte \n";
 
       for(int i=13; i<16; i++){
+        delayMicroseconds(10);
         if(data[i] == 0x00){
             values += String(data[i]) + " : Zero Padding \n";
           } else {
@@ -308,6 +350,7 @@ String ProtocolToString::pitchBendToString(const int* data){
     values += String(data[3]) + " : End Byte \n";
 
     for(int i=4; i<16; i++){
+      delayMicroseconds(10);
       if(data[i] == 0x00){
         values += String(data[i]) + " : Zero Padding \n";
       } else {
@@ -335,6 +378,7 @@ String ProtocolToString::pitchBendNoteToString(const int* data){
     values += String(data[5]) + " : End Byte \n";   
 
     for(int i=6; i<16; i++){
+      delayMicroseconds(10);
       if(data[i] == 0x00){
         values += String(data[i]) + " : Zero Padding \n";
       } else {
@@ -365,6 +409,7 @@ String ProtocolToString::controlChangeToString(const int* data){
     values += String(data[7]) + " : End Byte \n";
   
     for(int i=8; i<16; i++){
+      delayMicroseconds(10);
       if(data[i] == 0x00){
         values += String(data[i]) + " : Zero Padding \n";
         } else {
@@ -403,7 +448,7 @@ String ProtocolToString::controlChangeToString(const int* data){
     int optionId = data[1];
     int resolutionByte = data[3];
 
-    if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x00){       
+    if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x00 && data[12] == 0xFF){
       values += String(data[0]) + " : Start Byte \n";
       values += String(data[1]) + " : Control Change Fade ID \n";
       values += String(data[2]) + " : MIDI Channel \n";
@@ -419,13 +464,14 @@ String ProtocolToString::controlChangeToString(const int* data){
       values += String(data[12]) + " : End Byte \n";
         
       for(int i=13; i<16; i++){
+        delayMicroseconds(10);
         if(data[i] == 0x00){
           values += String(data[i]) + " : Zero Padding \n";
         } else {
           values += "Error \n";
         }     
       }
-    } else if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x01){
+    } else if(startByte == 0xF0 && optionId == 0xE6 && resolutionByte == 0x01 && data[15] == 0xFF){
       values += String(data[0]) + " : Start Byte \n";
       values += String(data[1]) + " : Control Change Fade ID \n";
       values += String(data[2]) + " : MIDI Channel \n";
@@ -443,13 +489,7 @@ String ProtocolToString::controlChangeToString(const int* data){
       values += String(data[14]) + " : Fade Out LSB \n";
       values += String(data[15]) + " : End Byte \n";
         
-      for(int i=3; i<16; i++){
-        if(data[i] == 0x00){
-        	values += String(data[i]) + " : Zero Padding \n";
-         } else {
-           values += "Error \n";
-         }
-      }
+
     } else {
       values = String("Error while parsing Control Change Fade Data \n");
     }      
@@ -462,7 +502,7 @@ String ProtocolToString::sceneDataToString(const int* data){
   int optionId = data[1];
   int endByte = data[15];
 
-  if(startByte == 0xF0 && optionId == 0xEA && endByte == 0xFF){
+  if(startByte == 0xF0 && optionId == 0xEE && endByte == 0xFF){
     values += String(data[0]) + " : Start Byte \n";
     values += String(data[1]) + " : Scene Data Id \n";
     values += String(data[2]) + " : Option \n";
@@ -480,220 +520,234 @@ String ProtocolToString::sceneDataToString(const int* data){
     values += String(data[14]) + " : Program 4 \n";
     values += String(data[15]) + " : End Byte \n";    
   } else {
-	  values += String("Error while parsing Scene Data \n");
+    values += String("Error while parsing Scene Data \n");
   }
   return values ;
 }
   
 String ProtocolToString::noteVelocityToggleToString(const int* data){
-	String values;
-	int startByte = data[0];
-	int optionId = data[1];
-	int endByte = data[6];
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[6];
 
-	if(startByte == 0xF0 && optionId == 0xE7 && endByte == 0xFF){
-		  values += String(data[0]) + " : Start Byte \n";
-		  values += String(data[1]) + " : Note Velocity Toggle ID \n";
-		  values += String(data[2]) + " : Switch Option \n";
-		  values += String(data[3]) + " : MIDI Channel \n";
-		  values += String(data[4]) + " : Pitch \n";
-		  values += String(data[5]) + " : Velocity \n";
-		  values += String(data[6]) + " : End Byte \n";
+  if(startByte == 0xF0 && optionId == 0xE7 && endByte == 0xFF){
+      values += String(data[0]) + " : Start Byte \n";
+      values += String(data[1]) + " : Note Velocity Toggle ID \n";
+      values += String(data[2]) + " : Switch Option \n";
+      values += String(data[3]) + " : MIDI Channel \n";
+      values += String(data[4]) + " : Pitch \n";
+      values += String(data[5]) + " : Velocity \n";
+      values += String(data[6]) + " : End Byte \n";
 
-		  for(int i=7; i<16; i++){
-			  if(data[i] == 0x00){
-		    	values += String(data[i]) + " : Zero Padding \n";
-			  } else {
-				  values += "Error \n";
-			  }
-		    }
-	} else {
-		values += String("Error while parsing Note Velocity Toggle Data");
-	}
-	return values;
+      for(int i=7; i<16; i++){
+        delayMicroseconds(10);
+        if(data[i] == 0x00){
+          values += String(data[i]) + " : Zero Padding \n";
+        } else {
+          values += "Error \n";
+        }
+        }
+  } else {
+    values += String("Error while parsing Note Velocity Toggle Data");
+  }
+  return values;
 }
 
 String ProtocolToString::noteControlChangeToggleToString(const int* data){
-	String values;
-	int startByte = data[0];
-	int optionId = data[1];
-	int resolutionByte = data[6];
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int resolutionByte = data[6];
 
-	if(startByte == 0xF0 && optionId == 0xE8 && resolutionByte == 0x00 && data[10] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Note Control Change Toggle ID \n";
-		values += String(data[2]) + " : Toggle Option \n";
-		values += String(data[4]) + " : Pitch \n";
-		values += String(data[5]) + " : Velocity \n";
-		values += String(data[6]) + " : Resolution 8-bit \n";
-		values += String(data[7]) + " : Control Change Number \n";
-		values += String(data[8]) + " : Top Value \n";
-		values += String(data[9]) + " : Bottom Value \n";
-		values += String(data[10]) + " : End Byte \n";
+  if(startByte == 0xF0 && optionId == 0xE8 && resolutionByte == 0x00 && data[10] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Note Control Change Toggle ID \n";
+    values += String(data[2]) + " : Toggle Option \n";
+    values += String(data[4]) + " : Pitch \n";
+    values += String(data[5]) + " : Velocity \n";
+    values += String(data[6]) + " : Resolution 8-bit \n";
+    values += String(data[7]) + " : Control Change Number \n";
+    values += String(data[8]) + " : Top Value \n";
+    values += String(data[9]) + " : Bottom Value \n";
+    values += String(data[10]) + " : End Byte \n";
 
-		for(int i=11; i<16; i++){
-			if(data[i] == 0x00){
-				values += String(data[i]) + " : Zero Padding \n";
-			} else {
-				values += "Error \n";
-			}
-		}
+    for(int i=11; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0x00){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error \n";
+      }
+    }
 
-	} else if(startByte == 0xF0 && optionId == 0xE8 && resolutionByte == 0x01 && data[12] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Note Control Change Toggle ID \n";
-		values += String(data[2]) + " : Toggle Option \n";
-		values += String(data[3]) + " : MIDI Channel \n";
-		values += String(data[4]) + " : Pitch \n";
-		values += String(data[5]) + " : Velocity \n";
-		values += String(data[6]) + " : Resolution 14-bit \n";
-		values += String(data[7]) + " : Control Change Number \n";
-		values += String(data[8]) + " : Top Value MSB \n";
-		values += String(data[9]) + " : Top Value LSB \n";
-		values += String(data[10]) + " : Bottom Value MSB \n";
-		values += String(data[11]) + " : Bottom Value LSB \n";
-		values += String(data[12]) + " : End Byte \n";
+  } else if(startByte == 0xF0 && optionId == 0xE8 && resolutionByte == 0x01 && data[12] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Note Control Change Toggle ID \n";
+    values += String(data[2]) + " : Toggle Option \n";
+    values += String(data[3]) + " : MIDI Channel \n";
+    values += String(data[4]) + " : Pitch \n";
+    values += String(data[5]) + " : Velocity \n";
+    values += String(data[6]) + " : Resolution 14-bit \n";
+    values += String(data[7]) + " : Control Change Number \n";
+    values += String(data[8]) + " : Top Value MSB \n";
+    values += String(data[9]) + " : Top Value LSB \n";
+    values += String(data[10]) + " : Bottom Value MSB \n";
+    values += String(data[11]) + " : Bottom Value LSB \n";
+    values += String(data[12]) + " : End Byte \n";
 
-		for(int i=13; i<16; i++){
-			if(data[i] == 0){
-				values += String(data[i]) + " : Zero Padding \n";
-			} else {
-				values += "Error";
-			}
-		}
-	} else {
-		values += String("Error while parsing Note Control Change Toggle Data \n");
-	}
-	return values;
+    for(int i=13; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error";
+      }
+    }
+  } else {
+    values += String("Error while parsing Note Control Change Toggle Data \n");
+  }
+  return values;
 }
 
 String ProtocolToString::controlChangeToggleToString(const int* data){
-	String values;
+  String values;
 
-	int startByte = data[0];
-	int optionId = data[1];
-	int resolutionByte = data[4];
+  int startByte = data[0];
+  int optionId = data[1];
+  int resolutionByte = data[4];
 
-	if(startByte == 0x00 && optionId == 0xE9 && resolutionByte == 0x00 && data[8] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Control Change Toggle ID \n";
-		values += String(data[2]) + " : Toggle Option \n";
-		values += String(data[3]) + " : MIDI Channel \n";
-		values += String(data[4]) + " : Resolution 8-bit \n";
-		values += String(data[5]) + " : Control Change Number \n";
-		values += String(data[6]) + " : Top Value \n";
-		values += String(data[7]) + " : Bottom Value \n";
-		values += String(data[8]) + " : End Byte \n";
+  if(startByte == 0xF0 && optionId == 0xE9 && resolutionByte == 0x00 && data[8] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Control Change Toggle ID \n";
+    values += String(data[2]) + " : Toggle Option \n";
+    values += String(data[3]) + " : MIDI Channel \n";
+    values += String(data[4]) + " : Resolution 8-bit \n";
+    values += String(data[5]) + " : Control Change Number \n";
+    values += String(data[6]) + " : Top Value \n";
+    values += String(data[7]) + " : Bottom Value \n";
+    values += String(data[8]) + " : End Byte \n";
 
-		for(int i=9; i<16; i++){
-			if(data[i] == 0){
-				values += String(data[i]) + " : Zero Padding \n";
-			} else {
-				values += "Error \n";
-			}
-		}
-	} else if(startByte == 0x00 && optionId == 0xE9 && resolutionByte == 0x01 && data[10] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Control Change Toggle ID \n";
-		values += String(data[2]) + " : Toggle Option \n";
-		values += String(data[3]) + " : MIDI Channel \n";
-		values += String(data[4]) + " : Resolution 14-bit \n";
-		values += String(data[5]) + " : Control Change Number \n";
-		values += String(data[6]) + " : Top Value MSB\n";
-		values += String(data[7]) + " : Top Value LSB\n";
-		values += String(data[8]) + " : Bottom Value MSB \n";
-		values += String(data[9]) + " : Bottom Value MSB \n";
-		values += String(data[10]) + " : End Byte \n";
+    for(int i=9; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error \n";
+      }
+    }
+  } else if(startByte == 0xF0 && optionId == 0xE9 && resolutionByte == 0x01 && data[10] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Control Change Toggle ID \n";
+    values += String(data[2]) + " : Toggle Option \n";
+    values += String(data[3]) + " : MIDI Channel \n";
+    values += String(data[4]) + " : Resolution 14-bit \n";
+    values += String(data[5]) + " : Control Change Number \n";
+    values += String(data[6]) + " : Top Value MSB\n";
+    values += String(data[7]) + " : Top Value LSB\n";
+    values += String(data[8]) + " : Bottom Value MSB \n";
+    values += String(data[9]) + " : Bottom Value MSB \n";
+    values += String(data[10]) + " : End Byte \n";
 
-		for(int i=11; i<16; i++){
-			if(data[i] == 0){
-				values += String(data[i]) + " : Zero Padding \n";
-			} else {
-				values += "Error \n";
-			}
-		}
-	} else {
-		values += String("Error while parsing Control Change Toggle Data \n");
-	}
+    for(int i=11; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error \n";
+      }
+    }
+  } else {
+    values += String("Error while parsing Control Change Toggle Data \n");
+  }
 
-	return values;
+  return values;
 }
 
 String ProtocolToString::controlChangeFadeToggleToString(const int* data){
-	String values;
-	int startByte = data[0];
-	int optionId = data[1];
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
 
-	int toggleOption = (data[3] & 0B00000010) >> 1;
-	int resolutionByte = data[3] & 0B00000001;
+  int toggleOption = (data[3] & 0B00000010) >> 1;
+  int resolutionByte = data[3] & 0B00000001;
 
-	if(startByte == 0xF0 && optionId == 0xEA && resolutionByte == 0x00 && data[12] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Control Change Fade Toggle ID \n";
-		values += toggleOption + 	" : Toggle Option extracted from Resolution \n";
-		values += String(data[2]) + " : MIDI Channel \n";
-		values += String(data[3]) + " : Resolution 8-bit \n";
-		values += String(data[4]) + " : Control Change Number \n";
-		values += String(data[5]) + " : Start \n";
-		values += String(data[6]) + " : Hold \n";
-		values += String(data[7]) + " : End \n";
-		values += String(data[8]) + " : Fade In MSB \n";
-		values += String(data[9]) + " : Fade In LSB \n";
-		values += String(data[10]) + " : Fade Out MSB \n";
-		values += String(data[11]) + " : Fade Out LSB \n";
-		values += String(data[12]) + " : End Byte \n";
+  if(startByte == 0xF0 && optionId == 0xEA && resolutionByte == 0x00 && data[12] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Control Change Fade Toggle ID \n";
+    values += String(toggleOption) +  " : Toggle Option extracted from resolution\n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(resolutionByte) + " : Resolution 8-bit \n";
+    values += String(data[4]) + " : Control Change Number \n";
+    values += String(data[5]) + " : Start \n";
+    values += String(data[6]) + " : Hold \n";
+    values += String(data[7]) + " : End \n";
+    values += String(data[8]) + " : Fade In MSB \n";
+    values += String(data[9]) + " : Fade In LSB \n";
+    values += String(data[10]) + " : Fade Out MSB \n";
+    values += String(data[11]) + " : Fade Out LSB \n";
+    values += String(data[12]) + " : End Byte \n";
 
-		for(int i=13; i<16; i++){
-			if(data[i] == 0){
-				values += String(data[i]) + " : Zero Padding \n";
-			} else {
-				values += "Error";
-			}
-		}
-	} else if(startByte == 0xF0 && optionId == 0xEA && resolutionByte == 0x01 && data[15] == 0xFF){
-		values += String(data[0]) + " : Start Byte \n";
-		values += String(data[1]) + " : Control Change Fade Toggle ID \n";
-		values += toggleOption + 				  " : Toggle Option extracted from Resolution \n";
-		values += String(data[2]) + " : MIDI Channel \n";
-		values += String(data[3]) + " : Resolution 14-bit \n";
-		values += String(data[4]) + " : Control Change Number \n";
-		values += String(data[5]) + " : Start MSB\n";
-		values += String(data[6]) + " : Start LSB\n";
-		values += String(data[7]) + " : Hold MSB \n";
-		values += String(data[8]) + " : Hold LSB \n";
-		values += String(data[9]) + " : End MSB \n";
-		values += String(data[10]) + " : End LSB \n";
-		values += String(data[11]) + " : Fade In MSB \n";
-		values += String(data[12]) + " : Fade In LSB \n";
-		values += String(data[13]) + " : Fade Out MSB \n";
-		values += String(data[14]) + " : Fade Out LSB \n";
-		values += String(data[15]) + " : End Byte \n";
-	} else {
-		values += String("Error while parsing Control Change Fade Toggle Data \n");
-	}
+    for(int i=13; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error";
+      }
+    }
+  } else if(startByte == 0xF0 && optionId == 0xEA && resolutionByte == 0x01 && data[15] == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Control Change Fade Toggle ID \n";
+    values += String(toggleOption) + " : Toggle Option extracted from resolution \n";
+    values += String(data[2]) + " : MIDI Channel \n";
+    values += String(resolutionByte) + " : Resolution 14-bit \n";
+    values += String(data[4]) + " : Control Change Number \n";
+    values += String(data[5]) + " : Start MSB\n";
+    values += String(data[6]) + " : Start LSB\n";
+    values += String(data[7]) + " : Hold MSB \n";
+    values += String(data[8]) + " : Hold LSB \n";
+    values += String(data[9]) + " : End MSB \n";
+    values += String(data[10]) + " : End LSB \n";
+    values += String(data[11]) + " : Fade In MSB \n";
+    values += String(data[12]) + " : Fade In LSB \n";
+    values += String(data[13]) + " : Fade Out MSB \n";
+    values += String(data[14]) + " : Fade Out LSB \n";
+    values += String(data[15]) + " : End Byte \n";
+  } else {
+    values += String("Error while parsing Control Change Fade Toggle Data \n");
+  }
 
-	return values;
+  return values;
 }
 
 
 
 String ProtocolToString::disabledControllerToString(const int* data){
-	String values;
-	int startByte = data[0];
-	int optionId = data[1];
-	int endByte = data[2];
+  String values;
+  int startByte = data[0];
+  int optionId = data[1];
+  int endByte = data[2];
 
-	if(startByte == 0xF0 && optionId == 0xEF && endByte == 0xFF){
-	  values += String(data[0]) + " : Start Byte \n";
-	  values += String(data[1]) + " : Disabled Controller ID \n";
-	  values += String(data[2]) + " : End Byte \n";
+  if(startByte == 0xF0 && optionId == 0xEF && endByte == 0xFF){
+    values += String(data[0]) + " : Start Byte \n";
+    values += String(data[1]) + " : Disabled Controller ID \n";
+    values += String(data[2]) + " : End Byte \n";
 
+    for(int i=3; i<16; i++){
+      delayMicroseconds(10);
+      if(data[i] == 0){
+        values += String(data[i]) + " : Zero Padding \n";
+      } else {
+        values += "Error";
+      }
+    }
 
-	} else {
-	  values = String("Error while parsing Disabled Controller Data \n");
-	}
+  } else {
+    values = String("Error while parsing Disabled Controller Data \n");
+  }
 
-	return values;
+  return values;
 }
 
 boolean ProtocolToString::compareSceneBlock(const int* data){

@@ -2,22 +2,30 @@
 #include "src/testing/configuration.h"
 
 //#include "src/testing/PointerTest.h"
+#include  "src/serial/SerialCommunication.h"
 //#include "src/testing/Test.h"
 #include "src/builders/Scene.h"
 #include "src/hardware/switches.h"
 #include "src/protocol/ProtocolInterperter.h"
+
+#include "src/protocol/ProtocolToString.h"
+
 #include "src/dispatcher/Dispatcher.h"
 #include "src/hardware/LTC1867.h"
 
-///Dispatcher dispatcher = Dispatcher();
+SerialCommunication serial = SerialCommunication();
 
-//Scene sceneOne = Scene("Scene One", &dispatcher);
+Dispatcher dispatcher = Dispatcher();
+
+Scene sceneOne = Scene("Scene One", &dispatcher);
+Scene sceneTwo = Scene("Scene Two", &dispatcher);
+Scene sceneThree = Scene("Scene Three", &dispatcher);
+Scene sceneFour = Scene("Scene Four", &dispatcher);
+
 
 IntervalTimer samplingClock;
 
-//Scene sceneTwo = Scene("Scene Two", &dispatcher);
-//Scene sceneThree = Scene("Scene Three", &dispatcher);
-//Scene sceneFour = Scene("Scene Four", &dispatcher);
+
 
 int cycles = 0;
 
@@ -54,8 +62,7 @@ void setup()
 
 	  startTime = millis();
 
-
-	  Serial.begin(115200);
+	 // configureSceneTest();
 
 	  //Try to go as low as possible in complete implementation
 	  //Teensy is overclocked to 96MHz
@@ -67,13 +74,13 @@ void setup()
 	  // when everything is implmented
 
 
-
 	samplingClock.begin(updateSensors, 20); // Start Sampling the sensors
 }
 
 // The loop function is called in an endless loop
 void loop()
 {
+	  delay(1000);
 	  currentTime = millis();
 
 
@@ -93,18 +100,26 @@ void loop()
 
 	   if((currentTime - startTime) > 50){
 	    startTime = currentTime;
-	     printValues();
+	   //  printValues();
 	 }
 
-	/*
+
 	if(run){
 		#ifdef DEBUG
 		//configureDispatcherTest();
 		//configureSceneTest();
 		//pogramChangeTest();
+
+		ProtocolToString printer = ProtocolToString();
+		//printer.printContentsToString();
+
+		printer.printEEPROM();
+
+		run = false;
 		#endif /* DEBUG */
 
-	/*
+	}
+/*
 	if(count == 100){
 			run = false;
 			time = millis();
@@ -113,6 +128,8 @@ void loop()
 		count++;
 	}
 	*/
+
+	serial.readSerial();
 }
 
 void updateSensors(){
@@ -269,16 +286,16 @@ void updateSensors(){
 
 //#ifdef DEBUG
 
-/*
 
+/*
 void configureDispatcherTest(){
 
 	sceneOne.updateControllers();
 
 	dispatcher.dispatch();
 }
+*/
 
-/*
 
 void configureSceneTest(){
 	ProtocolInterperter interperter = ProtocolInterperter();
@@ -298,7 +315,7 @@ void configureSceneTest(){
 	sceneFour.printControllerContents();
 }
 
-
+/*
 void pogramChangeTest(){
 	int dataTestOne[16] = {
 							0XF0, 0xEA, 0x00, 0x00,

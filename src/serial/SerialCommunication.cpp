@@ -5,7 +5,7 @@
 /** Tested and Verified **/
 
 SerialCommunication::SerialCommunication()
-  : baudrate(9600), 
+  : baudrate(115200),
     crc(false),
     dataIndex(0),
     eepromSize(0),
