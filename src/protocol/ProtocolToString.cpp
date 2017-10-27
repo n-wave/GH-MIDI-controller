@@ -14,16 +14,54 @@ ProtocolToString::ProtocolToString() :
 
 ProtocolToString::~ProtocolToString(){}
 
+void ProtocolToString::printMemoryCheck(){
+	boolean result = crc.memoryCheck();
+
+	if(result){
+	    int index = 1960;
+	    int crcBuffer[4];
+	    long crcInMemory = 0L;
+
+
+	    for(int i=0; i<4; i++){
+	      crcBuffer[i] = eepromBuffer[index];
+	      index++;
+	    }
+
+	    crcInMemory = crc.convertToLong(crcBuffer, 4);
+
+		Serial.println("/---------------------------/");
+		Serial.println("/----Memory Check passed----/");
+		Serial.println("/---------------------------/");
+		Serial.print("CRC : ");
+		Serial.println(crcInMemory);
+		Serial.println("/---------------------------/");
+
+		for(int i=0; i<4; i++){
+	        Serial.print("Byte[");
+	        Serial.print(i);
+	        Serial.print("] ");
+	        Serial.println(crcBuffer[i]);
+		}
+		Serial.println("/---------------------------/");
+	} else {
+		Serial.println("/---------------------------/");
+		Serial.println("/----Memory Check failed----/");
+		Serial.println("/---------------------------/");
+	}
+
+}
+
+
 void ProtocolToString::printEEPROM(){
     for(int i=0; i<1984; i++ ){
-      uint8_t tmp = EEPROM.read(i);
       delayMicroseconds(25);
 
       Serial.print("byte");
       Serial.print("[");
       Serial.print(i+1);
-      Serial.print("]");
-      Serial.println(tmp, HEX);
+      Serial.print("] ");
+      Serial.println(eepromBuffer[i]);
   }
 }
 
@@ -90,9 +128,9 @@ void ProtocolToString::printContentsToString(){
         while(bufferIndex < 4){
           crcBuffer[bufferIndex] = eepromBuffer[dataIndex];
 
-          values += String("Byte[");
+          values += String("byte[");
           values += String(bufferIndex);
-          values += String("]");
+          values += String("] ");
           values += crcBuffer[bufferIndex];
           values += String("\n");
           
@@ -121,6 +159,76 @@ void ProtocolToString::printContentsToString(){
   Serial.print(sceneBlockFound);
   /*Print CRC */ 
 }
+
+void ProtocolToString::printController(int scene, int controller)
+{
+	int index;
+	int startIndex;
+	int controllerIndex;
+
+
+	int blockBuffer[8] = {0};
+	int dataBuffer[16] = {0};
+
+	String tmpString = "";
+
+	switch(scene)
+	{
+		case 1:
+		  startIndex = 0;
+		  break;
+		case 2:
+          startIndex = 488;
+		  break;
+		case 3:
+		  startIndex = 976;
+		  break;
+		case 4:
+          startIndex = 1464;
+		  break;
+	}
+
+	for(int i=0; i<8;i++){
+		blockBuffer[i] = eepromBuffer[startIndex+i];
+	}
+
+	if(compareSceneBlock(blockBuffer) != true || blockBuffer[7] != scene-1){
+		Serial.println("Error ocurred couldn't find scene block");
+		return;
+	}
+
+	Serial.println("");
+	Serial.println("Retrieving Data");
+	delay(250);
+
+	if(controller == 0){
+		index = startIndex + 8;
+
+		for(int i=0; i<16; i++){
+			dataBuffer[i] = eepromBuffer[i+index];
+		}
+		tmpString += dataStructureToString(dataBuffer);
+	} else if(controller > 0){
+		controllerIndex = 16*(controller-1);
+		index = startIndex + 32 + controllerIndex;;
+
+		for(int i=0; i<16; i++){
+			dataBuffer[i] = eepromBuffer[i+index];
+		}
+		tmpString += dataStructureToString(dataBuffer);
+	}
+
+	Serial.print("Scene : ");
+	Serial.println(blockBuffer[7] + 1);
+	delay(100);
+	Serial.print("Controller :");
+	Serial.println(controller);
+	Serial.println("");
+	delay(100);
+
+	Serial.println(tmpString);
+}
+
 
 /** Return an Int Based on the 8 Byte Block supplied 
  *  as argument 

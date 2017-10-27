@@ -1,11 +1,15 @@
 #ifndef CYCLICREDUNDANCYCHECK_H
 #define CYCLICREDUNDANCYCHECK_H
 
+#include "Arduino.h"
+
 class CyclicRedundancyCheck
 {
 public:
   CyclicRedundancyCheck();
   ~CyclicRedundancyCheck();
+
+  boolean memoryCheck();
 
   long calculateCyclicRedundancyCheck(const int* dataArray, int length);
   

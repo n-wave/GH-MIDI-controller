@@ -141,13 +141,30 @@ boolean Scene::setController(int number, int type, const int* data){
 		Serial.print(" : ");
 	#endif /* DEBUG */
 
-		if(type == 0){
-			controllers[number] = new DisabledController();
-			return true;
-		}
+
+		/* PotentioMeters
+		 *
+		 * channel 0 Head PotentioMeter 1
+		 * channel 1 Head PotentioMeter 2
+		 * channel 2 Head PotentioMeter 3
+		 * channel 3 Head PotentioMeter 4
+		 * channel 4 Head PotentioMeter 5
+		 * channel 5 Head PotentioMeter 6
+		 *
+		 * channel 11 Body Potentiometer 1
+		 * channel 12 Body Potentiometer 2
+		 * channel 13 Body PotentioMeter 3
+		 * channel 14 joyStick X-axis
+		 * channel 15 joyStick Y-axis
+		 *
+		 */
+
 
 		if((number >= 0 && number <= 5) || (number >= 11 && number <= 15)){
 			switch(type){
+				case 0:
+					controllers[number] = new DisabledController(data);
+					break;
 				case 7:
 					controllers[number] = new ControlChangePotentioMeter8Bit(data, dispatcher);
 					break;
@@ -157,8 +174,18 @@ boolean Scene::setController(int number, int type, const int* data){
 			}
 		}
 
+		/*
+		 * Ribbon controller
+		 *
+		 * channel 6 Ribbon 1
+		 * channel 7 Ribbon 2
+		 */
+
 		if(number >= 6 && number <= 7){
 			switch(type){
+				case 0:
+					controllers[number] = new DisabledController(data);
+					break;
 				case 5:
 					controllers[number] = new PitchBendRibbon(data, dispatcher);
 					break;
@@ -174,8 +201,21 @@ boolean Scene::setController(int number, int type, const int* data){
 			}
 		}
 
+		/*
+		 * Pressure sensors
+		 *
+		 * channel 8 Pressure Sensor 1
+		 * channel 9 Pressure Sensor 2
+		 * channel 10 Pressure Sensor 3
+		 *
+		 */
+
+
 		if(number >= 8 && number <= 10){
 			switch(type){
+				case 0:
+					controllers[number] = new DisabledController(data);
+					break;
 				case 2:
 					controllers[number] = new NoteVelocityPressure(data, dispatcher);
 					break;
@@ -200,8 +240,11 @@ boolean Scene::setController(int number, int type, const int* data){
 			}
 		}
 
-		if(number >= 16 && number <= 29){
+		if(number >= 16 && number <= 25){
 			switch(type){
+				case 0:
+					controllers[number] = new DisabledController(data);
+					break;
 				case 1:
 					controllers[number] = new ProgramChangeSwitch(data, dispatcher);
 					break;
@@ -223,7 +266,7 @@ boolean Scene::setController(int number, int type, const int* data){
 			}
 		}
 
-		if(number >= 30 && number <= 31){
+		if(number >= 26 && number <= 27){
 			int ledPin = 0;
 
 			if(number == 30){
@@ -233,6 +276,9 @@ boolean Scene::setController(int number, int type, const int* data){
 			}
 
 			switch(type){
+				case 0:
+					controllers[number] = new DisabledController(data);
+					break;
 				case 11:
 					controllers[number] = new NoteVelocityToggle(data, ledPin, dispatcher);
 					break;
@@ -329,7 +375,7 @@ void Scene::printControllerContents(){
 		Serial.println(i);
 
 		this->printControllerContent(i);
-		delay(200);
+		delay(50);
 	}
 }
 

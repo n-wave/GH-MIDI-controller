@@ -1,4 +1,5 @@
 #include "CyclicRedundancyCheck.h"
+#include "EEPROM.h"
 
 CyclicRedundancyCheck::CyclicRedundancyCheck(){}
 
@@ -11,6 +12,40 @@ CyclicRedundancyCheck::~CyclicRedundancyCheck(){}
  * dataArray argument and return the result as a long
  * 
  */
+
+boolean CyclicRedundancyCheck::memoryCheck(){
+	long crcConvert = 0L;
+	long crcIntern = 0L;
+
+	boolean result = false;
+
+	int index = 1960;
+	int crcBuffer[4];
+	for(int i=0; i<4; i++){
+		crcBuffer[i] = EEPROM.read(index);
+		delayMicroseconds(25);
+	    index++;
+	}
+
+	crcConvert = convertToLong(crcBuffer ,4);
+
+	int dataBuffer[1952];
+
+	for(int i=0; i<1952; i++){
+		dataBuffer[i] = EEPROM.read(i);
+	    delayMicroseconds(25);
+	 }
+
+	 crcIntern = calculateCyclicRedundancyCheck(dataBuffer, 1952);
+
+	 if(crcIntern == crcConvert){
+		 result = true;
+	 }
+
+	return result;
+}
+
+
 
 long CyclicRedundancyCheck::calculateCyclicRedundancyCheck(const int* dataArray, int length)
 {

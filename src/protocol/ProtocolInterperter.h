@@ -24,7 +24,6 @@ public:
 
 
 private:
-	boolean checkMemory();
 	void setSceneBuffer(int* data, int sceneNumber);
 
 	int getType(const int* data);

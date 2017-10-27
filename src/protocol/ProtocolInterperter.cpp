@@ -12,7 +12,7 @@ ProtocolInterperter::ProtocolInterperter() :
 	memCheck(false),
 	crc(CyclicRedundancyCheck())
 {
-	memCheck = this->checkMemory();
+	memCheck = crc.memoryCheck();
 
 #ifdef DEBUG
 	if(memCheck){
@@ -75,7 +75,7 @@ boolean ProtocolInterperter::configureScene(Scene& scene, int sceneNumber){
 				dataBuffer[dataIndex++] = sceneBuffer[bufferIndex++];
 			}
 
-			if(dataBuffer[0] == 0xF0 && dataBuffer[1] == 0xEA && dataBuffer[15] == 0xFF){
+			if(dataBuffer[0] == 0xF0 && dataBuffer[1] == 0xEE && dataBuffer[15] == 0xFF){
 				/* The 16 Bytes in the buffer coincides with the sceneData */
 				scene.setSceneData(dataBuffer);
 
@@ -207,7 +207,7 @@ int ProtocolInterperter::getType(const int* data){
 	if(data[0] == 0xF0)
 	{
 		/* Disabled Controller Data Block*/
-		if(data[1] == 0xEF && data[3] == 0xFF){
+		if(data[1] == 0xEF && data[2] == 0xFF){
 			return 0;
 		}
 		/* Program Change Data Block */
@@ -293,66 +293,6 @@ int ProtocolInterperter::getType(const int* data){
  * and compare it with the calculated eeprom.
  *
  */
-
-boolean ProtocolInterperter::checkMemory(){
-	boolean result = false;
-
-	long calCRC = 0L;
-	long retCRC = 0L;
-
-	int index = 0;
-	int crcBuffer[4];
-	int crcBgnBuffer[8];
-	int crcEndBuffer[8];
-
-	int buffer[1952];
-
-	/* Fill preset data */
-	for(int i=0; i<1952; i++){
-	  buffer[i] = EEPROM.read(i);
-	  delayMicroseconds(150);
-	}
-
-	/* calculate crc */
-	calCRC = crc.calculateCyclicRedundancyCheck(buffer, 1952);
-
-	/* fill crcBgnBuffer if data in EEPROM
-	 * is valid it should contain CRCBGNBL
-	 */
-	for(int i=1952; i<1960; i++){
-		crcBgnBuffer[index] = EEPROM.read(i);
-		index++;
-	}
-	index = 0;
-
-	/* fill crcBgnBuffer if data in EEPROM
-	 * is valid it should contain CRCBGNBL
-	 */
-
-	for(int i=1964; i<1972; i++){
-		crcEndBuffer[index] = EEPROM.read(i);
-		index++;
-	}
-
-	if(this->compareCyclicRedundancyCheckBeginBlock(crcBgnBuffer) &&
-	    this->compareCyclicRedundancyCheckEndBlock(crcEndBuffer))
-	{
-
-	/* Fill crcBuffer with crc Stored in EEPROm */
-		crcBuffer[0] = EEPROM.read(1960);
-		crcBuffer[1] = EEPROM.read(1961);
-		crcBuffer[2] = EEPROM.read(1962);
-		crcBuffer[3] = EEPROM.read(1963);
-
-		retCRC = crc.convertToLong(crcBuffer, 4);
-	}
-
-	if(calCRC == retCRC){
-		result = true;
-	}
-
-	return result;
-}
 
 
 boolean ProtocolInterperter::compareSceneBlock(const int* data, int number){

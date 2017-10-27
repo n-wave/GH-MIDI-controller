@@ -5,11 +5,13 @@
 /** Tested and Verified **/
 
 SerialCommunication::SerialCommunication()
-  : baudrate(115200),
+  : baudRate(115200),
     crc(false),
     dataIndex(0),
     eepromSize(0),
-    eepromCurrentAddress(0)
+    eepromCurrentAddress(0),
+	requestedScene(0),
+	requestedController(0)
 {
 
   for(int i=0; i<32; i++){
@@ -18,8 +20,30 @@ SerialCommunication::SerialCommunication()
   }
   
   eepromSize = (EEPROM.length()-1);
-  
-  Serial.begin(baudrate);
+
+  Serial.begin(baudRate);
+}
+
+SerialCommunication::SerialCommunication(long baudrate)
+  : baudRate(baudrate),
+    crc(false),
+    dataIndex(0),
+    eepromSize(0),
+    eepromCurrentAddress(0),
+	requestedScene(0),
+	requestedController(0)
+{
+
+  for(int i=0; i<32; i++){
+    data[i] = 0x00;
+    eepromBuffer[i] = 0x00;
+  }
+
+  eepromSize = (EEPROM.length()-1);
+
+	if(Serial){
+		Serial.begin(baudRate);
+	}
 }
 
 SerialCommunication::~SerialCommunication()
@@ -27,8 +51,8 @@ SerialCommunication::~SerialCommunication()
   Serial.end();  
 }
 
-void SerialCommunication::readSerial(){
-
+int SerialCommunication::readSerial(){
+  int compareResult = 0;
   int bufferSize = Serial.available();
 
   if(bufferSize > 0 && bufferSize <= 32){
@@ -48,7 +72,7 @@ void SerialCommunication::readSerial(){
   }
   
   if(dataIndex == 6 && bufferSize <= 6){
-    compareSerialBlocks(data);
+	  compareResult = compareSerialBlocks(data);
     dataIndex = 0;
   }
   /** Actual data representing the 
@@ -59,6 +83,16 @@ void SerialCommunication::readSerial(){
     sendContinueBlock();
     dataIndex = 0;
   }  
+
+  return compareResult;
+}
+
+int SerialCommunication::getRequestedScene(){
+	return requestedScene;
+}
+
+int SerialCommunication::getRequestedController(){
+	return requestedController;
 }
 
 void SerialCommunication::writeBufferToSerial(const uint8_t* data){
@@ -112,7 +146,7 @@ boolean SerialCommunication::calculateCyclicRedundancyCheckFromEEPROM()
       delayMicroseconds(250);
     }
 
-  for(int i=0; i<8; i++){
+    for(int i=0; i<8; i++){
       endBlockBuffer[i] = EEPROM.read(endIndex++);
       delayMicroseconds(250);
     }
@@ -172,18 +206,18 @@ void SerialCommunication::sendFailedBlock(){
  *  action(s).  
  */
 
-void SerialCommunication::compareSerialBlocks(const uint8_t* data){
+int SerialCommunication::compareSerialBlocks(const uint8_t* data){
 /** 
  * Start Communication Block (STARTC) has been received. 
  * Send Identification Block (ID01GH). The java program 
  * will now start sending data to the MCU in chunks of 32 
- * bytes. These are written/updated to the EEPROM.
+ * bytes. These are written to the EEPROM.
  */ 
  
     if(compareStartCommunicationBlock(data)){
       eepromCurrentAddress = 0;
       sendIdentificationBlock();
-      return;
+      return 1;
     }
 /**
  * Cyclic Redundancy Check (CRCBGN) has been received. 
@@ -194,16 +228,60 @@ void SerialCommunication::compareSerialBlocks(const uint8_t* data){
  */
     
     if(compareCalculateCyclicRedundancyCheck(data)){
-       
       if(calculateCyclicRedundancyCheckFromEEPROM()){
        sendSuccessBlock();
       } else {
        sendFailedBlock(); 
       } 
-      return;
+      return 2;
     }
-}
 
+    /**
+     * 	Debug messages
+     *
+     * The result is received and processed in the main
+     *
+     **/
+
+    if(compareDebugEnable(data)){return 3;} 		//Enter Debug Mode
+
+    if(compareDebugCommands(data)){return 4;} 		//Print Debug Command
+    if(compareMemoryCheck(data)){return 5;}   		//Check the memory by activating a crc calculation
+    if(comparePrintEEPROM(data)){return 6;}   		//Print raw EEPROM memory in HEX
+    if(comparePrintContents(data)){return 7;} 		//Print all the controller settings
+
+    /*
+     * Print one specific controller from specific scene
+     * The specific scene and controller can be requested
+     * from the designated get Function in this class:
+     *
+     * int SerialCommunication::getRequestedScene();
+     * int SerialCommunication::getRequestedController();
+     *
+     * Which in turn can be given to the
+     *
+     * protocolToString::printController(int scene, int controller);
+     *
+     */
+
+    if(comparePrintController(data)){return 8;}
+    /*
+     * The next two commands will start outputting
+     * the data received from the sensors, only
+     * one can be active printing out the values.
+     * When any other message debug message are received
+     * the printing stops and can enabled again by
+     * sending the specific messages to the serial port
+     */
+
+    if(comparePrintAnalogSensors(data)){return 9;}  //Start outputting the analog sensor values
+    if(comparePrintSwitches(data)){return 10;}	    //Start outputting the values of the switches
+    if(compareLedTest(data)){return 11;}
+
+    if(compareDebugDisable(data)){return 255;}
+
+    return 0;
+}
 
 /**   
  *  Compare supplied data in the buffer, if true 
@@ -284,6 +362,208 @@ boolean SerialCommunication::compareCyclicRedundancyEndBlock(const int* data){
   return result;
 }
 
+/* Compare DEBUG messages */
+
+boolean SerialCommunication::compareDebugEnable(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'D' &&
+		data[1] == 'B' &&
+		data[2] == 'G' &&
+		data[3] == 'E' &&
+		data[4] == 'N' &&
+		data[5] == 'A'
+	  )
+	{
+		result = true;
+	}
+	return result;;
+}
+
+
+/*
+ * Print debug commands if true
+ */
+
+boolean SerialCommunication::compareDebugCommands(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'D' &&
+		data[1] == 'B' &&
+		data[2] == 'G' &&
+		data[3] == 'C' &&
+		data[4] == 'O' &&
+		data[5] == 'M'
+	  )
+	{
+		result = true;
+	}
+	return result;
+}
+
+boolean SerialCommunication::compareMemoryCheck(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'M' &&
+		data[1] == 'E' &&
+		data[2] == 'M' &&
+		data[3] == 'C' &&
+		data[4] == 'H' &&
+		data[5] == 'K'
+ 	  )
+	{
+		result = true;
+	}
+	return result;
+}
+
+
+
+/* Print the RAW bytes in the EEPROM data with minimal Parsing */
+
+boolean SerialCommunication::comparePrintEEPROM(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'P' &&
+		data[1] == 'R' &&
+		data[2] == 'I' &&
+		data[3] == 'N' &&
+		data[4] == 'T' &&
+		data[5] == 'E'
+ 	  )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+/* Print the EEPROM data and parse in to readable format
+ * i.e. With the specified function per byte
+ */
+
+boolean SerialCommunication::comparePrintContents(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'P' &&
+		data[1] == 'R' &&
+		data[2] == 'I' &&
+		data[3] == 'N' &&
+		data[4] == 'T' &&
+		data[5] == 'C'
+	  )
+	{
+		result = true;
+	}
+	return result;
+}
+
+boolean SerialCommunication::comparePrintController(const uint8_t* data){
+	boolean result = false;
+
+	if(data[0] == 'S' && data[1] == 'C' && data[3] == 'C' ){
+		int tmpSceneNumber = data[2] - 48;
+		int tmpControllerNumber = ((data[4]-48)*10) + (data[5]-48);
+
+		if(
+		   tmpSceneNumber >=1 &&
+		   tmpSceneNumber <=4 &&
+		   tmpControllerNumber >= 0 &&
+		   tmpControllerNumber <= 28
+		   )
+		{
+			requestedScene = tmpSceneNumber;
+			requestedController = tmpControllerNumber;
+
+			result = true;
+		} else {
+			Serial.println("Scene or Controller out of range");
+			Serial.println("SCx = Scene 1-4");
+			Serial.println("Cxx = controller 0-28");
+			result = false;
+		}
+	}
+
+	return result;
+}
+
+boolean SerialCommunication::comparePrintAnalogSensors(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'A' &&
+		data[1] == 'N' &&
+		data[2] == 'A' &&
+		data[3] == 'E' &&
+		data[4] == 'N' &&
+		data[5] == 'A'
+      )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+boolean SerialCommunication::comparePrintSwitches(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'S' &&
+		data[1] == 'W' &&
+		data[2] == 'S' &&
+		data[3] == 'E' &&
+		data[4] == 'N' &&
+		data[5] == 'A'
+ 	  )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+boolean SerialCommunication::compareLedTest(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'L' &&
+		data[1] == 'E' &&
+		data[2] == 'D' &&
+		data[3] == 'T' &&
+		data[4] == 'S' &&
+		data[5] == 'T'
+	  )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+boolean SerialCommunication::compareDebugDisable(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'D' &&
+		data[1] == 'B' &&
+		data[2] == 'G' &&
+		data[3] == 'D' &&
+		data[4] == 'I' &&
+		data[5] == 'S'
+ 	  )
+	{
+		result = true;
+	}
+	return result;
+}
+
+
 uint8_t SerialCommunication::id01gh[6] = {
                                           0x49, //I
                                           0x44, //D
@@ -319,8 +599,6 @@ uint8_t SerialCommunication::failta[6] = {
                                           0x54, //T
                                           0x41  //A    
                                          };
-
-
 
 
  

@@ -19,14 +19,17 @@ public:
 
   int compareProtocolBlocks(const int* data);
 
+  void printMemoryCheck();
   void printEEPROM();
   void printContentsToString();
-  String dataBlockToString(int option);
-  String dataStructureToString(const int* data);
+
+  void printController(int scene, int number);
 
 private:
   int sceneBlockFound;
 
+  String dataBlockToString(int option);
+  String dataStructureToString(const int* data);
 
   boolean compareSceneBlock(const int* data);
   boolean compareStartBlock(const int* data);

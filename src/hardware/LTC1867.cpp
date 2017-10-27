@@ -57,9 +57,7 @@ uint16_t mapTable[16][2] = {
 volatile uint32_t sensors[16] = {0};
 volatile uint16_t mappedValues[16] = {0};
 
-#ifdef DEBUG
-	volatile uint16_t averagedValues[16] = {0};
-#endif /* DEBUG */
+volatile uint16_t averagedValues[16] = {0};
 
 
 unsigned int addressIndex = 0;
@@ -94,6 +92,23 @@ void LTC1867_init() {
 
   SPI.begin();
 }
+
+void LTC1867_reset(){
+	sensors[16] = {0};
+	mappedValues[16] = {0};
+	averagedValues[16] = {0};
+
+	addressIndex = 0;
+	memoryIndex = 7;
+
+	digitalWrite(EN_DAC1, HIGH); //Active LOW thus disabled
+	digitalWrite(CS_DAC1, LOW); //short Pulse
+	digitalWrite(EN_DAC2, HIGH);
+	digitalWrite(CS_DAC2, LOW);
+}
+
+
+
 /*
    Read value's from the
    two digital Audio Converters

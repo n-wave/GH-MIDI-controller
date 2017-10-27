@@ -61,6 +61,7 @@ extern uint8_t offsetTable[16];  //hysteresis table for every sensor
 extern uint16_t mapTable[16][2];
 
 void LTC1867_init();
+void LTC1867_reset();
 void LTC1867_readSensors();
 void LTC1867_readDAC1();
 void LTC1867_readDAC2();

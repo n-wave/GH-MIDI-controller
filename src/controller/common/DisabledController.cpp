@@ -18,7 +18,6 @@ DisabledController::DisabledController(const int* data) :
 	parameter(0)
 {
 	boolean succes = this->setConfiguration(data);
-
 #ifdef DEBUG
 	if(succes){
 		Serial.println("Disabled Controller successfully initialized");
@@ -59,6 +58,6 @@ boolean DisabledController::setConfiguration(const int* data){
 
 #ifdef DEBUG
 	void DisabledController::printContents(){
-		Serial.println("Disabled Controller");
+		Serial.println("Disabled Controller \n");
 	}
 #endif /* DEBUG */
