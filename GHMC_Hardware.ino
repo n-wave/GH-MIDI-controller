@@ -11,8 +11,8 @@
 #include "src/hardware/LTC1867.h"
 #include "src/state/StateMachine.h"
 
+ProtocolInterperter interperter = ProtocolInterperter();
 StateMachine stateMachine = StateMachine(115200);
-
 Dispatcher dispatcher = Dispatcher();
 
 Scene sceneOne = Scene("Scene One", &dispatcher);
@@ -26,10 +26,12 @@ IntervalTimer samplingClock;
 int cycles = 0;
 boolean startup = true;
 boolean stateChanged = false;
+boolean sensorsUpdated = false;
+boolean enableMidi = true;
 
 void setup()
 {
-	delay(1000);
+	delay(100);
 
 	pinMode(3, OUTPUT);
 	pinMode(4, OUTPUT);
@@ -60,10 +62,15 @@ void loop()
 {
 
 	  if(startup){
-		  //configureSceneTest();
+		   configureScenes();
+		  startupLedSequence();
 
 		  startup = false;
-		  samplingClock.begin(updateSensors, 20); // Start Sampling the sensors
+		  samplingClock.begin(updateSensors, 15); // Start Sampling the sensors
+		  	  	  	  	  	  	  	  	  	  	  //16 stable
+		  	  	  	  	  	  	  	  	  	  	  //15 stable
+		  	  	  	  	  	  	  	  	  	  	  //14 stable
+		  	  	  	  	  	  	  	  	  	  	  //unstable
 	  }
 
 
@@ -72,10 +79,22 @@ void loop()
 	  digitalWrite(3, LOW);
 	  digitalWrite(4, LOW);
 	  digitalWrite(5, LOW);
-	  digitalWrite(6, LOW);
+	  digitalWrite(6, HIGH);
 
 	  digitalWrite(22, LOW);
 	  digitalWrite(21, LOW);
+
+	  if(sensorsUpdated){
+		  if(enableMidi){
+			sceneOne.setParameters();
+		  	sceneOne.updateControllers();
+		  }
+		  sensorsUpdated = false;
+	  }
+
+
+	  dispatcher.dispatch();
+
 
 	  //State 1: Normal Operation
 	  //State 2: Programming mode disable IntervalTimer
@@ -86,12 +105,29 @@ void loop()
 		  {
 	  	    case 1:
 	  	      cycles = 0;
+	  	      configureScenes();
+	  	      succeslLedSequence();
 	  		  LTC1867_reset();
-	  		  samplingClock.begin(updateSensors, 20);
+	  		  samplingClock.begin(updateSensors, 15);
+	  		  enableMidi = true;
 	  		  break;
-	  	    case 2:
+	  	    case 2: //Entering programming Mode disable the sampling clock and Midi
+	  	      enableMidi = false;
 		      samplingClock.end();
 		  	  break;
+	  	    case 3:
+	  	      //Upload failed not reconfiguring Scenes
+	  	      cycles = 0;
+	  		  LTC1867_reset();
+	  	  	  samplingClock.begin(updateSensors, 15);
+	  	  	  enableMidi = true;
+	  	  	  break;
+	  	    case 4: //Entering Debug or Disable Midi message has been received
+		      enableMidi = false;
+		      break;
+	  	    case 5:
+	  	      enableMidi = true; //Enable MIDI message has been received turn on Midi
+	  	      break;
     	  }
 	  }
 }
@@ -101,6 +137,7 @@ void updateSensors(){
 
 	   if(cycles == 0){
 	     LTC1867_calculateAverage();
+	     sensorsUpdated = true;
 	   }
 
 	   LTC1867_readSensors();
@@ -110,29 +147,55 @@ void updateSensors(){
 }
 
 
-
-
-
-
-void configureSceneTest(){
-	ProtocolInterperter interperter = ProtocolInterperter();
-
+void configureScenes(){
 	interperter.configureScene(sceneOne, 0);
-	delay(100);
 	interperter.configureScene(sceneTwo, 1);
-	delay(100);
-	interperter.configureScene(sceneThree, 2);
-	delay(100);
+    interperter.configureScene(sceneThree, 2);
 	interperter.configureScene(sceneFour, 3);
-	delay(100);
-
-	sceneOne.printControllerContents();
-	sceneTwo.printControllerContents();
-	sceneThree.printControllerContents();
-	sceneFour.printControllerContents();
 }
 
+void succeslLedSequence(){
+	for(int i=0; i<3; i++){
+		digitalWrite(20, HIGH);
+		delay(50);
+		digitalWrite(20, LOW);
+		delay(50);
+	  }
+
+	  digitalWrite(20, HIGH);
+}
+
+void startupLedSequence(){
+	int ledDelay;
+
+	digitalWrite(3, LOW);
+   	digitalWrite(4, LOW);
+	digitalWrite(5, LOW);
+	digitalWrite(6, LOW);
+	digitalWrite(20, LOW);
+
+	for(int i=22; i>20; i--){
+		digitalWrite(i, HIGH);
+		delay(150);
+		digitalWrite(i, LOW);
+	}
+
+	for(int i=6; i>=3; i--){
+		digitalWrite(i, HIGH);
+		delay(150);
+		digitalWrite(i, LOW);
+	}
 
 
+	for(int i=0; i<10; i++){
+		ledDelay = 120-(i*10);
+		digitalWrite(20, HIGH);
+		delay(ledDelay);
+		digitalWrite(20, LOW);
+		delay(ledDelay);
+	  }
+
+	  digitalWrite(20, HIGH);
+}
 
 

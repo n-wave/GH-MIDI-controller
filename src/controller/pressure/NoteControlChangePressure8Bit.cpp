@@ -104,7 +104,13 @@ void NoteControlChangePressure8Bit::update(const uint32_t* time){
 
 			if(sendNote == true){
 				if(velocityOption == 1){
-					uint8_t tmpVelocity = (velocity * parameter) >> 7;
+					uint8_t tmpVelocity;
+
+					if(parameter >= velocity){
+						tmpVelocity = velocity;
+					} else {
+						tmpVelocity = parameter;
+					}
 
 					dispatcher->addCommand(new NoteControlChange8BitCommand(channel,
 																			pitch,

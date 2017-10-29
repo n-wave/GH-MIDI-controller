@@ -29,7 +29,8 @@
  * 
  */
                      
-volatile unsigned char switches[16] =  {0,  //neck switch 1
+volatile unsigned char switches[16] =  {
+										0,  //neck switch 1
                                         0,  //neck switch 2
                                         0,  //neck switch 3
                                         0,  //neck switch 4
@@ -39,12 +40,13 @@ volatile unsigned char switches[16] =  {0,  //neck switch 1
                                         0,  //tab switch 2
                                         0,  //start
                                         0,  //select
-                                        0,  //hold/foot switch
-                                        0,  //joystick switch
                                         0,  //scene 1
                                         0,  //scene 2
                                         0,  //scene 3  
-                                        0}; //scene 4
+                                        0,  //scene 4
+                                        0,  //hold/foot switch
+                                        0  //joystick switch
+										};
 
 unsigned int switchIndex = 0;
                                        

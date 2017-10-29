@@ -9,21 +9,6 @@
 #include "../testing/configuration.h"
 
 
-/*
- *
- *     long baudRate;
-    SerialCommunication serial;
-    ProtocolToString printer;
-
-    unsigned long startTime;
-    unsigned long printTime; //Printing analog or switchvalues
-    unsigned long ledTime;   //Led indicator speed
-    boolean ledToggle;
-    int state;
- *
- *
- *
- */
 StateMachine::StateMachine() :
 	baudRate(115200),
 	serial(SerialCommunication(baudRate)),
@@ -37,7 +22,7 @@ StateMachine::StateMachine() :
 	debugMode(false),
 	printAnalogValues(false),
 	printSwitchValues(false),
-
+	midiEnabled(true),
 	ledPin(20),
 	state(1),
 	serialResult(0)
@@ -57,6 +42,7 @@ StateMachine::StateMachine(long baudrate) :
 	debugMode(false),
 	printAnalogValues(false),
 	printSwitchValues(false),
+	midiEnabled(true),
 	ledPin(20),
 	state(1),
 	serialResult(0)
@@ -81,22 +67,28 @@ boolean StateMachine::update(){
 	digitalWrite(20, ledToggle);
 
 	switch(serialResult){
-		case 1:
-		  state = 2; //Entered programming mode close samplingClock in main
-		  programMode = true;
-		  debugMode = false;
-		  break;
-		case 2:
+	case 1:
 		  state = 1; //Entered Normal device mode reset cycles, the LTC1867 and reset the sampling clock
+			  	  	  	 //And upload was succesfull configureScenes in main
 		  ledToggle = true;
 		  programMode = false;
 		  debugMode = false;
+		  midiEnabled = true;
+		  break;
+		case 2:
+		  state = 2; //Entered programming mode close samplingClock in main
+		  programMode = true;
+		  debugMode = false;
+		  midiEnabled = false;
 		  break;
 		case 3:
-		  state = 3;
+
+		case 4:
+		  state = 4;
 		  debugMode = true;
-		  Serial.println("/-----------------------------------------/");
+		  midiEnabled = false;
 		  Serial.println("/-----------Entering Debug Mode-----------/");
+		  Serial.println("/--------------MIDI disabled--------------/");
 		  this->printDebugCommands();
 		  break;
 	}
@@ -117,35 +109,59 @@ boolean StateMachine::update(){
 			}
 
 			switch(serialResult){
-				case 4:
+				case 5:
 			      printDebugCommands();
 				  break;
-				case 5:
+				case 6:
 				  printer.printMemoryCheck();
 				  break;
-				case 6:
+				case 7:
 				  printer.printEEPROM();
 			  	  break;
-				case 7:
+				case 8:
 				  printer.printContentsToString();
 			  	  break;
-				case 8:
+				case 9:
 				  printer.printController(serial.getRequestedScene(), serial.getRequestedController());
 			  	  break;
-				case 9:
+				case 10:
+				  state = 4; //disable Midi
 				  printAnalogValues = true;
+				  midiEnabled = false;
 				  Serial.println("Analog sensors true");
 				  break;
-				case 10:
+				case 11:
+				  state = 4; //Disable Midi
+				  midiEnabled = false;
 				  printSwitchValues = true;
 				  Serial.println("Switches true");
 				  break;
-				case 11:
+				case 12:
 				  Serial.println("          Testing LED indicators          ");
-			      Serial.println("/-----------------------------------------/");
+
 				  testLedIndicators();
 				  Serial.println("            Led test Finished             ");
-			      Serial.println("/-----------------------------------------/");
+				  break;
+				case 13:
+				  state = 5;
+				  if(!midiEnabled){
+					  Serial.println("/--------------MIDI Enabled---------------/");
+					  Serial.println("/-----------------------------------------/");
+				  } else {
+					  Serial.println("/----------MIDI Already Enabled-----------/");
+					  Serial.println("/-----------------------------------------/");
+				  }
+				  midiEnabled = true;
+				  break;
+				case 14:
+				  state = 4;
+				  if(midiEnabled){
+					  Serial.println("/--------------MIDI disabled--------------/");
+					  Serial.println("/-----------------------------------------/");
+				  } else {
+					  Serial.println("/----------MIDI Already Disabled----------/");
+				      Serial.println("/-----------------------------------------/");
+				  }
 				  break;
 				case 255:
 				  Serial.print("\n");
@@ -200,25 +216,26 @@ void StateMachine::init()
 
 void StateMachine::printDebugCommands()
 {
-	Serial.println("/-----------------------------------------/");
 	Serial.println("/-----------------commands----------------/");
 	Serial.println("/-----------------------------------------/");
-	Serial.println("0. : DBGENA : Enable debugging");
-	Serial.println("1. : DBGCOM : Print commands");
-	Serial.println("2. : MEMCHK : Memory Check (perform crc)");
-	Serial.println("3. : PRINTE : print EEPROM in HEX format");
-	Serial.println("4. : PRINTC : Print controller settings");
-	Serial.println("5. : SCxCxx : Print specific controller");
+	Serial.println(" 0 : DBGENA : Enable debugging");
+	Serial.println(" 1 : DBGCOM : Print commands");
+	Serial.println(" 2 : MEMCHK : Memory Check (perform crc)");
+	Serial.println(" 3 : PRINTE : print EEPROM in HEX format");
+	Serial.println(" 4 : PRINTC : Print controller settings");
+	Serial.println(" 5 : SCxCxx : Print specific controller");
 	Serial.println("              from a specific scene");
 	Serial.println(" >>: SC(1-4): Scene number 1 to 4");
 	Serial.println(" >>: Cxx    : Controller 1 to 28");
 	Serial.println(" >>: C00    : Print Scene Data");
 	Serial.println(" <<: SC1C11 : Prints controller 11");
 	Serial.println("		      from Scene 1");
-	Serial.println("6. : ANAENA : Enable analog sensors");
-	Serial.println("7. : SWSENA : Enable Switches");
-	Serial.println("8. : LEDTST : Test led indicatorss");
-	Serial.println("9. : DBGDIS : Exit debugging");
+	Serial.println(" 6 : ANAENA : Enable analog sensors");
+	Serial.println(" 7 : SWSENA : Enable Switches");
+	Serial.println(" 8 : LEDTST : Test led indicators");
+	Serial.println(" 9 : MIDENA : Enable MIDI");
+	Serial.println("10 : MIDDIS : Disable MIDI");
+	Serial.println("11 : DBGDIS : Exit debugging");
 	Serial.println("/-----------------------------------------/");
 }
 
@@ -330,7 +347,7 @@ void StateMachine::printSwitches(){
 
     Serial.println("/---------------------------/");
 	Serial.println(" 	     Switches            ");
-    Serial.println("/---------------------------/");
+	Serial.println("/---------------------------/");
 
 	Serial.print("N1:");                     //Neck Switch 1
 	Serial.println(switches[0]);
@@ -367,6 +384,8 @@ void StateMachine::printSwitches(){
 	Serial.println(switches[15]);
 }
 
+
+
 void StateMachine::testLedIndicators(){
 	  digitalWrite(3, LOW);
 	  digitalWrite(4, LOW);
@@ -390,8 +409,6 @@ void StateMachine::testLedIndicators(){
 		  delay(500);
 		  digitalWrite(i, LOW);
 	  }
-
-
 
 	  digitalWrite(20, HIGH);
 }

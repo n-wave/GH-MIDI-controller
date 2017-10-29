@@ -213,7 +213,7 @@ uint16_t ControlChangeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb)
 
 	return result;
 }
-
+#ifdef DEBUG
 void ControlChangeToggle16Bit::printContents(){
 	String result = String("Control Change Toggle 16Bit \n");
 
@@ -237,3 +237,4 @@ void ControlChangeToggle16Bit::printContents(){
 	result += (String)"LedPin       : " + ledPin + "\n";
 	Serial.println(result);
 }
+#endif DEBUG

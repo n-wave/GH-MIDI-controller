@@ -45,8 +45,6 @@ boolean CyclicRedundancyCheck::memoryCheck(){
 	return result;
 }
 
-
-
 long CyclicRedundancyCheck::calculateCyclicRedundancyCheck(const int* dataArray, int length)
 {
   long crc = ~0L;

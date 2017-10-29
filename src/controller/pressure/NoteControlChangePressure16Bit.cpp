@@ -105,13 +105,20 @@ void NoteControlChangePressure16Bit::update(const uint32_t* value){
 			uint16_t scalar = (range * parameter) >> 14;
 			scalar += bottomValue;
 
-			uint8_t controlChangeValueMSB = (scalar >> 7) & 0B01111111;
+			uint8_t controlChangeValueMSB = scalar >> 7;
 			uint8_t controlChangeValueLSB = scalar & 0B01111111;
 
 			if(sendNote == true){
 				if(velocityOption == 1){
 					uint8_t tmpValue7Bit = parameter >> 7;
-					uint8_t tmpVelocity = (velocity * tmpValue7Bit) >> 7;
+					uint8_t tmpVelocity;
+
+					if(tmpValue7Bit >= velocity){
+						tmpVelocity = velocity;
+					} else {
+						tmpVelocity = tmpValue7Bit;
+					}
+
 
 					dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
 																			 pitch,
@@ -121,6 +128,8 @@ void NoteControlChangePressure16Bit::update(const uint32_t* value){
 																			 controlChangeNumberLSB,
 																			 controlChangeValueLSB));
 
+
+				} else {
 					dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
 																			 pitch,
 																			 velocity,
@@ -150,13 +159,10 @@ void NoteControlChangePressure16Bit::update(const uint32_t* value){
 		}
 		updated = false;
 	}
-
-
-	dispatcher->addCommand(new NoteControlChange16BitCommand(2, 80, 100, 12, 100, 44, 10));
 }
 
 void NoteControlChangePressure16Bit::setParameter(const uint16_t* value){
-	uint16_t tmp = *value;;
+	uint16_t tmp = *value;
 
 	if(tmp != parameter){
 		if(parameter == 0){

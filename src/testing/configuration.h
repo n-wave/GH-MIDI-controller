@@ -9,7 +9,7 @@
 #define SRC_TESTING_CONFIGURATION_H_
 
 #define NROFCONT 28;
-#define DEBUG 1
+//#define DEBUG 1
 //#define COMPAREBLOCKS 0
 
 #endif /* SRC_TESTING_CONFIGURATION_H_ */

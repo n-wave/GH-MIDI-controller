@@ -14,6 +14,8 @@
 #include "../controller/common/controller.h"
 #include "../controller/common/ProgramChange.h"
 #include "../dispatcher/Dispatcher.h"
+#include "../hardware/LTC1867.h"
+#include "../hardware/switches.h"
 
 class Scene {
 public:
@@ -24,6 +26,7 @@ public:
 	virtual ~Scene();
 
 	void updateControllers();
+	void setParameters();
 
 	boolean setSceneData(const int* data);
 	boolean setController(int number, int type, const int* data);

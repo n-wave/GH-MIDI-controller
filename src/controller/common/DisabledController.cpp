@@ -35,7 +35,7 @@ DisabledController::~DisabledController() {
 void DisabledController::update(const uint32_t* time){}
 
 void DisabledController::setParameter(const uint16_t* value){
-	this->parameter = 0;
+	/* Disabled Controller nothing to see here */
 }
 
 uint16_t DisabledController::getParameter(){

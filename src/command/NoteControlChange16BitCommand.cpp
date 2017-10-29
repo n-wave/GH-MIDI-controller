@@ -37,6 +37,7 @@ NoteControlChange16BitCommand::NoteControlChange16BitCommand(const uint8_t& chan
 }
 
 NoteControlChange16BitCommand::~NoteControlChange16BitCommand() {
+
 #ifdef DEBUG
 	Serial.println("NoteControlChange16BitCommand Destructor called");
 #endif /* DEBUG */

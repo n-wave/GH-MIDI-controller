@@ -80,7 +80,17 @@ void NoteVelocityPressure::update(const uint32_t* time){
 	if(updated){
 			if(parameter != 0){
 				if(velocityOption == 1){
-					uint8_t tmp = (parameter * velocity) >> 7;
+
+					/*ToDo Max value not multiplication
+					 */
+					uint8_t tmp;
+
+					if(parameter >= velocity){
+						tmp = velocity;
+					} else {
+						tmp = parameter;
+					}
+
 					dispatcher->addCommand(new NoteVelocityCommand(channel,
 																   pitch,
 																   tmp));

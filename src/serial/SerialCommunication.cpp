@@ -14,11 +14,7 @@ SerialCommunication::SerialCommunication()
 	requestedController(0)
 {
 
-  for(int i=0; i<32; i++){
-    data[i] = 0x00;
-    eepromBuffer[i] = 0x00;
-  }
-  
+
   eepromSize = (EEPROM.length()-1);
 
   Serial.begin(baudRate);
@@ -34,10 +30,7 @@ SerialCommunication::SerialCommunication(long baudrate)
 	requestedController(0)
 {
 
-  for(int i=0; i<32; i++){
-    data[i] = 0x00;
-    eepromBuffer[i] = 0x00;
-  }
+
 
   eepromSize = (EEPROM.length()-1);
 
@@ -62,8 +55,8 @@ int SerialCommunication::readSerial(){
     dataIndex++;
   } else{
       dataIndex = 0;
-      
-      /** Flush Buffer **/     
+
+      /** Flush Buffer **/
       if(bufferSize > 32){   
         for(int i=0; i<bufferSize; i++){
           Serial.read();
@@ -126,7 +119,6 @@ void SerialCommunication::updateEEPROM(const uint8_t* data, int length){
     delayMicroseconds(100);
   }
 }
-
 
 /** Calculate Cyclic Redundancy Check from EEPROM **/ 
 boolean SerialCommunication::calculateCyclicRedundancyCheckFromEEPROM()
@@ -217,7 +209,7 @@ int SerialCommunication::compareSerialBlocks(const uint8_t* data){
     if(compareStartCommunicationBlock(data)){
       eepromCurrentAddress = 0;
       sendIdentificationBlock();
-      return 1;
+      return 2;
     }
 /**
  * Cyclic Redundancy Check (CRCBGN) has been received. 
@@ -229,11 +221,12 @@ int SerialCommunication::compareSerialBlocks(const uint8_t* data){
     
     if(compareCalculateCyclicRedundancyCheck(data)){
       if(calculateCyclicRedundancyCheckFromEEPROM()){
-       sendSuccessBlock();
+        sendSuccessBlock();
+        return 1;
       } else {
        sendFailedBlock(); 
-      } 
-      return 2;
+       return 3;
+      }
     }
 
     /**
@@ -243,12 +236,12 @@ int SerialCommunication::compareSerialBlocks(const uint8_t* data){
      *
      **/
 
-    if(compareDebugEnable(data)){return 3;} 		//Enter Debug Mode
+    if(compareDebugEnable(data)){return 4;} 		//Enter Debug Mode
 
-    if(compareDebugCommands(data)){return 4;} 		//Print Debug Command
-    if(compareMemoryCheck(data)){return 5;}   		//Check the memory by activating a crc calculation
-    if(comparePrintEEPROM(data)){return 6;}   		//Print raw EEPROM memory in HEX
-    if(comparePrintContents(data)){return 7;} 		//Print all the controller settings
+    if(compareDebugCommands(data)){return 5;} 		//Print Debug Command
+    if(compareMemoryCheck(data)){return 6;}   		//Check the memory by activating a crc calculation
+    if(comparePrintEEPROM(data)){return 7;}   		//Print raw EEPROM memory in HEX
+    if(comparePrintContents(data)){return 8;} 		//Print all the controller settings
 
     /*
      * Print one specific controller from specific scene
@@ -264,7 +257,7 @@ int SerialCommunication::compareSerialBlocks(const uint8_t* data){
      *
      */
 
-    if(comparePrintController(data)){return 8;}
+    if(comparePrintController(data)){return 9;}
     /*
      * The next two commands will start outputting
      * the data received from the sensors, only
@@ -274,9 +267,11 @@ int SerialCommunication::compareSerialBlocks(const uint8_t* data){
      * sending the specific messages to the serial port
      */
 
-    if(comparePrintAnalogSensors(data)){return 9;}  //Start outputting the analog sensor values
-    if(comparePrintSwitches(data)){return 10;}	    //Start outputting the values of the switches
-    if(compareLedTest(data)){return 11;}
+    if(comparePrintAnalogSensors(data)){return 10;}  //Start outputting the analog sensor values
+    if(comparePrintSwitches(data)){return 11;}	    //Start outputting the values of the switches
+    if(compareLedTest(data)){return 12;}			//Perform a led indicator test
+    if(compareMidiEnable(data)){return 13;}			//Enable Midi Functionality
+    if(compareMidiDisable(data)){return 14;}		//Disable Midi Functionality
 
     if(compareDebugDisable(data)){return 255;}
 
@@ -538,6 +533,44 @@ boolean SerialCommunication::compareLedTest(const uint8_t* data){
 		data[3] == 'T' &&
 		data[4] == 'S' &&
 		data[5] == 'T'
+	  )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+boolean SerialCommunication::compareMidiEnable(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		data[0] == 'M' &&
+		data[1] == 'I' &&
+		data[2] == 'D' &&
+		data[3] == 'E' &&
+		data[4] == 'N' &&
+		data[5] == 'A'
+	  )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+
+
+boolean SerialCommunication::compareMidiDisable(const uint8_t* data){
+	boolean result = false;
+
+	if(
+		 data[0] == 'M' &&
+		 data[1] == 'I' &&
+		 data[2] == 'D' &&
+		 data[3] == 'D' &&
+		 data[4] == 'I' &&
+		 data[5] == 'S'
 	  )
 	{
 		result = true;

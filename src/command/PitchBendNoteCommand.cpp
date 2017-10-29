@@ -29,6 +29,9 @@ PitchBendNoteCommand::PitchBendNoteCommand(const uint8_t& channel,
 }
 
 PitchBendNoteCommand::~PitchBendNoteCommand() {
+	//usbMIDI.sendNoteOn(pitch, velocity, channel);
+	usbMIDI.sendPitchBend(pbValue, channel);
+
 #ifdef DEBUG
 	Serial.println("PitchBendNoteCommand Destructor called");
 #endif /* DEBUG */

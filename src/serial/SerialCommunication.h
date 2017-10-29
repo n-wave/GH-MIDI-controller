@@ -40,7 +40,7 @@ private:
   int compareSerialBlocks(const uint8_t* data);
 
   void writeBufferToSerial(const uint8_t* data);
-  void updateEEPROM(const uint8_t* data, int length); 
+  void updateEEPROM(const uint8_t* data, int length);
   boolean calculateCyclicRedundancyCheckFromEEPROM();
 
   boolean compareStartCommunicationBlock(const uint8_t* data);
@@ -58,6 +58,8 @@ private:
   boolean comparePrintAnalogSensors(const uint8_t* data);
   boolean comparePrintSwitches(const uint8_t* data);
   boolean compareLedTest(const uint8_t* data);
+  boolean compareMidiEnable(const uint8_t* data);
+  boolean compareMidiDisable(const uint8_t *data);
 
   boolean compareDebugDisable(const uint8_t* data);
 

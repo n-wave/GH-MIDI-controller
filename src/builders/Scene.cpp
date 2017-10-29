@@ -124,6 +124,33 @@ boolean Scene::setSceneData(const int* data){
  * object.
  */
 
+void Scene::setParameters(){
+	int index = 0;
+	int switchIndex = 0;
+	uint16_t tmp = 0;
+
+	while(index < 16){
+		tmp = mappedValues[index];
+		controllers[index]->setParameter(&tmp);
+		index++;
+	}
+
+	while(index < 26){
+		tmp = switches[switchIndex];
+		controllers[index]->setParameter(&tmp);
+		index++;
+		switchIndex++;
+	}
+
+	tmp = switches[14];
+	controllers[26]->setParameter(&tmp);
+	tmp = switches[15];
+	controllers[27]->setParameter(&tmp);
+
+
+}
+
+
 boolean Scene::setController(int number, int type, const int* data){
 	boolean result = false;
 
@@ -322,7 +349,6 @@ void Scene::setName(const String& name){
 }
 
 #ifdef DEBUG
-
 void Scene::printPogramChangeContents(){
 	int tmpNrOfPC = this->nrOfProgramChanges;
 
