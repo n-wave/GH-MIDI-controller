@@ -19,10 +19,10 @@ public:
 
 	~ControlChangeFadeToggle8Bit();
 
-	void update(const uint32_t* time);
+	void update();
 
 	void setParameter(const uint16_t* value);
-	uint16_t getParameter();
+
 
 	boolean setConfiguration(const int* data);
 

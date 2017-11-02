@@ -17,8 +17,14 @@ DisabledController::DisabledController() :
 DisabledController::DisabledController(const int* data) :
 	parameter(0)
 {
-	boolean succes = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
+
 #ifdef DEBUG
+	boolean succes = this->setConfiguration(data);
+
 	if(succes){
 		Serial.println("Disabled Controller successfully initialized");
 	} else {
@@ -32,14 +38,10 @@ DisabledController::~DisabledController() {
 }
 
 
-void DisabledController::update(const uint32_t* time){}
+void DisabledController::update(){}
 
 void DisabledController::setParameter(const uint16_t* value){
 	/* Disabled Controller nothing to see here */
-}
-
-uint16_t DisabledController::getParameter(){
-	return parameter;
 }
 
 boolean DisabledController::setConfiguration(const int* data){

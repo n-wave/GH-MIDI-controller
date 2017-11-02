@@ -7,6 +7,9 @@
 
 #include "ControlChangeToggle16Bit.h"
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 ControlChangeToggle16Bit::ControlChangeToggle16Bit() :
 	toggleOption(0),
@@ -40,9 +43,13 @@ ControlChangeToggle16Bit::ControlChangeToggle16Bit(const int* data)  :
 	ledPin(0),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChange16Bit successfully initialized");
 	} else {
@@ -66,9 +73,13 @@ ControlChangeToggle16Bit::ControlChangeToggle16Bit(const int* data, Dispatcher* 
 	ledPin(0),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChange16Bit successfully initialized");
 	} else {
@@ -92,13 +103,16 @@ ControlChangeToggle16Bit::ControlChangeToggle16Bit(const int* data, uint8_t ledP
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChange16Bit successfully initialized");
 	} else {
@@ -125,7 +139,7 @@ ControlChangeToggle16Bit::~ControlChangeToggle16Bit()
  * arg 5: uint8_t ccValueLSB
  * */
 
-void ControlChangeToggle16Bit::update(const uint32_t* time)
+void ControlChangeToggle16Bit::update()
 {
 	if(updated){
 		if(toggleOption == 1){
@@ -177,10 +191,6 @@ void ControlChangeToggle16Bit::setParameter(const uint16_t* value){
 	}
 }
 
-uint16_t ControlChangeToggle16Bit::getParameter(){
-	return parameter;
-}
-
 boolean ControlChangeToggle16Bit:: setConfiguration(const int* data) {
 		boolean result = false;
 
@@ -207,21 +217,12 @@ boolean ControlChangeToggle16Bit:: setConfiguration(const int* data) {
 		return result;
 	}
 
-uint16_t ControlChangeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
 #ifdef DEBUG
 void ControlChangeToggle16Bit::printContents(){
 	String result = String("Control Change Toggle 16Bit \n");
 
-	uint16_t onValue = this->convertBytesTo14Bit(onValueMSB, onValueLSB);
-	uint16_t offValue = this->convertBytesTo14Bit(offValueMSB, onValueLSB);
+	uint16_t onValue = convertBytesTo14Bit(onValueMSB, onValueLSB);
+	uint16_t offValue = convertBytesTo14Bit(offValueMSB, onValueLSB);
 
 
 	result += (String)"Toggle Option: " + toggleOption + "\n";
@@ -240,4 +241,4 @@ void ControlChangeToggle16Bit::printContents(){
 	result += (String)"LedPin       : " + ledPin + "\n";
 	Serial.println(result);
 }
-#endif DEBUG
+#endif // DEBUG

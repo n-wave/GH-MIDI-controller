@@ -7,6 +7,9 @@
 
 #include "NoteControlChangeToggle16Bit.h"
 #include "../../command/NoteControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit() :
 	toggleOption(0),
@@ -44,9 +47,14 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data) :
 	ledPin(0),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChange16Bit successfully initialized");
 	} else {
@@ -72,9 +80,13 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data, Disp
 	ledPin(0),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChange16Bit successfully initialized");
 	} else {
@@ -100,12 +112,15 @@ NoteControlChangeToggle16Bit::NoteControlChangeToggle16Bit(const int* data, uint
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChange16Bit successfully initialized");
 	} else {
@@ -134,7 +149,7 @@ NoteControlChangeToggle16Bit::~NoteControlChangeToggle16Bit() {
  *
  */
 
-void NoteControlChangeToggle16Bit::update(const uint32_t* time){
+void NoteControlChangeToggle16Bit::update(){
 	if(updated){
 		if(toggleOption == 1){
 			if(toggle){
@@ -191,9 +206,6 @@ void NoteControlChangeToggle16Bit::setParameter(const uint16_t* value){
 	}
 }
 
-uint16_t NoteControlChangeToggle16Bit::getParameter(){
-	return parameter;
-}
 
 boolean NoteControlChangeToggle16Bit::setConfiguration(const int* data){
 	boolean result = false;
@@ -223,26 +235,12 @@ boolean NoteControlChangeToggle16Bit::setConfiguration(const int* data){
 
 	return result;
 }
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
 
-uint16_t NoteControlChangeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
 
 #ifdef DEBUG
     void NoteControlChangeToggle16Bit::printContents(){
-    	uint16_t onValue = this->convertBytesTo14Bit(onValueMSB, onValueLSB);
-    	uint16_t offValue = this->convertBytesTo14Bit(onValueMSB, onValueLSB);
+    	uint16_t onValue = convertBytesTo14Bit(onValueMSB, onValueLSB);
+    	uint16_t offValue = convertBytesTo14Bit(onValueMSB, onValueLSB);
 
     	String result = String("Note Control Change 16Bit \n");
     	result += (String)"Toggle Option: " + toggleOption + "\n";

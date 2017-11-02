@@ -31,9 +31,13 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data) :
 	ledPin(0),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocityToggle successfully initialized");
 	} else {
@@ -53,9 +57,13 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data, Dispatcher* dispatcher) 
 	ledPin(0),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocityToggle successfully initialized");
 	} else {
@@ -75,12 +83,15 @@ NoteVelocityToggle::NoteVelocityToggle(const int* data, uint8_t ledPin, Dispatch
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocityToggle successfully initialized");
 	} else {
@@ -94,7 +105,7 @@ NoteVelocityToggle::~NoteVelocityToggle() {
 }
 
 
-void NoteVelocityToggle::update(const uint32_t* time){
+void NoteVelocityToggle::update(){
 	if(updated){
 		if(toggleOption == 1){
 			if(toggle){
@@ -125,9 +136,6 @@ void NoteVelocityToggle::setParameter(const uint16_t* value){
 	}
 }
 
-uint16_t NoteVelocityToggle::getParameter(){
-	return parameter;
-}
 
 boolean NoteVelocityToggle::setConfiguration(const int* data){
 	boolean result = false;

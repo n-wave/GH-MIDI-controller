@@ -162,9 +162,9 @@ void ProtocolToString::printContentsToString(){
 
 void ProtocolToString::printController(int scene, int controller)
 {
-	int index;
-	int startIndex;
-	int controllerIndex;
+	int index = 0;
+	int startIndex = 0;
+	int controllerIndex = 0;
 
 
 	int blockBuffer[8] = {0};

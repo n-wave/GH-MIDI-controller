@@ -19,10 +19,10 @@ public:
 
 	virtual ~ControlChangeFadeSwitch16Bit();
 
-    void update(const uint32_t* time);
+    void update();
 
     void setParameter(const uint16_t* value);
-    uint16_t getParameter();
+
     boolean setConfiguration(const int* data);
 
 #ifdef DEBUG
@@ -41,9 +41,6 @@ private:
 
     void fadeInDecrement();
     void fadeOutDecrement();
-
-    uint16_t convertBytesTo14Bit(uint8_t msb, uint8_t lsb);
-    uint16_t convertBytesTo16Bit(uint8_t msb, uint8_t lsb);
 
     const uint8_t ID = 0xE6;
     uint8_t channel;

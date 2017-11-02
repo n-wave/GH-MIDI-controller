@@ -38,9 +38,15 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data) :
 	ledPin(0),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeToggle8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -61,9 +67,13 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data, Dispatcher* di
 	ledPin(0),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeToggle8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -84,12 +94,15 @@ ControlChangeToggle8Bit::ControlChangeToggle8Bit(const int* data, uint8_t ledPin
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeToggle8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -116,7 +129,7 @@ ControlChangeToggle8Bit::~ControlChangeToggle8Bit()
  */
 
 
-void ControlChangeToggle8Bit::update(const uint32_t* time){
+void ControlChangeToggle8Bit::update(){
 	if(updated){
 		if(toggleOption == 1){
 			if(toggle){
@@ -157,10 +170,6 @@ void ControlChangeToggle8Bit::setParameter(const uint16_t* value){
 		}
 		updated = true;
 	}
-}
-
-uint16_t ControlChangeToggle8Bit::getParameter(){
-	return parameter;
 }
 
 boolean ControlChangeToggle8Bit::setConfiguration(const int* data){

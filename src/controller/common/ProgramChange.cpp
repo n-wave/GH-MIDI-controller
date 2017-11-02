@@ -35,9 +35,13 @@ ProgramChange::ProgramChange(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ProgramChange successfully initialized");
 	} else {
@@ -54,9 +58,14 @@ ProgramChange::ProgramChange(const int* data, Dispatcher* dispatcher) :
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ProgramChange successfully initialized and dispatcher successfully assigned");
 	} else {
@@ -83,7 +92,7 @@ ProgramChange::~ProgramChange() {
  *
  */
 
-void ProgramChange::update(const uint32_t* time){
+void ProgramChange::update(){
 	if(updated){
 		if(parameter > 0){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
@@ -98,10 +107,6 @@ void ProgramChange::setParameter(const uint16_t * value)
 		parameter = *value;
 		updated = true;
 	}
-}
-
-uint16_t ProgramChange::getParameter(){
-	return parameter;
 }
 
 boolean ProgramChange::setConfiguration(const int* data){

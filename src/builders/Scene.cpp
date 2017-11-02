@@ -57,7 +57,7 @@ Scene::~Scene() {
 
 void Scene::updateControllers(){
 	for(int i=0; i<NROFCONTROLLERS; i++){
-		controllers[i]->update(0);
+		controllers[i]->update();
 	}
 }
 
@@ -257,12 +257,6 @@ boolean Scene::setController(int number, int type, const int* data){
 					break;
 				case 8:
 					controllers[number] = new ControlChangePressure16Bit(data, dispatcher);
-					break;
-				case 9:
-					controllers[number] = new ControlChangeFadePressure8Bit(data, dispatcher);
-					break;
-				case 10:
-					controllers[number] = new ControlChangeFadePressure16Bit(data, dispatcher);
 					break;
 			}
 		}

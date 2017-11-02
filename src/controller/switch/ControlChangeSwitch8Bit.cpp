@@ -30,9 +30,13 @@ ControlChangeSwitch8Bit::ControlChangeSwitch8Bit(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeSwitch8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -50,9 +54,13 @@ ControlChangeSwitch8Bit::ControlChangeSwitch8Bit(const int* data, Dispatcher* di
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeSwitch8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -79,7 +87,7 @@ ControlChangeSwitch8Bit::~ControlChangeSwitch8Bit() {
  */
 
 
-void ControlChangeSwitch8Bit::update(const uint32_t* time) {
+void ControlChangeSwitch8Bit::update() {
 	if(updated){
 		if(parameter){
 			dispatcher->addCommand(new ControlChange8BitCommand(channel,
@@ -99,10 +107,6 @@ void ControlChangeSwitch8Bit::setParameter(const uint16_t* value) {
 		parameter = *value;
 		updated = true;
 	}
-}
-
-uint16_t ControlChangeSwitch8Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangeSwitch8Bit::setConfiguration(const int* data) {

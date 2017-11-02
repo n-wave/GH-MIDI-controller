@@ -7,6 +7,10 @@
 
 #include "ControlChangeFadeToggle16Bit.h"
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
+using ghmc::byte::convertBytesTo16Bit;
 
 ControlChangeFadeToggle16Bit::ControlChangeFadeToggle16Bit() :
 	toggleOption(0),
@@ -247,7 +251,7 @@ ControlChangeFadeToggle16Bit::~ControlChangeFadeToggle16Bit() {
 	dispatcher = NULL;
 }
 
-void ControlChangeFadeToggle16Bit::update(const uint32_t* time) {
+void ControlChangeFadeToggle16Bit::update() {
 	if(methodPointerArray[state] != NULL){
 		(this->*methodPointerArray[state])();
 	}
@@ -445,10 +449,6 @@ void ControlChangeFadeToggle16Bit::sendOutEndValue(){
 		}
 }
 
-uint16_t ControlChangeFadeToggle16Bit::getParameter(){
-	return parameter;
-}
-
 boolean ControlChangeFadeToggle16Bit::setConfiguration(const int* data) {
 	boolean result = false;
 
@@ -471,47 +471,15 @@ boolean ControlChangeFadeToggle16Bit::setConfiguration(const int* data) {
 		endMSB = data[9];
 		endLSB = data[10];
 
-		start = this->convertBytesTo14Bit(startMSB, startLSB);
-		hold = this->convertBytesTo14Bit(holdMSB, holdLSB);
-		end = this->convertBytesTo14Bit(endMSB, endLSB);
+		start = convertBytesTo14Bit(startMSB, startLSB);
+		hold = convertBytesTo14Bit(holdMSB, holdLSB);
+		end = convertBytesTo14Bit(endMSB, endLSB);
 
-		fadeIn = this->convertBytesTo16Bit(data[11], data[12]);
-		fadeOut = this->convertBytesTo16Bit(data[13], data[14]);
+		fadeIn = convertBytesTo16Bit(data[11], data[12]);
+		fadeOut = convertBytesTo16Bit(data[13], data[14]);
 
 		result = true;
 	}
-	return result;
-}
-
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
-
-uint16_t ControlChangeFadeToggle16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
-
-/**
- *  Convert Supplied MSB and LSB values to the
- *  16Bit value they represent, store and return
- *  the result in a 16Bit value
- */
-
-uint16_t ControlChangeFadeToggle16Bit::convertBytesTo16Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0xFF) << 8;
-	uint16_t LSB = lsb & 0xFF;
-
-	result = MSB | LSB;
-
 	return result;
 }
 

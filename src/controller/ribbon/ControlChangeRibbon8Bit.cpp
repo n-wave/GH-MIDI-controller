@@ -32,9 +32,13 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeRibbon8Bit successfully initialized");
 	} else {
@@ -53,9 +57,14 @@ ControlChangeRibbon8Bit::ControlChangeRibbon8Bit(const int* data, Dispatcher* di
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeRibbon8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -82,7 +91,7 @@ ControlChangeRibbon8Bit::~ControlChangeRibbon8Bit() {
  */
 
 
-void ControlChangeRibbon8Bit::update(const uint32_t* time) {
+void ControlChangeRibbon8Bit::update() {
 	if(updated){
 		uint8_t scalar = (parameter*range) >> 7;
 		scalar += bottomValue;
@@ -99,10 +108,6 @@ void ControlChangeRibbon8Bit::setParameter(const uint16_t* value) {
 		parameter = tmp; //Raw ADC Value 16Bit
 		updated = true;
 	}
-}
-
-uint16_t ControlChangeRibbon8Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangeRibbon8Bit::setConfiguration(const int* data) {

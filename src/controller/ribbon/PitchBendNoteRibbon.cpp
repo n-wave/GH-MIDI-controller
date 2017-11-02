@@ -30,9 +30,13 @@ PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data) :
 	sendNote(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("PitchBendNote successfully initialized");
 	} else {
@@ -50,9 +54,13 @@ PitchBendNoteRibbon::PitchBendNoteRibbon(const int* data, Dispatcher* dispatcher
 	sendNote(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("PitchBendNoteRibbon successfully initialized and dispatcher assigned");
 	} else {
@@ -80,7 +88,7 @@ PitchBendNoteRibbon::~PitchBendNoteRibbon() {
  */
 
 
-void PitchBendNoteRibbon::update(const uint32_t* time) {
+void PitchBendNoteRibbon::update() {
 	if(updated){
 		if(parameter != 0){
 			if(sendNote){
@@ -115,10 +123,6 @@ void PitchBendNoteRibbon::setParameter(const uint16_t* value) {
 		parameter = tmp;
 		updated = true;
 	}
-}
-
-uint16_t PitchBendNoteRibbon::getParameter() {
-	return parameter;
 }
 
 boolean PitchBendNoteRibbon::setConfiguration(const int* data) {

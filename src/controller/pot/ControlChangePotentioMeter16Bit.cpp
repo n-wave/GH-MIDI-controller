@@ -7,6 +7,9 @@
 
 #include "ControlChangePotentioMeter16Bit.h"
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit() :
 	channel(0),
@@ -32,9 +35,13 @@ ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangePotentioMeter16Bit successfully initialized");
 	} else {
@@ -54,9 +61,14 @@ ControlChangePotentioMeter16Bit::ControlChangePotentioMeter16Bit(const int* data
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
+
 	if(success){
 		Serial.println("ControlChangePotentioMeter16Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -84,7 +96,7 @@ ControlChangePotentioMeter16Bit::~ControlChangePotentioMeter16Bit() {
  * arg 5: uint8_t ccValueLSB
  */
 
-void ControlChangePotentioMeter16Bit::update(const uint32_t* time) {
+void ControlChangePotentioMeter16Bit::update() {
 	if(updated == true){
 		uint8_t controlChangeValueMSB = 0;
 		uint8_t controlChangeValueLSB = 0;
@@ -114,10 +126,6 @@ void ControlChangePotentioMeter16Bit::setParameter(const uint16_t* value) {
 	}
 }
 
-uint16_t ControlChangePotentioMeter16Bit::getParameter() {
-	return parameter;
-}
-
 boolean ControlChangePotentioMeter16Bit:: setConfiguration(const int* data) {
 	boolean result = false;
 
@@ -132,29 +140,13 @@ boolean ControlChangePotentioMeter16Bit:: setConfiguration(const int* data) {
 		controlChangeNumberMSB = data[4];
 		controlChangeNumberLSB = controlChangeNumberMSB + 32;
 
-		topValue = this->convertBytesTo14Bit(data[5], data[6]);
-		bottomValue = this->convertBytesTo14Bit(data[7], data[8]);
+		topValue = convertBytesTo14Bit(data[5], data[6]);
+		bottomValue = convertBytesTo14Bit(data[7], data[8]);
 
 		range = topValue - bottomValue;
 
 		result = true;
 	}
-	return result;
-}
-
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
-
-uint16_t ControlChangePotentioMeter16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
 	return result;
 }
 

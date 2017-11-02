@@ -20,8 +20,6 @@
 #include "pressure/NoteControlChangePressure16Bit.h"
 #include "pressure/ControlChangePressure8Bit.h"
 #include "pressure/ControlChangePressure16Bit.h"
-#include "pressure/ControlChangeFadePressure8Bit.h"
-#include "pressure/ControlChangeFadePressure16Bit.h"
 
 #include "ribbon/PitchBendRibbon.h"
 #include "ribbon/PitchBendNoteRibbon.h"

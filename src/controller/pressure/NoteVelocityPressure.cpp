@@ -29,9 +29,14 @@ NoteVelocityPressure::NoteVelocityPressure(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocityPressure successfully initialized");
 	} else {
@@ -49,9 +54,13 @@ NoteVelocityPressure::NoteVelocityPressure(const int* data, Dispatcher* dispatch
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocityPressure successfully initialized and dispatcher assigned");
 	} else {
@@ -76,7 +85,7 @@ NoteVelocityPressure::~NoteVelocityPressure() {
  *
  */
 
-void NoteVelocityPressure::update(const uint32_t* time){
+void NoteVelocityPressure::update(){
 	if(updated){
 			if(parameter != 0){
 				if(velocityOption == 1){
@@ -116,9 +125,6 @@ void NoteVelocityPressure::setParameter(const uint16_t* value){
 	}
 }
 
-uint16_t NoteVelocityPressure::getParameter(){
-	return parameter;
-}
 
 boolean NoteVelocityPressure::setConfiguration(const int* data){
 	boolean result = false;

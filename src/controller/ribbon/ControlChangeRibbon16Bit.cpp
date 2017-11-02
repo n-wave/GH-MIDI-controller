@@ -6,8 +6,10 @@
  */
 
 #include "ControlChangeRibbon16Bit.h"
-
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 ControlChangeRibbon16Bit::ControlChangeRibbon16Bit() :
 	channel(0),
@@ -33,9 +35,13 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeRibbon16Bit successfully initialized");
 	} else {
@@ -55,9 +61,13 @@ ControlChangeRibbon16Bit::ControlChangeRibbon16Bit(const int* data, Dispatcher* 
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeRibbon16Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -85,7 +95,7 @@ ControlChangeRibbon16Bit::~ControlChangeRibbon16Bit() {
  * arg 5: uint8_t controlChangeValueLSB
  */
 
-void ControlChangeRibbon16Bit::update(const uint32_t* time) {
+void ControlChangeRibbon16Bit::update() {
 	if(updated){
 		uint8_t controlChangeValueMSB = 0;
 		uint8_t controlChangeValueLSB = 0;
@@ -114,10 +124,6 @@ void ControlChangeRibbon16Bit::setParameter(const uint16_t* value) {
 	}
 }
 
-uint16_t ControlChangeRibbon16Bit::getParameter() {
-	return parameter;
-}
-
 boolean ControlChangeRibbon16Bit:: setConfiguration(const int* data) {
 	boolean result = false;
 
@@ -132,8 +138,8 @@ boolean ControlChangeRibbon16Bit:: setConfiguration(const int* data) {
 		controlChangeNumberMSB = data[4];
 		controlChangeNumberLSB = controlChangeNumberMSB + 32;
 
-		topValue = this->convertBytesTo14Bit(data[5], data[6]);
-		bottomValue = this->convertBytesTo14Bit(data[7], data[8]);
+		topValue = convertBytesTo14Bit(data[5], data[6]);
+		bottomValue = convertBytesTo14Bit(data[7], data[8]);
 
 		range = topValue - bottomValue;
 
@@ -142,21 +148,6 @@ boolean ControlChangeRibbon16Bit:: setConfiguration(const int* data) {
 	return result;
 }
 
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
-
-uint16_t ControlChangeRibbon16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
 
 #ifdef DEBUG
     void ControlChangeRibbon16Bit::printContents(){

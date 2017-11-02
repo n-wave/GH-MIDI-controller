@@ -31,9 +31,13 @@ ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data) 
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangePotentioMeter8Bit successfully initialized");
 	} else {
@@ -52,9 +56,14 @@ ControlChangePotentioMeter8Bit::ControlChangePotentioMeter8Bit(const int* data, 
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangePotentioMeter8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -81,7 +90,7 @@ ControlChangePotentioMeter8Bit::~ControlChangePotentioMeter8Bit() {
  */
 
 
-void ControlChangePotentioMeter8Bit::update(const uint32_t* time) {
+void ControlChangePotentioMeter8Bit::update() {
 	if(updated == true){
 		uint8_t  scalar = 0;
 
@@ -100,10 +109,6 @@ void ControlChangePotentioMeter8Bit::setParameter(const uint16_t* value) {
 		parameter = tmp; //Raw ADC Value 16Bit
 		updated = true;
 	}
-}
-
-uint16_t ControlChangePotentioMeter8Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangePotentioMeter8Bit::setConfiguration(const int* data) {

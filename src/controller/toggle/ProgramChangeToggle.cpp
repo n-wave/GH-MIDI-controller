@@ -34,9 +34,13 @@ ProgramChangeToggle::ProgramChangeToggle(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ProgramChangeToggle successfully initialized");
 	} else {
@@ -55,9 +59,13 @@ ProgramChangeToggle::ProgramChangeToggle(const int* data, Dispatcher* dispatcher
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ProgramChangeToggle successfully initialized and dispatcher successfully assigned");
 	} else {
@@ -76,12 +84,15 @@ ProgramChangeToggle::ProgramChangeToggle(const int* data, uint8_t ledPin, Dispat
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ProgramChangeToggle successfully initialized and dispatcher successfully assigned");
 	} else {
@@ -107,7 +118,7 @@ ProgramChangeToggle::~ProgramChangeToggle() {
  *
  */
 
-void ProgramChangeToggle::update(const uint32_t* time){
+void ProgramChangeToggle::update(){
 	if(updated){
 		if(parameter){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
@@ -125,9 +136,6 @@ void ProgramChangeToggle::setParameter(const uint16_t * value){
 	}
 }
 
-uint16_t ProgramChangeToggle::getParameter(){
-	return parameter;
-}
 
 boolean ProgramChangeToggle::setConfiguration(const int* data){
 	boolean result = false;

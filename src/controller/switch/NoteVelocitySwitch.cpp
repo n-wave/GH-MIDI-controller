@@ -26,9 +26,11 @@ NoteVelocitySwitch::NoteVelocitySwitch(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+	this->setConfiguration(data);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocitySwitch successfully initialized");
 	} else {
@@ -45,9 +47,11 @@ NoteVelocitySwitch::NoteVelocitySwitch(const int* data, Dispatcher* dispatcher) 
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+	this->setConfiguration(data);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteVelocitySwitch successfully initialized and dispatcher assigned");
 	} else {
@@ -72,7 +76,7 @@ NoteVelocitySwitch::~NoteVelocitySwitch() {
  *
  */
 
-void NoteVelocitySwitch::update(const uint32_t* time){
+void NoteVelocitySwitch::update(){
 	if(updated){
 		uint8_t tmp = velocity*parameter;
 		dispatcher->addCommand(new NoteVelocityCommand(channel, pitch, tmp));
@@ -86,10 +90,6 @@ void NoteVelocitySwitch::setParameter(const uint16_t* value){
 		parameter = *value;
 		updated = true;
 	}
-}
-
-uint16_t NoteVelocitySwitch::getParameter(){
-	return parameter;
 }
 
 boolean NoteVelocitySwitch::setConfiguration(const int* data){

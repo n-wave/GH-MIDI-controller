@@ -11,10 +11,9 @@ class Controller
     Controller();
 
     virtual ~Controller();
-    virtual void update(const uint32_t* time) = 0;
+    virtual void update() = 0;
 
     virtual void setParameter(const uint16_t* value) = 0;
-    virtual uint16_t getParameter() = 0;
     virtual boolean setConfiguration(const int* data) = 0;
 
 #ifdef DEBUG

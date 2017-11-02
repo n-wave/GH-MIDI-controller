@@ -40,9 +40,14 @@ NoteControlChangePressure8Bit::NoteControlChangePressure8Bit(const int* data) :
 	sendNote(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangePressure8Bit successfully initialized");
 	} else {
@@ -65,9 +70,14 @@ NoteControlChangePressure8Bit::NoteControlChangePressure8Bit(const int* data, Di
 	sendNote(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangePressure8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -95,7 +105,7 @@ NoteControlChangePressure8Bit::~NoteControlChangePressure8Bit() {
  *
  */
 
-void NoteControlChangePressure8Bit::update(const uint32_t* time){
+void NoteControlChangePressure8Bit::update(){
 	if(updated){
 		if(parameter != 0){
 			uint8_t scalar = 0;
@@ -149,10 +159,6 @@ void NoteControlChangePressure8Bit::setParameter(const uint16_t* value){
 		parameter = tmp;
 		updated = true;
 	}
-}
-
-uint16_t NoteControlChangePressure8Bit::getParameter(){
-	return parameter;
 }
 
 boolean NoteControlChangePressure8Bit::setConfiguration(const int* data){

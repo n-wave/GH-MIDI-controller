@@ -8,6 +8,9 @@
 #include "NoteControlChangePressure16Bit.h"
 #include "../../command/NoteControlChange16BitCommand.h"
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 NoteControlChangePressure16Bit::NoteControlChangePressure16Bit() :
 	channel(0),
@@ -42,9 +45,13 @@ NoteControlChangePressure16Bit::NoteControlChangePressure16Bit(const int* data) 
 	sendNote(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangePressure16Bit successfully initialized");
 	} else {
@@ -68,9 +75,13 @@ NoteControlChangePressure16Bit::NoteControlChangePressure16Bit(const int* data, 
 	sendNote(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangePressure16Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -99,7 +110,7 @@ NoteControlChangePressure16Bit::~NoteControlChangePressure16Bit() {
  *
  */
 
-void NoteControlChangePressure16Bit::update(const uint32_t* value){
+void NoteControlChangePressure16Bit::update(){
 	if(updated){
 		if(parameter != 0){
 			uint16_t scalar = (range * parameter) >> 14;
@@ -169,10 +180,6 @@ void NoteControlChangePressure16Bit::setParameter(const uint16_t* value){
 	}
 }
 
-uint16_t NoteControlChangePressure16Bit::getParameter(){
-	return parameter;
-}
-
 boolean NoteControlChangePressure16Bit::setConfiguration(const int* data){
 	boolean result = false;
 
@@ -190,8 +197,8 @@ boolean NoteControlChangePressure16Bit::setConfiguration(const int* data){
 		controlChangeNumberMSB = data[7];
 		controlChangeNumberLSB = controlChangeNumberMSB + 32;
 
-		topValue = this->convertBytesTo14Bit(data[8], data[9]);
-		bottomValue = this->convertBytesTo14Bit(data[10], data[11]);
+		topValue = convertBytesTo14Bit(data[8], data[9]);
+		bottomValue = convertBytesTo14Bit(data[10], data[11]);
 
 		range = topValue - bottomValue;
 
@@ -200,21 +207,7 @@ boolean NoteControlChangePressure16Bit::setConfiguration(const int* data){
 
 	return result;
 }
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
 
-uint16_t NoteControlChangePressure16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
 
 #ifdef DEBUG
     void NoteControlChangePressure16Bit::printContents(){

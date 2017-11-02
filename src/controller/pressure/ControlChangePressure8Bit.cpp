@@ -31,9 +31,13 @@ ControlChangePressure8Bit::ControlChangePressure8Bit(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangePressure8Bit successfully initialized");
 	} else {
@@ -52,9 +56,13 @@ ControlChangePressure8Bit::ControlChangePressure8Bit(const int* data, Dispatcher
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangePressure8Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -81,7 +89,7 @@ ControlChangePressure8Bit::~ControlChangePressure8Bit() {
  */
 
 
-void ControlChangePressure8Bit::update(const uint32_t* time) {
+void ControlChangePressure8Bit::update() {
 	if(updated == true){
 		uint8_t  scalar = 0;
 
@@ -100,10 +108,6 @@ void ControlChangePressure8Bit::setParameter(const uint16_t* value) {
 		parameter = tmp; //Raw ADC Value 16Bit
 		updated = true;
 	}
-}
-
-uint16_t ControlChangePressure8Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangePressure8Bit::setConfiguration(const int* data) {

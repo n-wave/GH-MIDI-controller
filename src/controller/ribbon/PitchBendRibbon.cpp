@@ -22,9 +22,13 @@ PitchBendRibbon::PitchBendRibbon(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("PitchBend successfully initialized");
 	} else {
@@ -39,9 +43,13 @@ PitchBendRibbon::PitchBendRibbon(const int* data, Dispatcher* dispatcher) :
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("PitchBend successfully initialized and dispatcher assigned");
 	} else {
@@ -66,7 +74,7 @@ PitchBendRibbon::~PitchBendRibbon(){
  *
  */
 
-void PitchBendRibbon::update(const uint32_t* time){
+void PitchBendRibbon::update(){
 	if(updated){
 		dispatcher->addCommand(new PitchBendCommand(channel, parameter));
 		updated = false;
@@ -80,10 +88,6 @@ void PitchBendRibbon::setParameter(const uint16_t* value){
 		parameter = tmp;
 		updated = true;
 	}
-}
-
-uint16_t PitchBendRibbon::getParameter(){
-	return parameter;
 }
 
 boolean PitchBendRibbon::setConfiguration(const int* data){

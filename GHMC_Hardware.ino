@@ -15,6 +15,8 @@ ProtocolInterperter interperter = ProtocolInterperter();
 StateMachine stateMachine = StateMachine(115200);
 Dispatcher dispatcher = Dispatcher();
 
+Scene* activeScene = NULL;
+
 Scene sceneOne = Scene("Scene One", &dispatcher);
 Scene sceneTwo = Scene("Scene Two", &dispatcher);
 Scene sceneThree = Scene("Scene Three", &dispatcher);

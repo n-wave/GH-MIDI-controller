@@ -6,8 +6,10 @@
  */
 
 #include "ControlChangeSwitch16Bit.h"
-
 #include "../../command/ControlChange16BitCommand.h"
+#include "../../ghmc/ghmc.h"
+
+using ghmc::byte::convertBytesTo14Bit;
 
 ControlChangeSwitch16Bit::ControlChangeSwitch16Bit() :
 	channel(0),
@@ -35,9 +37,13 @@ ControlChangeSwitch16Bit::ControlChangeSwitch16Bit(const int* data) :
 	updated(false),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeSwitch16Bit successfully initialized");
 	} else {
@@ -58,9 +64,14 @@ ControlChangeSwitch16Bit::ControlChangeSwitch16Bit(const int* data, Dispatcher* 
 	updated(false),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("ControlChangeSwitch16Bit successfully initialized and dispatcher assigned");
 	} else {
@@ -88,7 +99,7 @@ ControlChangeSwitch16Bit::~ControlChangeSwitch16Bit() {
  * arg 5: uint8_t controlChangeValueLSB
  */
 
-void ControlChangeSwitch16Bit::update(const uint32_t* time) {
+void ControlChangeSwitch16Bit::update() {
 	if(updated){
 		if(parameter > 0){
 			dispatcher->addCommand(new ControlChange16BitCommand(channel,
@@ -112,10 +123,6 @@ void ControlChangeSwitch16Bit::setParameter(const uint16_t* value) {
 		parameter = *value;
 		updated = true;
 	}
-}
-
-uint16_t ControlChangeSwitch16Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangeSwitch16Bit:: setConfiguration(const int* data) {
@@ -142,21 +149,6 @@ boolean ControlChangeSwitch16Bit:: setConfiguration(const int* data) {
 	return result;
 }
 
-/**
- *  Convert Supplied MSB and LSB values to the
- *  14Bit value they represent, store and return
- *  the result in a 16Bit value
- */
-
-uint16_t ControlChangeSwitch16Bit::convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
-	uint16_t result = 0;
-	uint16_t MSB = (msb & 0x7F) << 7;
-	uint16_t LSB = lsb & 0x7F;
-
-	result = MSB | LSB;
-
-	return result;
-}
 
 #ifdef DEBUG
     void ControlChangeSwitch16Bit::printContents(){

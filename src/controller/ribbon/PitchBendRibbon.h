@@ -18,10 +18,9 @@ public:
 	PitchBendRibbon(const int* data, Dispatcher* dispatcher);
     ~PitchBendRibbon();
 
-    void update(const uint32_t* time);
+    void update();
 
-    void setParameter(const uint16_t* value);
-    uint16_t getParameter();
+    void setParameter(const uint16_t* value);;
     boolean setConfiguration(const int* data);
 
 #ifdef DEBUG

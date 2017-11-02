@@ -220,7 +220,7 @@ ControlChangeFadeToggle8Bit::~ControlChangeFadeToggle8Bit() {
 	dispatcher = NULL;
 }
 
-void ControlChangeFadeToggle8Bit::update(const uint32_t* time){
+void ControlChangeFadeToggle8Bit::update(){
 	if(methodPointerArray[state] != NULL){
 		(this->*methodPointerArray[state])();
 	}
@@ -383,9 +383,6 @@ void ControlChangeFadeToggle8Bit::sendOutEndValue(){
 	}
 }
 
-uint16_t ControlChangeFadeToggle8Bit::getParameter(){
-	return parameter;
-}
 
 boolean ControlChangeFadeToggle8Bit::setConfiguration(const int* data) {
 	boolean result = false;

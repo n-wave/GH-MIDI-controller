@@ -205,7 +205,7 @@ ControlChangeFadeSwitch8Bit::~ControlChangeFadeSwitch8Bit() {
  *
  */
 
-void ControlChangeFadeSwitch8Bit::update(const uint32_t* time) {
+void ControlChangeFadeSwitch8Bit::update() {
 
 	if(methodPointerArray[state] != NULL){
 		(this->*methodPointerArray[state])();
@@ -360,10 +360,6 @@ void ControlChangeFadeSwitch8Bit::sendOutEndValue(){
 
 		fadeOutEnabled = false;
 	}
-}
-
-uint16_t ControlChangeFadeSwitch8Bit::getParameter() {
-	return parameter;
 }
 
 boolean ControlChangeFadeSwitch8Bit::setConfiguration(const int* data) {

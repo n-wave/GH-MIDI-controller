@@ -38,9 +38,14 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data) :
 	ledPin(0),
 	dispatcher(NULL)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangeToggle8Bit successfully initialized");
 	} else {
@@ -64,9 +69,14 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data, Dispat
 	ledPin(0),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
+#ifndef DEBUG
+	 this->setConfiguration(data);
+#endif
+
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangeToggle8Bit successfully initialized");
 	} else {
@@ -89,12 +99,15 @@ NoteControlChangeToggle8Bit::NoteControlChangeToggle8Bit(const int* data, uint8_
 	ledPin(ledPin),
 	dispatcher(dispatcher)
 {
-	boolean success = this->setConfiguration(data);
-
+#ifndef DEBUG
+	 this->setConfiguration(data);
+#endif
 	pinMode(ledPin, OUTPUT);
 	digitalWrite(ledPin, LOW);
 
 #ifdef DEBUG
+	boolean success = this->setConfiguration(data);
+
 	if(success){
 		Serial.println("NoteControlChangeToggle8Bit successfully initialized");
 	} else {
@@ -124,7 +137,7 @@ NoteControlChangeToggle8Bit::~NoteControlChangeToggle8Bit()
  */
 
 
-void NoteControlChangeToggle8Bit::update(const uint32_t* time){
+void NoteControlChangeToggle8Bit::update(){
 	if(updated){
 		if(toggleOption == 1){
 			if(toggle){
@@ -172,10 +185,6 @@ void NoteControlChangeToggle8Bit::setParameter(const uint16_t* value){
 
 		updated = true;
 	}
-}
-
-uint16_t NoteControlChangeToggle8Bit::getParameter(){
-	return parameter;
 }
 
 boolean NoteControlChangeToggle8Bit::setConfiguration(const int* data){
