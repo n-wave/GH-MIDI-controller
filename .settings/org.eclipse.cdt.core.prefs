@@ -127,13 +127,13 @@ environment/project/io.sloeber.core.toolChain.release.2138512834/A.ESP8266.NETWO
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.ESP8266.NETWORK.UPLOAD.TOOL/value=esp8266OTA
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.DTS/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.DTS/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.DTS/value=3600
+environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.DTS/value=0
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.LOCAL/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.LOCAL/value=1508864696
+environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.LOCAL/value=1509638841
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.UTC/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.UTC/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.UTC/value=1508857496
+environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.UTC/value=1509635241
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.ZONE/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.EXTRA.TIME.ZONE/value=3600
@@ -193,7 +193,7 @@ environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.AR.PAT
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.AR.PATTERN/value="${A.COMPILER.PATH}${A.BUILD.TOOLCHAIN}${A.BUILD.COMMAND.AR}" rcs "${A.BUILD.PATH}/core/${A.ARCHIVE_FILE}" "${A.OBJECT_FILE}"
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.1/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.1/value="/work/electronic-projects/arduino-1.8.1/hardware/teensy/../tools/arm/bin/arm-none-eabi-gcc" -O1 -Wl,--gc-sections,--relax,--defsym\=__rtc_localtime\=1508864696 "-T/work/electronic-projects/arduino-1.8.1/hardware/teensy/avr/cores/teensy3/mk20dx256.ld" -mthumb -mcpu\=cortex-m4 -fsingle-precision-constant -o "/work/electronic-projects/guitar-hero-midi-controller/software/MCU/GHMC-hardware/GHMC_Hardware/Release/GHMC_Hardware.elf" 
+environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.1/value="/work/electronic-projects/arduino-1.8.1/hardware/teensy/../tools/arm/bin/arm-none-eabi-gcc" -O1 -Wl,--gc-sections,--relax,--defsym\=__rtc_localtime\=1509638841 "-T/work/electronic-projects/arduino-1.8.1/hardware/teensy/avr/cores/teensy3/mk20dx256.ld" -mthumb -mcpu\=cortex-m4 -fsingle-precision-constant -o "/work/electronic-projects/guitar-hero-midi-controller/software/MCU/GHMC-hardware/GHMC_Hardware/Release/GHMC_Hardware.elf" 
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.2/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.2/operation=replace
 environment/project/io.sloeber.core.toolChain.release.2138512834/A.RECIPE.C.COMBINE.PATTERN.2/value=\ 
@@ -412,7 +412,7 @@ environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.COM_PORT
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.COM_PORT/value=/dev/ttyACM0
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.ECLIPSE_LOCATION/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.ECLIPSE_LOCATION/operation=replace
-environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.EXTRA.C.COMPILE/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.EXTRA.C.COMPILE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.2138512834/JANTJE.EXTRA.C.COMPILE/value=

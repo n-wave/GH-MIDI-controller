@@ -13,7 +13,7 @@
 									  0xF4  //Channel 7
                                     };
 
-uint8_t offsetTable[16] = {
+uint16_t offsetTable[16] = {
 							50,	//Head Potentiometer 1
 							50, //Head Potentiometer 2
 							50, //Head Potentiometer 3
@@ -36,42 +36,51 @@ uint8_t offsetTable[16] = {
 //of the averaged values to 14Bit values
 
 uint16_t mapTable[16][2] = {
-							 {500, 65503}, //Head Potentiometer 1
-							 {500, 65503}, //Head Potentiometer 2
-							 {500, 65503}, //Head Potentiometer 3
-							 {500, 65503}, //Head Potentiometer 4
-							 {500, 65503}, //Head Potentiometer 5
-							 {500, 65503}, //Head Potentiometer 6
-							 {500, 65503}, //Ribbon 1
-							 {500, 65503}, //Ribbon 2
-							 {200, 65503}, //Pressure 1
-							 {200, 65503}, //Pressure 2
-							 {200, 65503}, //Pressure 3
-							 {500, 65503}, //Body Pot 1
-							 {516, 65503}, //Body Pot 2
+							 {500, 65500}, //Head Potentiometer 1
+							 {500, 65500}, //Head Potentiometer 2
+							 {500, 65500}, //Head Potentiometer 3
+							 {500, 65500}, //Head Potentiometer 4
+							 {500, 65500}, //Head Potentiometer 5
+							 {500, 65500}, //Head Potentiometer 6
+							 {500, 65500}, //Ribbon 1
+							 {500, 65500}, //Ribbon 2
+							 {200, 65500}, //Pressure 1
+							 {200, 65500}, //Pressure 2
+							 {200, 65500}, //Pressure 3
+							 {500, 65500}, //Body Pot 1
+							 {516, 65500}, //Body Pot 2
 							 {1000, 65475}, //Body Pot 3
 							 {450, 65503}, //X - axis
 							 {450, 65503}, //Y - axis
 						   };
 
-volatile uint32_t sensors[16] = {0};
-volatile uint16_t mappedValues[16] = {0};
-
-volatile uint16_t averagedValues[16] = {0};
-
 SPISettings settings = SPISettings(16000000, MSBFIRST, SPI_MODE1);
 
-unsigned int addressIndex = 0;
-unsigned int memoryIndex = 7;
+volatile uint32_t* writePtrOne = NULL;
+volatile uint32_t* writePtrTwo = NULL;
+volatile uint32_t* bufferPtr = NULL;
 
-unsigned int highVal = 0;
-unsigned int lowVal = 0;
-unsigned int bit14 = 0;
+volatile uint32_t bufferOne[16] = {0};
+volatile uint32_t bufferTwo[16] = {0};
+
+uint16_t mappedValues[16] = {0};
+uint16_t averagedValues[16] = {0};
+
+volatile boolean bufferActive = 0;
+
+volatile unsigned int addressIndex = 0;
+volatile unsigned int memoryIndex = 7;
+
+volatile unsigned int highVal = 0;
+volatile unsigned int lowVal = 0;
 
 void LTC1867_init() {
-  //Set middlePoint position for the X and Y axis of the joystick/
-  averagedValues[14] = 32767;
-  averagedValues[15] = 32767;
+  //ToDo Set middlePoint position for the X and Y axis of the joystick/
+
+  bufferActive = 0;
+  writePtrOne = &bufferOne[0];
+  writePtrTwo = &bufferOne[8];
+  bufferPtr = bufferTwo;
 
   SPI.setSCK(14);   //Has no Led attached on the boards better pulse from the clock
   SPI.setMOSI(11);
@@ -95,17 +104,24 @@ void LTC1867_init() {
 }
 
 void LTC1867_reset(){
-	sensors[16] = {0};
 	mappedValues[16] = {0};
 	averagedValues[16] = {0};
+
+	bufferActive = 0;
+	writePtrOne = &bufferOne[0];
+	writePtrTwo = &bufferOne[8];
+	bufferPtr = bufferTwo;
+
+
 
 	addressIndex = 0;
 	memoryIndex = 7;
 
-	digitalWrite(EN_DAC1, HIGH); //Active LOW thus disabled
-	digitalWrite(CS_DAC1, LOW); //short Pulse
-	digitalWrite(EN_DAC2, HIGH);
-	digitalWrite(CS_DAC2, LOW);
+	GPIOD_PDOR |= B0100;  //digitalWrite(EN_DAC1, HIGH); Active LOW thus disabled
+	GPIOD_PDOR &= ~B1000;  //digitalWrite(CS_DAC1, LOW); //short Pulse keep low
+
+	GPIOC_PDOR |= B1000;   //digitalWrite(EN_DAC2, HIGH); //DISABLE the buffers DAC2
+	GPIOC_PDOR &= ~B10000; //digitalWrite(CS_ADC, LOW);
 }
 
 
@@ -120,7 +136,7 @@ void LTC1867_reset(){
  *
  * GPIOD_PDOR |= (1<<3);
  * 			 or
- * GPIOD_PDOR |= B1000 >> saves a bitshift
+ * GPIOD_PDOR |= B1000; >> saves a bitshift
  *
  * saves a bitshift
  *
@@ -145,6 +161,8 @@ void LTC1867_reset(){
  *
  * digitalWrite(CS_ADC1, LOW)
  * digitalWrite(EN_ADC1, LOW);
+ *
+ *
  */
 
 
@@ -164,35 +182,53 @@ void LTC1867_readSensors() {
   highVal = SPI.transfer(channelSelection[addressIndex]); //Send channel for next cycle and exhange MSB
   lowVal = SPI.transfer(0x00); //Send 8Bytes of 0x00 and store LSB
 
-  //Sum up 128 times and calculated averages do a test with max 16Bit value (1000 * 128) >> 7 = 1000 //passed without cabling
+  //Sum up 128 times and calculated averages do a test with max 16Bit value (1000 * 128) >> 7 = 1000 //passed
   //After averaging has taken place set initial values to zero.
   //Disable interrupts when resetting the values
 
-  sensors[memoryIndex] += (highVal<<8) + lowVal;
+  writePtrOne[memoryIndex] += (highVal<<8) + lowVal;
 
-  //Finished disable buffers DAC1
-  GPIOD_PDOR |= B0100; //digitalWrite(EN_ADC, HIGH); //DISABLE the buffers DAC1
+  //Finished disable buffers ADC
+  GPIOD_PDOR |= B0100; //digitalWrite(EN_ADC, HIGH); //DISABLE the buffers ADC1
 
   //Start Reading ADC1
   GPIOC_PDOR |= B10000; //  digitalWrite(CS_ADC, HIGH);
   delayMicroseconds(3);
 
-  GPIOC_PDOR  &= ~B11000;  	  //digitalWrite(CS_DAC2, LOW);
-  	  	  	  	  	  	  	  //digitalWrite(EN_DAC2, LOW); //Enable the buffers DAC1
+  GPIOC_PDOR  &= ~B11000;  	  //digitalWrite(CS_ADC2, LOW);
+  	  	  	  	  	  	  	  //digitalWrite(EN_ADC2, LOW); //Enable the buffers DAC1
 
   highVal = SPI.transfer(channelSelection[addressIndex]); //Send channel for next cycle and exhange MSB
   lowVal = SPI.transfer(0x00); //Send 8Bytes of 0x00 and store LSB
 
-  sensors[memoryIndex + 8] += (highVal<<8) + lowVal;
+  writePtrTwo[memoryIndex] += (highVal<<8) + lowVal; //The pointer is offsetted to the eight element of the buffer
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //This in effect eliminates an instruction in the loop
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //Make sure the pointer doesn't read off memory outside the loop
+  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //The buffer
 
-  //Finished disable buffers ADC2
+  //Finished disable tristate buffers ADC2
   GPIOC_PDOR |= B1000; //digitalWrite(EN_DAC2, HIGH); //DISABLE the buffers DAC2
 
   addressIndex++;
-  memoryIndex ++;
+  memoryIndex++;
 
   SPI.endTransaction();
 }
+
+void LTC1867_swapBuffer(){
+	bufferActive = !bufferActive;
+
+	if(bufferActive == 0){
+		writePtrOne = &bufferOne[0];
+		writePtrTwo = &bufferOne[8];
+		bufferPtr = bufferTwo;
+	} else {
+		writePtrOne = &bufferTwo[0];
+		writePtrTwo = &bufferTwo[8];
+		bufferPtr = bufferOne;
+	}
+}
+
 
 
 /* Optimize use double buffering
@@ -200,46 +236,56 @@ void LTC1867_readSensors() {
  */
 
 void LTC1867_calculateAverage(){
-	uint32_t tmpValue;
+  uint16_t tmpValue;
+  int bufferIndex = 0;
 
-  for(int i=0; i<8; i++){
+  while(bufferIndex < 8){
 	  //sensors[i] are (128)summed up values by
 	  //by bit shifting with >> 7 a fast division of 128 takes place
 
-	  tmpValue = sensors[i] >> 7;
+	  tmpValue = (bufferPtr[bufferIndex] >> 7) & 0xFFFF ;
 
-	  if(tmpValue <= (averagedValues[i] - offsetTable[i]) || tmpValue >= (averagedValues[i] + offsetTable[i])){
-		  averagedValues[i] = tmpValue;
-		  tmpValue = constrain(tmpValue, mapTable[i][0] , mapTable[i][1]);
-		  mappedValues[i] = map(tmpValue, mapTable[i][1], mapTable[i][0], 0, 16384) & 0xFFFF;
+	  if(tmpValue <= (averagedValues[bufferIndex] - offsetTable[bufferIndex]) || tmpValue >= (averagedValues[bufferIndex] + offsetTable[bufferIndex])){
+		  averagedValues[bufferIndex] = tmpValue;
+		  tmpValue = constrain(tmpValue, mapTable[bufferIndex][0] , mapTable[bufferIndex][1]);
+
+		  mappedValues[bufferIndex] = (tmpValue - mapTable[bufferIndex][1])*(16384-0) / (mapTable[bufferIndex][0] - mapTable[bufferIndex][1]) + 0;
 	  }
 	  tmpValue = 0;
- 	  sensors[i] = 0; // reset and start summing the values again
+	  bufferPtr[bufferIndex] = 0; // reset and start summing the values again
+
+	  bufferIndex++;
   }
 
-  for(int i=8; i<11; i++){
-	  tmpValue = sensors[i] >> 7;
+  while(bufferIndex < 11){
+	  tmpValue = bufferPtr[bufferIndex] >> 7;
 
-	  if(tmpValue <= (averagedValues[i] - offsetTable[i]) || tmpValue >= (averagedValues[i] + offsetTable[i])){
-		  averagedValues[i] = tmpValue;
-		  tmpValue = constrain(tmpValue, mapTable[i][0] , mapTable[i][1]);
-		  mappedValues[i] = map(tmpValue, mapTable[i][1], mapTable[i][0], 16384, 0) & 0xFFFF;
+	  if(tmpValue <= (averagedValues[bufferIndex] - offsetTable[bufferIndex]) || tmpValue >= (averagedValues[bufferIndex] + offsetTable[bufferIndex])){
+		  averagedValues[bufferIndex] = tmpValue;
+		  tmpValue = constrain(tmpValue, mapTable[bufferIndex][0] , mapTable[bufferIndex][1]);
+		  mappedValues[bufferIndex] = (tmpValue - mapTable[bufferIndex][1]) * (0 - 16384) / (mapTable[bufferIndex][0] - mapTable[bufferIndex][1]) + 16384;
 	  }
 	  tmpValue = 0;
- 	  sensors[i] = 0; // reset and start summing the values again
+	  bufferPtr[bufferIndex] = 0; // reset and start summing the values again
+
+	  bufferIndex++;
   }
 
-  for(int i=11; i<16; i++){
-	  tmpValue = sensors[i] >> 7;
+  while(bufferIndex < 16){
+	  tmpValue = bufferPtr[bufferIndex] >> 7;
 
-	  if(tmpValue <= (averagedValues[i] - offsetTable[i]) || tmpValue >= (averagedValues[i] + offsetTable[i])){
-		  averagedValues[i] = tmpValue;
-		  tmpValue = constrain(tmpValue, mapTable[i][0] , mapTable[i][1]);
-		  mappedValues[i] = map(tmpValue, mapTable[i][1], mapTable[i][0], 0, 16384) & 0xFFFF;
-	  }
-	  tmpValue = 0;
- 	  sensors[i] = 0; // reset and start summing the values again
+	  if(tmpValue <= (averagedValues[bufferIndex] - offsetTable[bufferIndex]) || tmpValue >= (averagedValues[bufferIndex] + offsetTable[bufferIndex])){
+		  averagedValues[bufferIndex] = tmpValue;
+		  tmpValue = constrain(tmpValue, mapTable[bufferIndex][0] , mapTable[bufferIndex][1]);
+		  mappedValues[bufferIndex] = (tmpValue - mapTable[bufferIndex][1])*(16384-0) / (mapTable[bufferIndex][0] - mapTable[bufferIndex][1]) + 0;
+
+	 }
+	 tmpValue = 0;
+	 bufferPtr[bufferIndex] = 0; // reset and start summing the values again
+
+	 bufferIndex++;
   }
+
  //Offset for the joystick this way it will be st up in the middle position
 }
 

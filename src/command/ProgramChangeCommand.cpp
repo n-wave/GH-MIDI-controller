@@ -27,14 +27,14 @@ ProgramChangeCommand::ProgramChangeCommand (const uint8_t& channel,
 }
 
 ProgramChangeCommand::~ProgramChangeCommand() {
-	usbMIDI.sendControlChange(0, bank, channel); //controller number 0 is bank Select
-	usbMIDI.sendProgramChange(program, channel);
 #ifdef DEBUG
 	Serial.println("ProgramChangeCommand Destructor called");
 #endif /* DEBUG */
 }
 
 void ProgramChangeCommand::operator ()() const {
+	usbMIDI.sendControlChange(0, bank, channel); //controller number 0 is bank Select
+	usbMIDI.sendProgramChange(program, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("     Program Change     ");

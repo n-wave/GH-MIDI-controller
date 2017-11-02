@@ -81,7 +81,7 @@ ControlChangeSwitch8Bit::~ControlChangeSwitch8Bit() {
 
 void ControlChangeSwitch8Bit::update(const uint32_t* time) {
 	if(updated){
-		if(parameter > 0){
+		if(parameter){
 			dispatcher->addCommand(new ControlChange8BitCommand(channel,
 																controlChangeNumber,
 																topValue));

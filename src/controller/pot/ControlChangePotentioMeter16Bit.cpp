@@ -93,8 +93,8 @@ void ControlChangePotentioMeter16Bit::update(const uint32_t* time) {
 		scalar = (range*parameter) >> 14;
 		scalar += bottomValue;
 
-		controlChangeValueMSB = (scalar >> 7) & 0B01111111;
-		controlChangeValueLSB = scalar & 0B01111111; //Mask only needed bytes
+		controlChangeValueMSB = (scalar >> 7) & 0x7F;
+		controlChangeValueLSB = scalar & 0x7F; //Mask only needed bytes
 
 		dispatcher->addCommand(new ControlChange16BitCommand(channel,				  //Midi Channel
 															 controlChangeNumberMSB,  //Control Change MSB

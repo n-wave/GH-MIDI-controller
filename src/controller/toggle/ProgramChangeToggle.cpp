@@ -71,7 +71,7 @@ ProgramChangeToggle::ProgramChangeToggle(const int* data, uint8_t ledPin, Dispat
 	bank(0),
 	program(0),
 	parameter(0),
-	ledPin(0),
+	ledPin(ledPin),
 	toggle(false),
 	updated(false),
 	dispatcher(dispatcher)
@@ -109,10 +109,11 @@ ProgramChangeToggle::~ProgramChangeToggle() {
 
 void ProgramChangeToggle::update(const uint32_t* time){
 	if(updated){
-		if(toggle){
+		if(parameter){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
+
 		}
-		digitalWrite(ledPin, toggle);
+		digitalWrite(ledPin, parameter);
 		updated = false;
 	}
 }
@@ -120,8 +121,6 @@ void ProgramChangeToggle::update(const uint32_t* time){
 void ProgramChangeToggle::setParameter(const uint16_t * value){
 	if(parameter != *value){
 		parameter = *value;
-		toggle = !toggle;
-
 		updated = true;
 	}
 }

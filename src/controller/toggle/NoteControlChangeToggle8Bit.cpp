@@ -165,7 +165,10 @@ void NoteControlChangeToggle8Bit::update(const uint32_t* time){
 void NoteControlChangeToggle8Bit::setParameter(const uint16_t* value){
 	if(parameter != *value){
 		parameter = *value;
-		toggle = !toggle;
+
+		if(parameter == 1){
+			toggle = !toggle;
+		}
 
 		updated = true;
 	}

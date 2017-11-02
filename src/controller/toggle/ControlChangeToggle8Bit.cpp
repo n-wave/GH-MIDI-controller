@@ -8,6 +8,7 @@
 #include "ControlChangeToggle8Bit.h"
 #include "../../command/ControlChange8BitCommand.h"
 
+
 ControlChangeToggle8Bit::ControlChangeToggle8Bit() :
     toggleOption(0),
 	channel(0),
@@ -131,7 +132,7 @@ void ControlChangeToggle8Bit::update(const uint32_t* time){
 			digitalWrite(ledPin, toggle);
 
 		} else {
-			if(parameter != 0){
+			if(parameter == 1){
 				dispatcher->addCommand(new ControlChange8BitCommand(channel,
 																	controlChangeNumber,
 																	onValue));
@@ -151,7 +152,9 @@ void ControlChangeToggle8Bit::setParameter(const uint16_t* value){
 	if(parameter != *value){
 		parameter = *value;
 
-		toggle = !toggle;
+		if(parameter == 1){
+			toggle = !toggle;
+		}
 		updated = true;
 	}
 }

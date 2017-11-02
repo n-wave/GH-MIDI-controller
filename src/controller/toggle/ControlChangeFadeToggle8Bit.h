@@ -31,7 +31,14 @@ public:
 #endif /*DEBUG */
 
 private:
-    uint16_t convertBytesTo16Bit(uint8_t msb, uint8_t lsb);
+	typedef void(ControlChangeFadeToggle8Bit::*MethodPointer)();
+
+    void sendOutHoldValue();
+    void sendOutEndValue();
+    void fadeInIncrement();
+    void fadeInDecrement();
+    void fadeOutIncrement();
+    void fadeOutDecrement();
 
     const uint8_t ID = 0xEA;
     uint8_t toggleOption;
@@ -44,11 +51,28 @@ private:
     uint16_t fadeOut;
 
     uint16_t parameter;
+    boolean toggle;
+    boolean fadeInEnabled;
+    boolean fadeOutEnabled;
 
-    boolean enabled;
+    uint32_t startValue;
+    uint32_t holdValue;
+    uint32_t endValue;
+
+    uint32_t currentValue;
+    uint32_t fadeInStepSize;
+    uint32_t fadeOutTimeConstant;
+    uint32_t fadeOutStepSize;
+
+    uint8_t endModus;
+    uint8_t state;
+
     uint8_t ledPin;
 
+    boolean updated = false;
+
     Dispatcher* dispatcher;
+    MethodPointer methodPointerArray[3];
 };
 
 #endif /* SRC_CONTROLLER_CONTROLCHANGEFADETOGGLE8BIT_H_ */

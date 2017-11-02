@@ -113,12 +113,7 @@ void NoteControlChangePressure16Bit::update(const uint32_t* value){
 					uint8_t tmpValue7Bit = parameter >> 7;
 					uint8_t tmpVelocity;
 
-					if(tmpValue7Bit >= velocity){
-						tmpVelocity = velocity;
-					} else {
-						tmpVelocity = tmpValue7Bit;
-					}
-
+					tmpVelocity = (tmpValue7Bit >= velocity) ? velocity : tmpValue7Bit;
 
 					dispatcher->addCommand(new NoteControlChange16BitCommand(channel,
 																			 pitch,

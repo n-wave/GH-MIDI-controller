@@ -90,7 +90,7 @@ ControlChangeToggle16Bit::ControlChangeToggle16Bit(const int* data, uint8_t ledP
 	toggle(false),
 	updated(false),
 	ledPin(ledPin),
-	dispatcher(NULL)
+	dispatcher(dispatcher)
 {
 	boolean success = this->setConfiguration(data);
 
@@ -128,7 +128,7 @@ ControlChangeToggle16Bit::~ControlChangeToggle16Bit()
 void ControlChangeToggle16Bit::update(const uint32_t* time)
 {
 	if(updated){
-		if(toggleOption){
+		if(toggleOption == 1){
 			if(toggle){
 				dispatcher->addCommand(new ControlChange16BitCommand(channel,
 																	 controlChangeNumberMSB,
@@ -145,7 +145,7 @@ void ControlChangeToggle16Bit::update(const uint32_t* time)
 			}
 			digitalWrite(ledPin, toggle);
 		} else {
-			if(parameter != 0){
+			if(parameter == 1){
 				dispatcher->addCommand(new ControlChange16BitCommand(channel,
 																	 controlChangeNumberMSB,
 																	 onValueMSB,
@@ -169,7 +169,10 @@ void ControlChangeToggle16Bit::setParameter(const uint16_t* value){
 	if(parameter != *value){
 		parameter = *value;
 
-		toggle = !toggle;
+		if(parameter == 1){
+			toggle = !toggle;
+
+		}
 		updated = true;
 	}
 }
@@ -184,7 +187,7 @@ boolean ControlChangeToggle16Bit:: setConfiguration(const int* data) {
 		if(
 			data[0] == 0xF0 &&
 			data[1] == ID &&
-			data[4] == 0x00 &&
+			data[4] == 0x01 &&
 			data[10] == 0xFF
 		  )
 		{

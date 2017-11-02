@@ -41,22 +41,30 @@
 
 extern unsigned int channelSelection[8];
 
+extern volatile uint32_t* writePtrOne;
+extern volatile uint32_t* writePtrTwo;
+extern volatile uint32_t* bufferPtr;
 
-extern volatile uint32_t sensors[16];
+extern volatile uint32_t bufferOne[16];
+extern volatile uint32_t bufferTwo[16];
 
-extern volatile uint16_t averagedValues[16];
-extern volatile uint16_t mappedValues[16];
+
+extern volatile boolean bufferActive; //buffer active  0 = bufferOne, 1 = bufferTwo
+
 
 extern SPISettings settings;
 
-extern uint8_t offsetTable[16];  //hysteresis table for every sensor
+extern uint16_t averagedValues[16];
+extern uint16_t mappedValues[16];
+extern uint16_t offsetTable[16];  //hysteresis table for every sensor
 extern uint16_t mapTable[16][2];
 
 void LTC1867_init();
 void LTC1867_reset();
 void LTC1867_readSensors();
-void LTC1867_readDAC1();
-void LTC1867_readDAC2();
+
+void LTC1867_swapBuffer();
+
 void LTC1867_calculateAverage();
 
 void LTC1867_mapValues();

@@ -56,12 +56,12 @@ void initSwitches() {
   pinMode(ADDRESS_1, OUTPUT);
   pinMode(ADDRESS_2, OUTPUT);
   pinMode(ADDRESS_3, OUTPUT);
-  GPIOB_PDOR = B00000000;
+  GPIOB_PDOR &= ~B0000;
   switchIndex = 0;
 }
 
 void readSwitches(){
-  GPIOB_PDOR = 15-switchIndex;
+  GPIOB_PDOR = ~switchIndex; //Because of the hex inverter invert the address
   
   delayMicroseconds(3);
   switches[switchIndex] = digitalReadFast(COMMON_Z);

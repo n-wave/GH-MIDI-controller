@@ -130,8 +130,7 @@ void Scene::setParameters(){
 	uint16_t tmp = 0;
 
 	while(index < 16){
-		tmp = mappedValues[index];
-		controllers[index]->setParameter(&tmp);
+		controllers[index]->setParameter(&mappedValues[index]);
 		index++;
 	}
 
@@ -194,6 +193,7 @@ boolean Scene::setController(int number, int type, const int* data){
 					break;
 				case 7:
 					controllers[number] = new ControlChangePotentioMeter8Bit(data, dispatcher);
+
 					break;
 				case 8:
 					controllers[number] = new ControlChangePotentioMeter16Bit(data, dispatcher);
@@ -305,6 +305,9 @@ boolean Scene::setController(int number, int type, const int* data){
 			switch(type){
 				case 0:
 					controllers[number] = new DisabledController(data);
+					break;
+				case 1:
+					controllers[number] = new ProgramChangeToggle(data,ledPin, dispatcher);
 					break;
 				case 11:
 					controllers[number] = new NoteVelocityToggle(data, ledPin, dispatcher);

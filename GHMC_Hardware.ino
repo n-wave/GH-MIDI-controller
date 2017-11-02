@@ -68,8 +68,10 @@ void loop()
 		  startup = false;
 		  samplingClock.begin(updateSensors, 15); // Start Sampling the sensors
 		  	  	  	  	  	  	  	  	  	  	  //16 stable
-		  	  	  	  	  	  	  	  	  	  	  //15 stable
+		  	  	  	  	  	  	  	  	  	  	  //15 stable -> 65Hz leave headroom we need to do more calculations
 		  	  	  	  	  	  	  	  	  	  	  //14 stable
+		  	  	  	  	  	  	  	  	  	  	  //13 unstable
+
 		  	  	  	  	  	  	  	  	  	  	  //unstable
 	  }
 
@@ -81,10 +83,8 @@ void loop()
 	  digitalWrite(5, LOW);
 	  digitalWrite(6, HIGH);
 
-	  digitalWrite(22, LOW);
-	  digitalWrite(21, LOW);
-
 	  if(sensorsUpdated){
+		  LTC1867_calculateAverage();
 		  if(enableMidi){
 			sceneOne.setParameters();
 		  	sceneOne.updateControllers();
@@ -104,12 +104,17 @@ void loop()
 		  switch(stateMachine.getState())
 		  {
 	  	    case 1:
+	  	      //Disable interrupts temporary experiencing
+	  	      //hangup without this, because of the
+	  	      //Ptr's to the buffers which are set in LTC1867_reset;
+	  	      noInterrupts();
 	  	      cycles = 0;
-	  	      configureScenes();
-	  	      succeslLedSequence();
 	  		  LTC1867_reset();
-	  		  samplingClock.begin(updateSensors, 15);
+	  	      succeslLedSequence();
+	  	      configureScenes();
 	  		  enableMidi = true;
+	  		  interrupts();
+	  		  samplingClock.begin(updateSensors, 15);
 	  		  break;
 	  	    case 2: //Entering programming Mode disable the sampling clock and Midi
 	  	      enableMidi = false;
@@ -117,10 +122,12 @@ void loop()
 		  	  break;
 	  	    case 3:
 	  	      //Upload failed not reconfiguring Scenes
+	  	      noInterrupts();
 	  	      cycles = 0;
 	  		  LTC1867_reset();
-	  	  	  samplingClock.begin(updateSensors, 15);
 	  	  	  enableMidi = true;
+	  	  	  interrupts();
+	  	  	  samplingClock.begin(updateSensors, 15);
 	  	  	  break;
 	  	    case 4: //Entering Debug or Disable Midi message has been received
 		      enableMidi = false;
@@ -136,7 +143,7 @@ void updateSensors(){
 	   cycles = cycles & 1023; // summing 128 times use 511 for 64 times
 
 	   if(cycles == 0){
-	     LTC1867_calculateAverage();
+		 LTC1867_swapBuffer();
 	     sensorsUpdated = true;
 	   }
 
@@ -152,6 +159,7 @@ void configureScenes(){
 	interperter.configureScene(sceneTwo, 1);
     interperter.configureScene(sceneThree, 2);
 	interperter.configureScene(sceneFour, 3);
+
 }
 
 void succeslLedSequence(){

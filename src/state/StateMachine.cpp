@@ -378,9 +378,9 @@ void StateMachine::printSwitches(){
 	Serial.println(switches[12]);
 	Serial.print("S4:");                     //Neck Switch 6
 	Serial.println(switches[13]);
-	Serial.print("PS:");                      //Up Switch
+	Serial.print("JS:");                      //Up Switch
 	Serial.println(switches[14]);
-	Serial.print("jS:");                      //Down Switch
+	Serial.print("PS:");                      //Down Switch
 	Serial.println(switches[15]);
 }
 

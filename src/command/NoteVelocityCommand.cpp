@@ -25,15 +25,13 @@ NoteVelocityCommand::NoteVelocityCommand(const uint8_t& channel,
 }
 
 NoteVelocityCommand::~NoteVelocityCommand() {
-	usbMIDI.sendNoteOn(pitch, velocity, channel);
-
 #ifdef DEBUG
 	Serial.println("NoteVelocityCommand Destructor called");
 #endif /* DEBUG */
 }
 
 void NoteVelocityCommand::operator ()() const {
-
+	usbMIDI.sendNoteOn(pitch, velocity, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("      Note Velocity     ");

@@ -78,7 +78,7 @@ ProgramChangeSwitch::~ProgramChangeSwitch() {
 
 void ProgramChangeSwitch::update(const uint32_t* time){
 	if(updated){
-		if(parameter > 0){
+		if(parameter == 1){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
 		}
 		updated = false;

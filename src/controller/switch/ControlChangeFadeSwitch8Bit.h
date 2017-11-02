@@ -9,6 +9,7 @@
 #define SRC_CONTROLLER_SWITCH_CONTROLCHANGEFADESWITCH8BIT_H_
 
 #include "../common/controller.h"
+#include "../../testing/configuration.h"
 
 class ControlChangeFadeSwitch8Bit : public Controller {
 public:
@@ -29,6 +30,17 @@ public:
 #endif /* DEBUG */
 
 private:
+    typedef void(ControlChangeFadeSwitch8Bit::*MethodPointer)();
+
+    void fadeInIncrement();
+    void fadeInDecrement();
+
+    void fadeOutIncrement();
+    void fadeOutDecrement();
+
+    void sendOutHoldValue();
+    void sendOutEndValue();
+
     uint16_t convertBytesTo16Bit(uint8_t msb, uint8_t lsb);
 
     const uint8_t ID = 0xE6;
@@ -40,9 +52,27 @@ private:
     uint16_t fadeIn;
     uint16_t fadeOut;
 
-    uint8_t parameter;
+    uint16_t parameter;
+
+    boolean fadeInEnabled;
+    boolean fadeOutEnabled;
+
+    /* Needed for comparison leave them, instead of recalculating */
+    uint32_t startValue; // calculated start Value
+    uint32_t holdValue;  //calculated hold value
+    uint32_t endValue;   //calculated end Value
+
+    uint32_t currentValue;
+    uint32_t fadeInStepSize;
+    uint32_t fadeOutTimeConstant;
+    uint32_t fadeOutStepSize;
+
+    uint8_t endModus;// (end < hold) ? true : false;
+    uint8_t state;
 
     Dispatcher* dispatcher;
+    MethodPointer methodPointerArray[3];
+
 };
 
 #endif /* SRC_CONTROLLER_SWITCH_CONTROLCHANGEFADESWITCH8BIT_H_ */

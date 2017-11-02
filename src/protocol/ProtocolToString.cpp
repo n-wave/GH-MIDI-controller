@@ -61,7 +61,7 @@ void ProtocolToString::printEEPROM(){
       Serial.print("[");
       Serial.print(i+1);
       Serial.print("] ");
-      Serial.println(eepromBuffer[i]);
+      Serial.println(eepromBuffer[i], HEX);
   }
 }
 
