@@ -31,6 +31,9 @@ public:
 	boolean setSceneData(const int* data);
 	boolean setController(int number, int type, const int* data);
 
+	void sendProgramChangeCommands();
+	void sendNotesOffCommand();
+
 #ifdef DEBUG
 	void printPogramChangeContents();
 	void printPogramChangeContent(int index);

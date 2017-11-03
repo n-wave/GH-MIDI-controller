@@ -8,6 +8,7 @@
 #include "Scene.h"
 
 #include "../controller/includeControllers.h"
+#include "../command/AllNotesOffCommand.h"
 
 Scene::Scene() :
 	nrOfProgramChanges(0),
@@ -92,6 +93,7 @@ boolean Scene::setSceneData(const int* data){
 			do {
 				int dataBuffer[6];
 
+
 				dataBuffer[0] = 0xF0;
 				dataBuffer[1] = 0xE0;
 				dataBuffer[2] = data[channelIndex];
@@ -99,7 +101,7 @@ boolean Scene::setSceneData(const int* data){
 				dataBuffer[4] = data[programIndex];
 				dataBuffer[5] = 0xFF;
 
-				programChange[index] = new ProgramChange(dataBuffer);
+				programChange[index] = new ProgramChange(dataBuffer, dispatcher);
 				delay(50);
 
 				index++;
@@ -339,6 +341,20 @@ boolean Scene::setController(int number, int type, const int* data){
 	}
 #endif /* Debug */
 	return result;
+}
+
+void Scene::sendNotesOffCommand(){
+	dispatcher->addCommand(new AllNotesOffCommand());
+}
+
+void Scene::sendProgramChangeCommands(){
+	if(nrOfProgramChanges > 0 && nrOfProgramChanges <= 4){
+		for(int i=0; i<nrOfProgramChanges; i++){
+			uint16_t tmp = 1;
+			programChange[i]->setParameter(&tmp);
+			programChange[i]->update();
+		}
+	}
 }
 
 void Scene::setName(const String& name){

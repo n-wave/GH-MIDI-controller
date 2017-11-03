@@ -106,6 +106,7 @@ void loop()
 		  switch(stateMachine.getState())
 		  {
 	  	    case 1:
+		  	  //New data has been uploaded
 	  	      //Disable interrupts temporary experiencing
 	  	      //hangup without this, because of the
 	  	      //Ptr's to the buffers which are set in LTC1867_reset;
@@ -117,6 +118,7 @@ void loop()
 	  		  enableMidi = true;
 	  		  interrupts();
 	  		  samplingClock.begin(updateSensors, 15);
+
 	  		  break;
 	  	    case 2: //Entering programming Mode disable the sampling clock and Midi
 	  	      enableMidi = false;

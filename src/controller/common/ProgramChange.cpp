@@ -94,7 +94,7 @@ ProgramChange::~ProgramChange() {
 
 void ProgramChange::update(){
 	if(updated){
-		if(parameter > 0){
+		if(parameter == 1){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
 		}
 		updated = false;
@@ -103,6 +103,7 @@ void ProgramChange::update(){
 
 void ProgramChange::setParameter(const uint16_t * value)
 {
+	Serial.println(parameter);
 	if(parameter != *value){
 		parameter = *value;
 		updated = true;
