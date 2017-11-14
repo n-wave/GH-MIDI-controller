@@ -129,26 +129,19 @@ boolean Scene::setSceneData(const int* data){
 void Scene::setParameters(){
 	int index = 0;
 	int switchIndex = 0;
-	uint16_t tmp = 0;
-
 	while(index < 16){
-		controllers[index]->setParameter(&mappedValues[index]);
+		controllers[index]->setParameter(&ltc1867::mappedValues[index]);
 		index++;
 	}
 
 	while(index < 26){
-		tmp = switches[switchIndex];
-		controllers[index]->setParameter(&tmp);
+		controllers[index]->setParameter(&switches::values[switchIndex]);
 		index++;
 		switchIndex++;
 	}
 
-	tmp = switches[14];
-	controllers[26]->setParameter(&tmp);
-	tmp = switches[15];
-	controllers[27]->setParameter(&tmp);
-
-
+	controllers[26]->setParameter(&switches::values[14]);
+	controllers[27]->setParameter(&switches::values[15]);
 }
 
 
@@ -292,9 +285,9 @@ boolean Scene::setController(int number, int type, const int* data){
 		if(number >= 26 && number <= 27){
 			int ledPin = 0;
 
-			if(number == 30){
+			if(number == 26){
 				ledPin = 21; //Joy Stick Switch Led
-			} else {
+			} else if(number == 27) {
 				ledPin = 22; //Foot Switch led
 			}
 

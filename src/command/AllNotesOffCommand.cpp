@@ -22,7 +22,7 @@ AllNotesOffCommand::~AllNotesOffCommand() {
 }
 
 void AllNotesOffCommand::operator ()() const {
-	usbMIDI.sendControlChange(channel, ccNumber, ccValue);
+	usbMIDI.sendControlChange(ccNumber, ccValue, channel);
 #ifdef DEBUG
 	Serial.println("_----------------------_");
 	Serial.println("      All Notes Off     ");

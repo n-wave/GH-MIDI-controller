@@ -2,6 +2,13 @@
 
 #include "LTC1867.h"
 
+namespace ltc1867 {
+
+uint8_t en_adc1 = 7; // Enable the Buffers ADC1, active low, if high the buffer is in a high impedance state
+uint8_t cs_adc1 = 8; // chipSelect pin ADC1 take high for at least 2 uS and then low
+uint8_t en_adc2 = 9; // Enable the Buffers ADC2, active low, if high the buffer is in a high impedance state
+uint8_t cs_adc2 = 10;// chipSelect pin ADC2
+
  unsigned int channelSelection[8] = {
 		 	 	 	 	 	 	 	  0x84,	//Channel 0
 									  0xC4, //Channel 1
@@ -25,9 +32,9 @@ uint16_t offsetTable[16] = {
 							50, //Pressure 1
 							50, //Pressure 2
 							50, //Pressure 3
-							50, //Body Pot 1
-							50, //Body Pot 2
-							50, //Body Pot 3
+							75, //Body Pot 1
+							75, //Body Pot 2
+							75, //Body Pot 3
 							50, //X axis
 							50, //Y Axis
 						  };
@@ -47,9 +54,9 @@ uint16_t mapTable[16][2] = {
 							 {200, 65500}, //Pressure 1
 							 {200, 65500}, //Pressure 2
 							 {200, 65500}, //Pressure 3
-							 {500, 65500}, //Body Pot 1
-							 {516, 65500}, //Body Pot 2
-							 {1000, 65475}, //Body Pot 3
+							 {500, 62000}, //Body Pot 1
+							 {516, 62000}, //Body Pot 2
+							 {1000, 62000}, //Body Pot 3
 							 {450, 65503}, //X - axis
 							 {450, 65503}, //Y - axis
 						   };
@@ -74,7 +81,7 @@ volatile unsigned int memoryIndex = 7;
 volatile unsigned int highVal = 0;
 volatile unsigned int lowVal = 0;
 
-void LTC1867_init() {
+void init() {
   //ToDo Set middlePoint position for the X and Y axis of the joystick/
 
   bufferActive = 0;
@@ -87,23 +94,23 @@ void LTC1867_init() {
   SPI.setMISO(12);
 
   //Set Pins associated with ADC1
-  pinMode(EN_DAC1, OUTPUT);
-  digitalWrite(EN_DAC1, HIGH); //Active LOW thus disabled
+  pinMode(en_adc1, OUTPUT);
+  digitalWrite(en_adc1, HIGH); //Active LOW thus disabled
 
-  pinMode(CS_DAC1, OUTPUT);
-  digitalWrite(CS_DAC1, LOW); //short Pulse
+  pinMode(cs_adc1, OUTPUT);
+  digitalWrite(cs_adc1, LOW); //short Pulse
 
   //Set Pins associated with ADC2
-  pinMode(EN_DAC2, OUTPUT);
-  digitalWrite(EN_DAC2, HIGH);
+  pinMode(en_adc2, OUTPUT);
+  digitalWrite(en_adc2, HIGH);
 
-  pinMode(CS_DAC2, OUTPUT);
-  digitalWrite(CS_DAC2, LOW);
+  pinMode(cs_adc2, OUTPUT);
+  digitalWrite(cs_adc2, LOW);
 
   SPI.begin();
 }
 
-void LTC1867_reset(){
+void reset(){
 	mappedValues[16] = {0};
 	averagedValues[16] = {0};
 
@@ -166,7 +173,7 @@ void LTC1867_reset(){
  */
 
 
-void LTC1867_readSensors() {
+void readSensors() {
   SPI.beginTransaction(settings);
 
   addressIndex = addressIndex & 7;
@@ -215,7 +222,7 @@ void LTC1867_readSensors() {
   SPI.endTransaction();
 }
 
-void LTC1867_swapBuffer(){
+void swapBuffer(){
 	bufferActive = !bufferActive;
 
 	if(bufferActive == 0){
@@ -235,7 +242,7 @@ void LTC1867_swapBuffer(){
  * and swap the buffers
  */
 
-void LTC1867_calculateAverage(){
+void calculateAverage(){
   uint16_t tmpValue;
   int bufferIndex = 0;
 
@@ -287,6 +294,7 @@ void LTC1867_calculateAverage(){
   }
 
  //Offset for the joystick this way it will be st up in the middle position
-}
+	}
+} // namespace ltc1867
 
 

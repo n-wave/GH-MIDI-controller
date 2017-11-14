@@ -1,20 +1,28 @@
-#define COMMON_Z 15 //common pin 16 ch multiplexer
-#define ADDRESS_0 16
-#define ADDRESS_1 17
-#define ADDRESS_2 19
-#define ADDRESS_3 18
 
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
 #include <Arduino.h>
 
-extern volatile unsigned char switches[16];
-extern byte addressMultiplexer[16];
-extern unsigned int switchIndex;
+/* switches midi controller */
 
-void initSwitches();
-void readSwitches();
+namespace switches
+{
+	extern uint8_t common_z;
+	extern uint8_t address_a;
+	extern uint8_t address_b;
+	extern uint8_t address_c;
+	extern uint8_t address_d;
 
+	extern uint16_t values[16];
+	extern byte addressMultiplexer[16];
+	extern unsigned int switchIndex;
+
+	void init();
+	void read();
+
+	uint8_t pollSceneSwitches();
+
+} //name swmc
 #endif
 

@@ -97,6 +97,7 @@ void ProgramChange::update(){
 		if(parameter == 1){
 			dispatcher->addCommand(new ProgramChangeCommand(channel, bank, program));
 		}
+		parameter = 0;
 		updated = false;
 	}
 }

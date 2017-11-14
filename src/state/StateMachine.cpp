@@ -8,6 +8,9 @@
 #include "StateMachine.h"
 #include "../testing/configuration.h"
 
+using ltc1867::averagedValues;
+using ltc1867::mappedValues;
+using switches::values;
 
 StateMachine::StateMachine() :
 	baudRate(115200),
@@ -350,38 +353,38 @@ void StateMachine::printSwitches(){
 	Serial.println("/---------------------------/");
 
 	Serial.print("N1:");                     //Neck Switch 1
-	Serial.println(switches[0]);
+	Serial.println(values[0]);
 	Serial.print("N2:");                     //Neck Switch 2
-	Serial.println(switches[1]);
+	Serial.println(values[1]);
 	Serial.print("N3:");                     //Neck Switch 3
-	Serial.println(switches[2]);
+	Serial.println(values[2]);
 	Serial.print("N1:");                     //Neck Switch 4
-	Serial.println(switches[3]);
+	Serial.println(values[3]);
 	Serial.print("N2:");                     //Neck Switch 5
-	Serial.println(switches[4]);
+	Serial.println(values[4]);
 	Serial.print("N3:");                     //Neck Switch 6
-	Serial.println(switches[5]);
+	Serial.println(values[5]);
 	Serial.print("Up:");                      //Up Switch
-	Serial.println(switches[6]);
+	Serial.println(values[6]);
 	Serial.print("Do:");                      //Down Switch
-	Serial.println(switches[7]);
+	Serial.println(values[7]);
 
 	Serial.print("ST:");                     //Neck Switch 1
-	Serial.println(switches[8]);
+	Serial.println(values[8]);
 	Serial.print("SE:");                     //Neck Switch 2
-	Serial.println(switches[9]);
+	Serial.println(values[9]);
 	Serial.print("S1:");                     //Neck Switch 3
-	Serial.println(switches[10]);
+	Serial.println(values[10]);
 	Serial.print("S2:");                     //Neck Switch 4
-	Serial.println(switches[11]);
+	Serial.println(values[11]);
 	Serial.print("S3:");                     //Neck Switch 5
-	Serial.println(switches[12]);
+	Serial.println(values[12]);
 	Serial.print("S4:");                     //Neck Switch 6
-	Serial.println(switches[13]);
+	Serial.println(values[13]);
 	Serial.print("JS:");                      //Up Switch
-	Serial.println(switches[14]);
+	Serial.println(values[14]);
 	Serial.print("PS:");                      //Down Switch
-	Serial.println(switches[15]);
+	Serial.println(values[15]);
 }
 
 

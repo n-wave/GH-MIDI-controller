@@ -29,44 +29,65 @@
  * 
  */
                      
-volatile unsigned char switches[16] =  {
-										0,  //neck switch 1
-                                        0,  //neck switch 2
-                                        0,  //neck switch 3
-                                        0,  //neck switch 4
-                                        0,  //neck switch 5
-                                        0,  //neck switch 6
-                                        0,  //tab switch 1
-                                        0,  //tab switch 2
-                                        0,  //start
-                                        0,  //select
-                                        0,  //scene 1
-                                        0,  //scene 2
-                                        0,  //scene 3  
-                                        0,  //scene 4
-                                        0,  //hold/foot switch
-                                        0  //joystick switch
-										};
 
-unsigned int switchIndex = 0;
-                                       
-void initSwitches() {
-  pinMode(COMMON_Z, INPUT); //enable pullup resistor for 16bit channel multiplexer
-  pinMode(ADDRESS_0, OUTPUT);
-  pinMode(ADDRESS_1, OUTPUT);
-  pinMode(ADDRESS_2, OUTPUT);
-  pinMode(ADDRESS_3, OUTPUT);
-  GPIOB_PDOR &= ~B0000;
-  switchIndex = 0;
-}
+namespace switches
+{
+	uint8_t common_z = 15;
+	uint8_t address_a = 16;
+	uint8_t address_b = 17;
+	uint8_t address_c = 19;
+	uint8_t address_d = 18;
 
-void readSwitches(){
-  GPIOB_PDOR = ~switchIndex; //Because of the hex inverter invert the address
+	uint16_t values[16] =  {
+							0,  //neck switch 1
+							0,  //neck switch 2
+							0,  //neck switch 3
+							0,  //neck switch 4
+							0,  //neck switch 5
+							0,  //neck switch 6
+							0,  //tab switch 1
+							0,  //tab switch 2
+							0,  //start
+							0,  //select
+							0,  //scene 1
+							0,  //scene 2
+							0,  //scene 3
+							0,  //scene 4
+							0,  //joystick switch
+							0   //pot switch
+							};
+
+	unsigned int switchIndex = 0;
+
+	void init(){
+		pinMode(common_z, INPUT); //enable pullup resistor for 16bit channel multiplexer
+		pinMode(address_a, OUTPUT);
+		pinMode(address_b, OUTPUT);
+		pinMode(address_c, OUTPUT);
+		pinMode(address_d, OUTPUT);
+		GPIOB_PDOR &= ~B0000;
+		switchIndex = 0;
+	}
+
+	void read(){
+		GPIOB_PDOR = ~switchIndex; //Because of the hex inverter invert the address
   
-  delayMicroseconds(3);
-  switches[switchIndex] = digitalReadFast(COMMON_Z);
+		delayMicroseconds(3);
+		values[switchIndex] = digitalReadFast(common_z);
     
-   switchIndex++;
-   switchIndex &= 15;
-}
+		switchIndex++;
+		switchIndex &= 15;
+	}
 
+	uint8_t pollSceneSwitches(){
+		uint8_t result = 0;
+
+		for(int i=10; i<14; i++){
+			if(values[i] == 1){
+				result = i-9;
+			}
+		}
+
+		return result;
+	}
+} //namespace swmc

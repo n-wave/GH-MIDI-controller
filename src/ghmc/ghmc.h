@@ -17,12 +17,6 @@
  */
 namespace ghmc{
 
-	namespace debug {
-
-
-	}
-
-
 	//Function for byt eConversions
 	namespace byte{
 		uint16_t convertBytesTo14Bit(uint8_t msb, uint8_t lsb);

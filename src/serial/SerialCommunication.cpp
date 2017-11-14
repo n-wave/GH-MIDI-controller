@@ -373,7 +373,7 @@ boolean SerialCommunication::compareDebugEnable(const uint8_t* data){
 	{
 		result = true;
 	}
-	return result;;
+	return result;
 }
 
 

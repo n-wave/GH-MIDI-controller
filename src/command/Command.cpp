@@ -10,8 +10,7 @@
 #include "../testing/configuration.h"
 
 Command::Command() {
-	// TODO Auto-generated constructor stub
-
+	// Abstract virtual class nothing to do.
 }
 
 Command::~Command() {

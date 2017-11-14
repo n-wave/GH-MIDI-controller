@@ -9,11 +9,6 @@
 #include "ghmc.h"
 
 namespace ghmc {
-
-	namespace debug {
-
-	} // namespace debug
-
 	namespace byte {
 		uint16_t convertBytesTo14Bit(uint8_t msb, uint8_t lsb){
 			uint16_t result = 0;
