@@ -1,44 +1,36 @@
 
 /*
- *      DAC LTC1863
+ *      ADC LTC1867
  *  
  *    Mario Van Etten 
  *  
  *       24-02-2017
  * 
  * SPI Communication for 
- * the LTC1863 16Bit
- * Digital Audio Converter. 
+ * the LTC1867 16Bit
+ * Analog Digital Converter.
  * 
  * This specific project
- * uses two DAC's, thus 
- * they are sampled in the 
+ * uses two ADC's, these
+ * are sampled in the
  * same interrupt.
- * 
- * two seperate SI classes
  *
  */
 
-/* 
- *  channel configuration 
- * 8 channels 
- * single ended 
- * unipolar 
- * input
- * 
- */
-#ifndef LTC1863_H
-#define LTC1863_H
+
+
+#ifndef LTC1867_H
+#define LTC1867_H
 
 #include "Arduino.h"
 #include <SPI.h>
 #include "../testing/configuration.h"
 
 namespace ltc1867 {
-	extern uint8_t EN_DAC1; // Enable the Buffers DAC1, active low, if high the buffer is in a high impedance state
-	extern uint8_t CS_DAC1; // chipSelect pin DAC1 take high for at least 2 uS and then low
-	extern uint8_t EN_DAC2; // Enable the Buffers DAC1, active low, if high the buffer is in a high impedance state
-	extern uint8_t CS_DAC2;// chipSelect pin DAC2
+	extern uint8_t en_adc1; // Enable the Buffers ADC1, active low, if high the buffer is in a high impedance state
+	extern uint8_t cs_adc1; // chipSelect pin ADC1 take high for at least 2 uS and then low
+	extern uint8_t en_adc2; // Enable the Buffers ADC2, active low, if high the buffer is in a high impedance state
+	extern uint8_t cs_adc2;// chipSelect pin ADC2
 
 	extern unsigned int channelSelection[8];
 
@@ -69,8 +61,8 @@ namespace ltc1867 {
 	void calculateAverage();
 
 	void mapValues();
-} // namespace ltc1867
-#endif
+} // namespace LTC1867_H
+#endif //LTC1867_H
 
 
 

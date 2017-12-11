@@ -9,6 +9,15 @@ uint8_t cs_adc1 = 8; // chipSelect pin ADC1 take high for at least 2 uS and then
 uint8_t en_adc2 = 9; // Enable the Buffers ADC2, active low, if high the buffer is in a high impedance state
 uint8_t cs_adc2 = 10;// chipSelect pin ADC2
 
+
+/*
+ * channel configuration
+ * 8 channels
+ * single ended
+ * unipolar input
+ *
+ */
+
  unsigned int channelSelection[8] = {
 		 	 	 	 	 	 	 	  0x84,	//Channel 0
 									  0xC4, //Channel 1
@@ -89,7 +98,7 @@ void init() {
   writePtrTwo = &bufferOne[8];
   bufferPtr = bufferTwo;
 
-  SPI.setSCK(14);   //Has no Led attached on the boards better pulse from the clock
+  SPI.setSCK(14);   //Has no Led attached on the board better pulse from the clock
   SPI.setMOSI(11);
   SPI.setMISO(12);
 
@@ -124,11 +133,11 @@ void reset(){
 	addressIndex = 0;
 	memoryIndex = 7;
 
-	GPIOD_PDOR |= B0100;  //digitalWrite(EN_DAC1, HIGH); Active LOW thus disabled
-	GPIOD_PDOR &= ~B1000;  //digitalWrite(CS_DAC1, LOW); //short Pulse keep low
+	GPIOD_PDOR |= B0100;  //digitalWrite(en_adc1, HIGH); Active LOW thus disabled
+	GPIOD_PDOR &= ~B1000;  //digitalWrite(cs_adc1, LOW); //short Pulse keep low
 
-	GPIOC_PDOR |= B1000;   //digitalWrite(EN_DAC2, HIGH); //DISABLE the buffers DAC2
-	GPIOC_PDOR &= ~B10000; //digitalWrite(CS_ADC, LOW);
+	GPIOC_PDOR |= B1000;   //digitalWrite(en_adc2, HIGH); //DISABLE the buffers DAC2
+	GPIOC_PDOR &= ~B10000; //digitalWrite(cs_adc2, LOW);
 }
 
 
@@ -189,10 +198,6 @@ void readSensors() {
   highVal = SPI.transfer(channelSelection[addressIndex]); //Send channel for next cycle and exhange MSB
   lowVal = SPI.transfer(0x00); //Send 8Bytes of 0x00 and store LSB
 
-  //Sum up 128 times and calculated averages do a test with max 16Bit value (1000 * 128) >> 7 = 1000 //passed
-  //After averaging has taken place set initial values to zero.
-  //Disable interrupts when resetting the values
-
   writePtrOne[memoryIndex] += (highVal<<8) + lowVal;
 
   //Finished disable buffers ADC
@@ -209,12 +214,12 @@ void readSensors() {
   lowVal = SPI.transfer(0x00); //Send 8Bytes of 0x00 and store LSB
 
   writePtrTwo[memoryIndex] += (highVal<<8) + lowVal; //The pointer is offsetted to the eight element of the buffer
-  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //This in effect eliminates an instruction in the loop
-  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //Make sure the pointer doesn't read off memory outside the loop
-  	  	  	  	  	  	  	  	  	  	  	  	  	  	  //The buffer
+  	  	  	  	  	  	  	  	  	  	  	  	  	 //This in effect eliminates an instruction in the loop
+  	  	  	  	  	  	  	  	  	  	  	  	  	 //Make sure the pointer doesn't read off memory outside the loop
+
 
   //Finished disable tristate buffers ADC2
-  GPIOC_PDOR |= B1000; //digitalWrite(EN_DAC2, HIGH); //DISABLE the buffers DAC2
+  GPIOC_PDOR |= B1000; //digitalWrite(en_adc2, HIGH); //DISABLE the buffers DAC2
 
   addressIndex++;
   memoryIndex++;
@@ -293,7 +298,6 @@ void calculateAverage(){
 	 bufferIndex++;
   }
 
- //Offset for the joystick this way it will be st up in the middle position
 	}
 } // namespace ltc1867
 

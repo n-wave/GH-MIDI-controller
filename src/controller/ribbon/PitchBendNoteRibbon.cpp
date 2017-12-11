@@ -9,6 +9,7 @@
 #include "../../command/PitchBendCommand.h"
 #include "../../command/PitchBendNoteCommand.h"
 #include "PitchBendNoteRibbon.h"
+#include "../../command/NoteVelocityCommand.h"
 
 PitchBendNoteRibbon::PitchBendNoteRibbon() :
 	channel(0),
@@ -102,10 +103,14 @@ void PitchBendNoteRibbon::update() {
 			}
 			sendNote = false;
 		} else {
+
 			dispatcher->addCommand(new PitchBendNoteCommand(channel,
 															pitch,
 															0,
 															0));
+
+
+
 			sendNote = false;
 		}
 		updated = false;
